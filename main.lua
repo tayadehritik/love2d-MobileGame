@@ -31,7 +31,7 @@ Platform_Quad = love.graphics.newQuad(48,48,48,48,TileSetW,TileSetH)
 
 runningIndex = 0
 
-FLOORX = 300
+FLOORX = 544
 TREESX = 0
 MOUNTAINSX = 0
 
@@ -128,19 +128,16 @@ function love.draw()
     
     if(GAMESTATE == "playstate")
     then
-        ogFLOORX = FLOORX
-        while(FLOORX>=-50)
-        do
-           
-            love.graphics.draw(TILE_SET,Platform_Quad,FLOORX,VIRTUAL_HEIGHT-24)
-            FLOORX = FLOORX - 48
-        end
-        FLOORX = ogFLOORX - 1
-        if(FLOORX <= -48)
+        
+        if(FLOORX ==  272-48)
         then
             FLOORX = 272
         end
-
+        for i=FLOORX,-48,- 48
+        do
+            love.graphics.draw(TILE_SET,Platform_Quad,i,VIRTUAL_HEIGHT-24)
+        end
+        FLOORX = FLOORX - 4
 
         if(PLAYERSTATE == "idle")
         then
