@@ -29,7 +29,11 @@ TileSetW = TILE_SET:getWidth()
 TileSetH = TILE_SET:getHeight()
 Platform_Quad = love.graphics.newQuad(48,48,48,48,TileSetW,TileSetH)
 
-runningIndex = 1
+runningIndex = 0
+
+FLOORX = 300
+TREESX = 0
+MOUNTAINSX = 0
 
 function love.load()
     
@@ -73,34 +77,46 @@ function love.update(dt)
     
     if(love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') or love.touch.wasTouched())
     then
+        
         GAMESTATE = "playstate"
         PLAYERSTATE = "running"
         love.touch.displaytouched = false
-        BOTRunningX = BOTRunningX + 50 * dt
-        if(BOTRunningX > 272)
+        if(BOTRunningX < VIRTUAL_WIDTH /2 - 15)
         then
-            BOTRunningX = 0
-        elseif (BOTRunningX <= 272)
-        then
-            print(BOTRunningX)
-            if(math.floor(BOTRunningX) % 5 == 0)
-            then
-                print("here")
-                if(runningIndex ==  4) then
-                    runningIndex = 1
-                end
-                runningIndex = runningIndex + 1
-
-            end
+            BOTRunningX = BOTRunningX + 80 * dt
         end
         
+        
+        playerrun()
+
+        
+        
+
     end
+
+    
 
 end
 
 function love.resize(width, height)
     push:resize(width, height)
 end
+
+function playerrun()
+
+    
+    
+        
+        if(runningIndex ==  4) then
+            runningIndex = 0
+        end
+        runningIndex = runningIndex + 1
+        
+
+    
+
+end
+
 
 function love.draw()
     push:start()
@@ -112,13 +128,20 @@ function love.draw()
     
     if(GAMESTATE == "playstate")
     then
-        while(Xcoor<272)
+        ogFLOORX = FLOORX
+        while(FLOORX>=-50)
         do
-            print(Xcoor)
-            love.graphics.draw(TILE_SET,Platform_Quad,Xcoor,VIRTUAL_HEIGHT-24)
-            Xcoor = Xcoor + 48
+           
+            love.graphics.draw(TILE_SET,Platform_Quad,FLOORX,VIRTUAL_HEIGHT-24)
+            FLOORX = FLOORX - 48
         end
-        Xcoor = 0
+        FLOORX = ogFLOORX - 1
+        if(FLOORX <= -48)
+        then
+            FLOORX = 272
+        end
+
+
         if(PLAYERSTATE == "idle")
         then
             
@@ -127,9 +150,13 @@ function love.draw()
         elseif(PLAYERSTATE == 'running')
         then
             
-            print(runningIndex)
-            love.graphics.draw(PLAYER_RUN[runningIndex],BOTRunningX,BOTRunningY)
-            print(runningIndex)
+           
+            for i=1,250000 
+            do
+                love.graphics.draw(PLAYER_RUN[runningIndex],BOTRunningX,BOTRunningY)
+            end
+            
+            
         end
     
     elseif(GAMESTATE == "titlescreen")
