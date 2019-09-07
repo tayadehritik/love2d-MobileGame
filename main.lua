@@ -29,11 +29,17 @@ TileSetW = TILE_SET:getWidth()
 TileSetH = TILE_SET:getHeight()
 Platform_Quad = love.graphics.newQuad(48,48,48,48,TileSetW,TileSetH)
 
-runningIndex = 0
+runningIndex = 1
 
 FLOORX = 544
-TREESX = 0
-MOUNTAINSX = 0
+LAYER_0_X = 0
+LAYER_1_X = 0
+LAYER_2_X = 0
+LAYER_3_X = 0
+LAYER_4_X = 0
+
+timepassed = 0
+
 
 function love.load()
     
@@ -81,16 +87,37 @@ function love.update(dt)
         GAMESTATE = "playstate"
         PLAYERSTATE = "running"
         love.touch.displaytouched = false
+        
+        timepassed = timepassed + 1 * dt
         if(BOTRunningX < VIRTUAL_WIDTH /2 - 15)
         then
             BOTRunningX = BOTRunningX + 80 * dt
         end
         
-        
-        playerrun()
+        if(timepassed >= 0.10031554799898)
+        then
+            timepassed = 0
+            playerrun()
+        end
+        FLOORX = FLOORX - 2
+        LAYER_4_X = LAYER_4_X - 1.7
+        LAYER_3_X = LAYER_3_X - 1.0
+        LAYER_2_X = LAYER_2_X - 0.5       
 
-        
-        
+        if(LAYER_4_X <= -262-1)
+        then
+            LAYER_4_X = 0
+        end
+
+        if(LAYER_3_X <= -272)
+        then
+            LAYER_3_X = 0
+        end
+
+        if(LAYER_2_X <= -272)
+        then
+            LAYER_2_X = 0
+        end
 
     end
 
@@ -102,17 +129,12 @@ function love.resize(width, height)
     push:resize(width, height)
 end
 
-function playerrun()
-
+function playerrun(timepassed, counter)
     
-    
-        
-        if(runningIndex ==  4) then
-            runningIndex = 0
-        end
-        runningIndex = runningIndex + 1
-        
-
+    if(runningIndex ==  4) then
+        runningIndex = 0
+    end
+    runningIndex = runningIndex + 1
     
 
 end
@@ -120,16 +142,19 @@ end
 
 function love.draw()
     push:start()
-    love.graphics.draw(BACKGROUND_LAYER0,0,0)
-    love.graphics.draw(BACKGROUND_LAYER1,0,0)
-    love.graphics.draw(BACKGROUND_LAYER2,0,0)
-    love.graphics.draw(BACKGROUND_LAYER3,0,0)
-    love.graphics.draw(BACKGROUND_LAYER4,0,0)
+    
     
     if(GAMESTATE == "playstate")
     then
         
-        if(FLOORX ==  272-48)
+        love.graphics.draw(BACKGROUND_LAYER0,LAYER_0_X,0)
+        love.graphics.draw(BACKGROUND_LAYER1,LAYER_1_X,0-24)
+        love.graphics.draw(BACKGROUND_LAYER2,LAYER_2_X,0-24)
+        love.graphics.draw(BACKGROUND_LAYER3,LAYER_3_X,0-20)
+        love.graphics.draw(BACKGROUND_LAYER4,LAYER_4_X,0-24)
+
+
+        if(FLOORX <=  272-48)
         then
             FLOORX = 272
         end
@@ -137,7 +162,7 @@ function love.draw()
         do
             love.graphics.draw(TILE_SET,Platform_Quad,i,VIRTUAL_HEIGHT-24)
         end
-        FLOORX = FLOORX - 4
+        
 
         if(PLAYERSTATE == "idle")
         then
@@ -148,16 +173,23 @@ function love.draw()
         then
             
            
-            for i=1,250000 
-            do
+            
                 love.graphics.draw(PLAYER_RUN[runningIndex],BOTRunningX,BOTRunningY)
-            end
+            
             
             
         end
     
     elseif(GAMESTATE == "titlescreen")
     then
+
+        love.graphics.draw(BACKGROUND_LAYER0,LAYER_0_X,0)
+        love.graphics.draw(BACKGROUND_LAYER1,LAYER_1_X,0)
+        love.graphics.draw(BACKGROUND_LAYER2,LAYER_2_X,0)
+        love.graphics.draw(BACKGROUND_LAYER3,LAYER_3_X,0)
+        love.graphics.draw(BACKGROUND_LAYER4,LAYER_4_X,0)
+
+
         love.graphics.setFont(mediumfont)
         love.graphics.printf("Start Game",0,VIRTUAL_HEIGHT/2,VIRTUAL_WIDTH,'center')
         love.graphics.setFont(smallfont)
