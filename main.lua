@@ -13,10 +13,11 @@ PLAYER_RUN = {
     [1] = love.graphics.newImage("assets/megabot/png-files/player/run1.png"),
     [2] = love.graphics.newImage("assets/megabot/png-files/player/run2.png"),
     [3] = love.graphics.newImage("assets/megabot/png-files/player/run3.png"),
-    [4] = love.graphics.newImage("assets/megabot/png-files/player/run4.png")
-
+    [4] = love.graphics.newImage("assets/megabot/png-files/player/run4.png"),
+    [5] =  love.graphics.newImage("assets/megabot/png-files/player/jump.png")
 
 }
+
  
 TILE_SET =  love.graphics.newImage("assets/megabot/png-files/tileset.png")
 VIRTUAL_WIDTH = 272
@@ -40,6 +41,7 @@ LAYER_4_X = 0
 
 timepassed = 0
 
+GRAVITY = 100
 
 function love.load()
     
@@ -79,48 +81,53 @@ function love.touch.wasTouched()
 end
 
 function love.update(dt)
+    playstate(dt)
     
-    
-    if(love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') or love.touch.wasTouched())
+    if(love.keyboard.wasPressed('enter') or love.keyboard.wasPressed('return') or love.touch.wasTouched() and GAMESTATE == "titlescreen")
     then
         
         GAMESTATE = "playstate"
         PLAYERSTATE = "running"
+        
+        love.keyboard.keysPressed['enter'] = false
+        love.keyboard.keysPressed['return'] = false
         love.touch.displaytouched = false
         
-        timepassed = timepassed + 1 * dt
-        if(BOTRunningX < VIRTUAL_WIDTH /2 - 15)
-        then
-            BOTRunningX = BOTRunningX + 80 * dt
-        end
-        
-        if(timepassed >= 0.10031554799898)
-        then
-            timepassed = 0
-            playerrun()
-        end
-        FLOORX = FLOORX - 2
-        LAYER_4_X = LAYER_4_X - 1.7
-        LAYER_3_X = LAYER_3_X - 1.0
-        LAYER_2_X = LAYER_2_X - 0.5       
-
-        if(LAYER_4_X <= -262-1)
-        then
-            LAYER_4_X = 0
-        end
-
-        if(LAYER_3_X <= -272)
-        then
-            LAYER_3_X = 0
-        end
-
-        if(LAYER_2_X <= -272)
-        then
-            LAYER_2_X = 0
-        end
+       
 
     end
 
+    if(GAMESTATE == "playstate" and PLAYERSTATE == "running")
+    then
+        
+        checkPlayerCollisionWithFloor(dt)
+        
+        if(love.touch.wasTouched() or love.keyboard.wasPressed('space') )
+        then
+
+            PLAYERSTATE = "jumping"
+            runningIndex = 5
+            print("jump")
+
+        end
+
+
+       
+        
+
+    end
+
+   
+    
+    if(PLAYERSTATE == "jumping" and GAMESTATE == "playstate")
+    then
+        
+        checkPlayerCollisionWithJumpLimit(dt)
+        
+        
+    end
+
+    
     
 
 end
@@ -129,10 +136,96 @@ function love.resize(width, height)
     push:resize(width, height)
 end
 
+
+function checkPlayerCollisionWithJumpLimit(dt)
+    
+    if(BOTRunningY <= 75)
+    then
+        PLAYERSTATE = "running"
+        checkPlayerCollisionWithFloor(dt)
+        
+
+    else
+        BOTRunningY = BOTRunningY - GRAVITY * dt
+        
+    end
+
+end
+
+
+function checkPlayerCollisionWithFloor(dt)
+    if(BOTRunningY <= VIRTUAL_HEIGHT - 24 -28)
+    then
+        BOTRunningY = BOTRunningY + GRAVITY *dt 
+        love.touch.displaytouched = false
+        love.keyboard.keysPressed['space'] = false
+    else
+        if(runningIndex == 5)
+        then
+            runningIndex = 1    
+        end
+    end
+    
+end
+
+
+function playstate(dt)
+
+    timepassed = timepassed + 1 * dt
+    if(BOTRunningX < VIRTUAL_WIDTH /2 - 50)
+    then
+        BOTRunningX = BOTRunningX + 80 * dt
+    end
+    
+    if(timepassed >= 0.10031554799898)
+    then
+        timepassed = 0
+        if(runningIndex == 5)
+        then
+            
+        else
+            playerrun()
+    
+        end
+    end
+    FLOORX = FLOORX - 2
+    LAYER_4_X = LAYER_4_X - 1.7
+    LAYER_3_X = LAYER_3_X - 1.0
+    LAYER_2_X = LAYER_2_X - 0.5       
+
+    if(LAYER_4_X <= -262-1)
+    then
+        LAYER_4_X = 0
+    end
+
+    if(LAYER_3_X <= -272)
+    then
+        LAYER_3_X = 0
+    end
+
+    if(LAYER_2_X <= -272)
+    then
+        LAYER_2_X = 0
+    end
+
+
+end
+
+
+
+function playerjump()
+
+
+
+end
+
+
 function playerrun(timepassed, counter)
     
     if(runningIndex ==  4) then
+        
         runningIndex = 0
+        
     end
     runningIndex = runningIndex + 1
     
@@ -169,7 +262,7 @@ function love.draw()
             
             love.graphics.draw(PLAYER_IDLE,BOTIdleX,BOTIdleY)
             
-        elseif(PLAYERSTATE == 'running')
+        elseif(PLAYERSTATE == 'running' or PLAYERSTATE == "jumping")
         then
             
            
