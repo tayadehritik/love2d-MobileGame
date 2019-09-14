@@ -7,6 +7,9 @@ BACKGROUND_LAYER1 = love.graphics.newImage("assets/layers/parallax-mountain-moun
 BACKGROUND_LAYER2 = love.graphics.newImage("assets/layers/parallax-mountain-mountains.png")
 BACKGROUND_LAYER3 = love.graphics.newImage("assets/layers/parallax-mountain-trees.png")
 BACKGROUND_LAYER4 = love.graphics.newImage("assets/layers/parallax-mountain-foreground-trees.png")
+
+
+
 PLAYER_IDLE = love.graphics.newImage("assets/megabot/png-files/player/idle.png")
 PLAYER_RUN = {
 
@@ -29,6 +32,19 @@ BOTIdleY = VIRTUAL_HEIGHT-24-28
 TileSetW = TILE_SET:getWidth()
 TileSetH = TILE_SET:getHeight()
 Platform_Quad = love.graphics.newQuad(48,48,48,48,TileSetW,TileSetH)
+
+SPRITE0 = love.graphics.newQuad(0,96-15,16,31,TileSetW,TileSetH)
+SPRITE1 = love.graphics.newQuad(32,96-15,16,31,TileSetW,TileSetH)
+SPRITE2 = love.graphics.newQuad(32+16,96,16,16,TileSetW,TileSetH)
+
+SPRITE0_X = VIRTUAL_WIDTH + 10
+SPRITE1_X = SPRITE0_X + 20
+SPRITE2_X = SPRITE1_X + 30
+
+SPRITE1_Y = VIRTUAL_HEIGHT-24-28
+SPRITE0_Y = VIRTUAL_HEIGHT-24-28
+SPRITE2_Y = VIRTUAL_HEIGHT-24-22
+
 
 runningIndex = 1
 
@@ -191,7 +207,11 @@ function playstate(dt)
     FLOORX = FLOORX - 2
     LAYER_4_X = LAYER_4_X - 1.7
     LAYER_3_X = LAYER_3_X - 1.0
-    LAYER_2_X = LAYER_2_X - 0.5       
+    LAYER_2_X = LAYER_2_X - 0.5   
+
+    SPRITE0_X = SPRITE0_X - 2
+    SPRITE1_X = SPRITE1_X - 2
+    SPRITE2_X = SPRITE2_X - 2
 
     if(LAYER_4_X <= -262-1)
     then
@@ -206,6 +226,25 @@ function playstate(dt)
     if(LAYER_2_X <= -272)
     then
         LAYER_2_X = 0
+    end
+
+
+    if(SPRITE0_X <= -272-16)
+    then
+        
+        SPRITE0_X = 272 + 10
+        
+    end
+
+    if(SPRITE1_X <= -272-16)
+    then
+        
+        SPRITE1_X = SPRITE0_X +20
+    end
+
+    if(SPRITE2_X <= -272-16)
+    then
+        SPRITE2_X = SPRITE1_X + 20
     end
 
 
@@ -237,15 +276,22 @@ function love.draw()
     push:start()
     
     
+
     if(GAMESTATE == "playstate")
     then
         
+        
+
+
         love.graphics.draw(BACKGROUND_LAYER0,LAYER_0_X,0)
         love.graphics.draw(BACKGROUND_LAYER1,LAYER_1_X,0-24)
         love.graphics.draw(BACKGROUND_LAYER2,LAYER_2_X,0-24)
         love.graphics.draw(BACKGROUND_LAYER3,LAYER_3_X,0-20)
         love.graphics.draw(BACKGROUND_LAYER4,LAYER_4_X,0-24)
 
+        love.graphics.draw(TILE_SET,SPRITE0,SPRITE0_X,SPRITE0_Y)
+        love.graphics.draw(TILE_SET,SPRITE1,SPRITE1_X,SPRITE1_Y)
+        love.graphics.draw(TILE_SET,SPRITE2,SPRITE2_X,SPRITE2_Y)
 
         if(FLOORX <=  272-48)
         then
@@ -272,6 +318,8 @@ function love.draw()
             
             
         end
+
+        
     
     elseif(GAMESTATE == "titlescreen")
     then
@@ -281,13 +329,14 @@ function love.draw()
         love.graphics.draw(BACKGROUND_LAYER2,LAYER_2_X,0)
         love.graphics.draw(BACKGROUND_LAYER3,LAYER_3_X,0)
         love.graphics.draw(BACKGROUND_LAYER4,LAYER_4_X,0)
+        
 
 
         love.graphics.setFont(mediumfont)
         love.graphics.printf("Start Game",0,VIRTUAL_HEIGHT/2,VIRTUAL_WIDTH,'center')
         love.graphics.setFont(smallfont)
         love.graphics.printf("Touch to start",0,(VIRTUAL_HEIGHT/2)+20,VIRTUAL_WIDTH,'center')
-
+        
     end
     push:finish()
 end
