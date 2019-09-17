@@ -185,6 +185,12 @@ function checkPlayerCollisionWithFloor(dt)
 end
 
 
+function checkPlayerCollisionWithSprites()
+
+
+end
+
+
 function playstate(dt)
 
     timepassed = timepassed + 1 * dt
