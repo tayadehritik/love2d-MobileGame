@@ -23,8 +23,8 @@ PLAYER_RUN = {
 
  
 TILE_SET =  love.graphics.newImage("assets/megabot/png-files/tileset.png")
-VIRTUAL_WIDTH = 272
-VIRTUAL_HEIGHT = 160
+VIRTUAL_WIDTH = 272 --[272]--
+VIRTUAL_HEIGHT = 160 --[160]--
 BOTRunningX = 0
 BOTRunningY = VIRTUAL_HEIGHT-24-28
 BOTIdleX = 0
@@ -45,8 +45,11 @@ SPRITE1_Y = VIRTUAL_HEIGHT-24-28
 SPRITE0_Y = VIRTUAL_HEIGHT-24-28
 SPRITE2_Y = VIRTUAL_HEIGHT-24-22
 
-
 runningIndex = 1
+
+FLOOR_SPRITE = 544
+CEIL_SPRITE = 272+10
+
 
 FLOORX = 544
 LAYER_0_X = 0
@@ -69,6 +72,7 @@ function love.load()
     Xcoor = 0
     love.touch.displaytouched = false
     love.keyboard.keysPressed = {}
+    math.randomseed(os.time())
     
 end
 
@@ -109,8 +113,6 @@ function love.update(dt)
         love.keyboard.keysPressed['return'] = false
         love.touch.displaytouched = false
         
-       
-
     end
 
     if(GAMESTATE == "playstate" and PLAYERSTATE == "running")
@@ -127,24 +129,15 @@ function love.update(dt)
 
         end
 
-
-       
-        
-
     end
-
-   
     
     if(PLAYERSTATE == "jumping" and GAMESTATE == "playstate")
     then
         
         checkPlayerCollisionWithJumpLimit(dt)
         
-        
     end
 
-    
-    
 
 end
 
@@ -155,7 +148,7 @@ end
 
 function checkPlayerCollisionWithJumpLimit(dt)
     
-    if(BOTRunningY <= 75)
+    if(BOTRunningY <= 70)
     then
         PLAYERSTATE = "running"
         checkPlayerCollisionWithFloor(dt)
@@ -167,7 +160,6 @@ function checkPlayerCollisionWithJumpLimit(dt)
     end
 
 end
-
 
 function checkPlayerCollisionWithFloor(dt)
     if(BOTRunningY <= VIRTUAL_HEIGHT - 24 -28)
@@ -235,28 +227,26 @@ function playstate(dt)
     end
 
 
-    if(SPRITE0_X <= -272-16)
+    if(SPRITE0_X <= -16)
     then
         
-        SPRITE0_X = 272 + 10
+        SPRITE0_X =  math.random(FLOOR_SPRITE,CEIL_SPRITE) --544
         
     end
 
-    if(SPRITE1_X <= -272-16)
+    if(SPRITE1_X <= -16)
     then
         
-        SPRITE1_X = SPRITE0_X +20
+        SPRITE1_X = math.random(FLOOR_SPRITE, CEIL_SPRITE)--[SPRITE0_X +20]-- --[random value between floor_sprite and base_sprite]--
     end
 
-    if(SPRITE2_X <= -272-16)
+    if(SPRITE2_X <= -16)
     then
-        SPRITE2_X = SPRITE1_X + 20
+        SPRITE2_X = math.random(FLOOR_SPRITE,CEIL_SPRITE)--[SPRITE1_X + 20]-- --[random value between floor_sprite and base sprite]--
     end
 
 
 end
-
-
 
 function playerjump()
 
@@ -274,7 +264,6 @@ function playerrun(timepassed, counter)
     end
     runningIndex = runningIndex + 1
     
-
 end
 
 
@@ -287,8 +276,6 @@ function love.draw()
     then
         
         
-
-
         love.graphics.draw(BACKGROUND_LAYER0,LAYER_0_X,0)
         love.graphics.draw(BACKGROUND_LAYER1,LAYER_1_X,0-24)
         love.graphics.draw(BACKGROUND_LAYER2,LAYER_2_X,0-24)
@@ -317,11 +304,7 @@ function love.draw()
         elseif(PLAYERSTATE == 'running' or PLAYERSTATE == "jumping")
         then
             
-           
-            
-                love.graphics.draw(PLAYER_RUN[runningIndex],BOTRunningX,BOTRunningY)
-            
-            
+                love.graphics.draw(PLAYER_RUN[runningIndex],BOTRunningX,BOTRunningY)     
             
         end
 
@@ -336,8 +319,6 @@ function love.draw()
         love.graphics.draw(BACKGROUND_LAYER3,LAYER_3_X,0)
         love.graphics.draw(BACKGROUND_LAYER4,LAYER_4_X,0)
         
-
-
         love.graphics.setFont(mediumfont)
         love.graphics.printf("Start Game",0,VIRTUAL_HEIGHT/2,VIRTUAL_WIDTH,'center')
         love.graphics.setFont(smallfont)
