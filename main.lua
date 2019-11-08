@@ -62,6 +62,9 @@ timepassed = 0
 
 GRAVITY = 100
 
+
+-- TODO : make sure random sprites don't overlap each other.
+
 function love.load()
     
     smallfont = love.graphics.newFont("font.ttf",8)
