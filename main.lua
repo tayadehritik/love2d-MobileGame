@@ -26,9 +26,9 @@ TILE_SET =  love.graphics.newImage("assets/megabot/png-files/tileset.png")
 VIRTUAL_WIDTH = 272 --[272]--
 VIRTUAL_HEIGHT = 160 --[160]--
 BOTRunningX = 0
-BOTRunningY = VIRTUAL_HEIGHT-24-28
+BOTRunningY = VIRTUAL_HEIGHT-24-32
 BOTIdleX = 0
-BOTIdleY = VIRTUAL_HEIGHT-24-28
+BOTIdleY = VIRTUAL_HEIGHT-24-32
 TileSetW = TILE_SET:getWidth()
 TileSetH = TILE_SET:getHeight()
 Platform_Quad = love.graphics.newQuad(48,48,48,48,TileSetW,TileSetH)
@@ -125,7 +125,7 @@ function love.update(dt)
         
         if(love.touch.wasTouched() or love.keyboard.wasPressed('space') )
         then
-
+            
             PLAYERSTATE = "jumping"
             runningIndex = 5
             print("jump")
@@ -165,7 +165,7 @@ function checkPlayerCollisionWithJumpLimit(dt)
 end
 
 function checkPlayerCollisionWithFloor(dt)
-    if(BOTRunningY <= VIRTUAL_HEIGHT - 24 -28)
+    if(BOTRunningY <= VIRTUAL_HEIGHT - 53)
     then
         BOTRunningY = BOTRunningY + GRAVITY *dt 
         love.touch.displaytouched = false
@@ -194,15 +194,14 @@ function playstate(dt)
         BOTRunningX = BOTRunningX + 80 * dt
     end
     
-    if(timepassed >= 0.10031554799898)
+    if(timepassed >= 0.131554799898) 
     then
         timepassed = 0
         if(runningIndex == 5)
         then
-            
+
         else
             playerrun()
-    
         end
     end
     FLOORX = FLOORX - 2
@@ -229,7 +228,7 @@ function playstate(dt)
         LAYER_2_X = 0
     end
 
-
+  
     if(SPRITE0_X <= -16)
     then
         
@@ -299,17 +298,17 @@ function love.draw()
         end
         
 
-        if(PLAYERSTATE == "idle")
-        then
+        --if(PLAYERSTATE == "idle")
+        --then
             
-            love.graphics.draw(PLAYER_IDLE,BOTIdleX,BOTIdleY)
+        --    love.graphics.draw(PLAYER_IDLE,BOTIdleX,BOTIdleY)
             
-        elseif(PLAYERSTATE == 'running' or PLAYERSTATE == "jumping")
-        then
-            
+        --elseif(PLAYERSTATE == 'running' or PLAYERSTATE == "jumping")
+        --then
+                    
                 love.graphics.draw(PLAYER_RUN[runningIndex],BOTRunningX,BOTRunningY)     
             
-        end
+        --end
 
         
     
