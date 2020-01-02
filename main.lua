@@ -50,6 +50,10 @@ runningIndex = 1
 FLOOR_SPRITE = 544
 CEIL_SPRITE = 272+10
 
+SPRITE_0_POSITION = 0
+SPRITE_1_POSITION = 0
+SPRITE_2_POSITION = 0
+PLAYER_POSITION = 0
 
 FLOORX = 544
 LAYER_0_X = 0
@@ -61,6 +65,8 @@ LAYER_4_X = 0
 timepassed = 0
 
 GRAVITY = 100
+
+score = 0
 
 
 -- TODO : make sure random sprites don't overlap each other.
@@ -122,6 +128,7 @@ function love.update(dt)
     then
         
         checkPlayerCollisionWithFloor(dt)
+        checkPlayerCollisionWithSprites()
         
         if(love.touch.wasTouched() or love.keyboard.wasPressed('space') )
         then
@@ -140,6 +147,8 @@ function love.update(dt)
         checkPlayerCollisionWithJumpLimit(dt)
         
     end
+
+    SPRITE_0_POSITION = SPRITE0_X +    
 
 
 end
@@ -287,6 +296,9 @@ function love.draw()
         love.graphics.draw(TILE_SET,SPRITE0,SPRITE0_X,SPRITE0_Y)
         love.graphics.draw(TILE_SET,SPRITE1,SPRITE1_X,SPRITE1_Y)
         love.graphics.draw(TILE_SET,SPRITE2,SPRITE2_X,SPRITE2_Y)
+
+        love.graphics.setFont(smallfont)
+        love.graphics.printf(score, 0,0,VIRTUAL_WIDTH,'center')
 
         if(FLOORX <=  272-48)
         then
