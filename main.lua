@@ -70,8 +70,10 @@ timepassed = 0
 
 GRAVITY = 100
 
-score = 0
+CrossingStatus = false;
 
+score = 0
+status = 0
 
 -- TODO : make sure random sprites don't overlap each other.
 
@@ -163,6 +165,8 @@ function love.update(dt)
     PLAYER_POSITIONALWIDTH = BOTRunningX + 28
     PLAYER_POSITIONALHEIGHT = BOTRunningY + 28
 
+    updateScore()
+
 
 
 end
@@ -205,6 +209,26 @@ end
 
 function checkPlayerCollisionWithSprites()
 
+
+end
+
+function updateScore()
+
+    if(PLAYER_POSITIONALWIDTH > SPRITE_0_POSITIONALWIDTH or PLAYER_POSITIONALWIDTH > SPRITE_1_POSITIONALWIDTH)
+    then
+        
+        CrossingStatus = true 
+        status = 'crossed'
+    end
+
+
+
+    if(CrossingStatus == true)
+    then
+        score = score + 1
+        CrossingStatus = false
+        status = 'not crossed'
+    end
 
 end
 
@@ -312,7 +336,8 @@ function love.draw()
         love.graphics.draw(TILE_SET,SPRITE2,SPRITE2_X,SPRITE2_Y)
 
         love.graphics.setFont(smallfont)
-        love.graphics.printf(PLAYER_POSITIONALHEIGHT, 0,0,VIRTUAL_WIDTH,'center')
+        love.graphics.printf(score, 0,0,VIRTUAL_WIDTH,'center')
+        love.graphics.printf(status, 0,0,VIRTUAL_WIDTH,'left')
 
         if(FLOORX <=  272-48)
         then
