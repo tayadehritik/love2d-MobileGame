@@ -214,21 +214,11 @@ end
 
 function updateScore()
 
-    if(PLAYER_POSITIONALWIDTH > SPRITE_0_POSITIONALWIDTH or PLAYER_POSITIONALWIDTH > SPRITE_1_POSITIONALWIDTH)
-    then
-        
-        CrossingStatus = true 
-        status = 'crossed'
-    end
+    
 
 
 
-    if(CrossingStatus == true)
-    then
-        score = score + 1
-        CrossingStatus = false
-        status = 'not crossed'
-    end
+    
 
 end
 
