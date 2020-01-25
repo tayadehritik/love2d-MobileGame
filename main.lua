@@ -23,8 +23,8 @@ PLAYER_RUN = {
 
  
 TILE_SET =  love.graphics.newImage("assets/megabot/png-files/tileset.png")
-VIRTUAL_WIDTH = 272 --[272]--
-VIRTUAL_HEIGHT = 160 --[160]--
+VIRTUAL_WIDTH = love.graphics.getWidth() --[272]--
+VIRTUAL_HEIGHT = love.graphics.getHeight()  --[160]--
 BOTRunningX = 0
 BOTRunningY = VIRTUAL_HEIGHT-24-32
 BOTIdleX = 0
@@ -40,6 +40,9 @@ SPRITE2 = love.graphics.newQuad(32+16,96,16,16,TileSetW,TileSetH)
 SPRITE0_X = VIRTUAL_WIDTH + 10
 SPRITE1_X = SPRITE0_X + 20
 SPRITE2_X = SPRITE1_X + 30
+
+CURRENT_Height = 0
+CURRENT_Width = 0
 
 SPRITE1_Y = VIRTUAL_HEIGHT-24-28
 SPRITE0_Y = VIRTUAL_HEIGHT-24-28
@@ -66,6 +69,14 @@ LAYER_2_X = 0
 LAYER_3_X = 0
 LAYER_4_X = 0
 
+Layer4width = BACKGROUND_LAYER4:getWidth();
+
+Scale_layer1_y =  love.graphics.getHeight()  / BACKGROUND_LAYER0:getHeight() 
+Scale_layer1_x = love.graphics.getWidth() / BACKGROUND_LAYER1:getWidth() 
+
+Scale_layer4_y = love.graphics.getHeight() / 544
+Scale_layer4_x = love.graphics.getWidth() / 166 
+
 timepassed = 0
 
 GRAVITY = 100
@@ -83,7 +94,9 @@ function love.load()
     mediumfont = love.graphics.newFont("flappy.ttf",14)
     largefont = love.graphics.newFont("flappy.ttf",28)
     hugefont = love.graphics.newFont("flappy.ttf",56)    
-    push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WIDTH, HEIGHT, {resizable=true, vsync=false})
+    --push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WIDTH, HEIGHT, {resizable=true, vsync=false})
+    
+    love.window.setMode(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, {resizable=true, vsync=false})
     Xcoor = 0
     love.touch.displaytouched = false
     love.keyboard.keysPressed = {}
@@ -129,7 +142,7 @@ function love.update(dt)
         love.touch.displaytouched = false
         
     end
-
+    
     if(GAMESTATE == "playstate" and PLAYERSTATE == "running")
     then
         
@@ -153,7 +166,8 @@ function love.update(dt)
         checkPlayerCollisionWithJumpLimit(dt)
         
     end
-
+    
+    --[[
     SPRITE_0_POSITIONALWIDTH = SPRITE0_X + 16
     SPRITE_1_POSITIONALWIDTH = SPRITE1_X + 16
     SPRITE_2_POSITIONALWIDTH = SPRITE2_X + 16
@@ -165,14 +179,16 @@ function love.update(dt)
     PLAYER_POSITIONALWIDTH = BOTRunningX + 28
     PLAYER_POSITIONALHEIGHT = BOTRunningY + 28
 
-    updateScore()
-
-
+   ]]--
+    
 
 end
 
 function love.resize(width, height)
-    push:resize(width, height)
+    Scale_layer1_y =  love.graphics.getHeight()  / BACKGROUND_LAYER0:getHeight() 
+    Scale_layer1_x = love.graphics.getWidth() / BACKGROUND_LAYER1:getWidth() 
+    VIRTUAL_HEIGHT = love.graphics.getHeight()
+    VIRTUAL_WIDTH = love.graphics.getWidth()
 end
 
 
@@ -214,9 +230,11 @@ end
 
 function updateScore()
 
-    -- something
+    if(PLAYER_POSITIONALWIDTH > SPRITE_0_POSITIONALWIDTH)
+    then 
+        score = score + 1
 
-
+    end
 
     
 
@@ -241,7 +259,7 @@ function playstate(dt)
             playerrun()
         end
     end
-    FLOORX = FLOORX - 2
+    FLOORX = FLOORX - 1.8
     LAYER_4_X = LAYER_4_X - 1.7
     LAYER_3_X = LAYER_3_X - 1.0
     LAYER_2_X = LAYER_2_X - 0.5   
@@ -250,17 +268,17 @@ function playstate(dt)
     SPRITE1_X = SPRITE1_X - 2
     SPRITE2_X = SPRITE2_X - 2
 
-    if(LAYER_4_X <= -262-1)
+    if(LAYER_4_X <= -544)
     then
         LAYER_4_X = 0
     end
 
-    if(LAYER_3_X <= -272)
+    if(LAYER_3_X <= -VIRTUAL_WIDTH)
     then
         LAYER_3_X = 0
     end
 
-    if(LAYER_2_X <= -272)
+    if(LAYER_2_X <= -VIRTUAL_WIDTH)
     then
         LAYER_2_X = 0
     end
@@ -307,19 +325,19 @@ end
 
 
 function love.draw()
-    push:start()
+    --push:start()
     
-    
+   
 
     if(GAMESTATE == "playstate")
     then
         
         
-        love.graphics.draw(BACKGROUND_LAYER0,LAYER_0_X,0)
-        love.graphics.draw(BACKGROUND_LAYER1,LAYER_1_X,0-24)
-        love.graphics.draw(BACKGROUND_LAYER2,LAYER_2_X,0-24)
-        love.graphics.draw(BACKGROUND_LAYER3,LAYER_3_X,0-20)
-        love.graphics.draw(BACKGROUND_LAYER4,LAYER_4_X,0-24)
+        love.graphics.draw(BACKGROUND_LAYER0,LAYER_0_X,0,0, Scale_layer1_x ,Scale_layer1_y)
+        love.graphics.draw(BACKGROUND_LAYER1,LAYER_1_X,0-24,0, Scale_layer1_x, Scale_layer1_y)
+        love.graphics.draw(BACKGROUND_LAYER2,LAYER_2_X,0,0, Scale_layer1_x, Scale_layer1_y)
+        --love.graphics.draw(BACKGROUND_LAYER3,LAYER_3_X,2)
+       love.graphics.draw(BACKGROUND_LAYER4,LAYER_4_X,0-24,0,Scale_layer1_x, Scale_layer1_y)
 
         love.graphics.draw(TILE_SET,SPRITE0,SPRITE0_X,SPRITE0_Y)
         love.graphics.draw(TILE_SET,SPRITE1,SPRITE1_X,SPRITE1_Y)
@@ -328,28 +346,29 @@ function love.draw()
         love.graphics.setFont(smallfont)
         love.graphics.printf(score, 0,0,VIRTUAL_WIDTH,'center')
         love.graphics.printf(status, 0,0,VIRTUAL_WIDTH,'left')
-
-        if(FLOORX <=  272-48)
+        
+        
+        if(FLOORX <=  VIRTUAL_WIDTH-48)
         then
-            FLOORX = 272
+            FLOORX = VIRTUAL_WIDTH
         end
         for i=FLOORX,-48,- 48
         do
-            love.graphics.draw(TILE_SET,Platform_Quad,i,VIRTUAL_HEIGHT-24)
+            love.graphics.draw(TILE_SET,Platform_Quad,i,VIRTUAL_HEIGHT-48,0,2,2)
         end
         
 
-        --if(PLAYERSTATE == "idle")
-        --then
+        if(PLAYERSTATE == "idle")
+        then
             
-        --    love.graphics.draw(PLAYER_IDLE,BOTIdleX,BOTIdleY)
+            love.graphics.draw(PLAYER_IDLE,BOTIdleX,BOTIdleY)
             
-        --elseif(PLAYERSTATE == 'running' or PLAYERSTATE == "jumping")
-        --then
+        elseif(PLAYERSTATE == 'running' or PLAYERSTATE == "jumping")
+        then
                     
                 love.graphics.draw(PLAYER_RUN[runningIndex],BOTRunningX,BOTRunningY)     
             
-        --end
+        end
 
         
     
@@ -359,14 +378,19 @@ function love.draw()
         love.graphics.draw(BACKGROUND_LAYER0,LAYER_0_X,0)
         love.graphics.draw(BACKGROUND_LAYER1,LAYER_1_X,0)
         love.graphics.draw(BACKGROUND_LAYER2,LAYER_2_X,0)
-        love.graphics.draw(BACKGROUND_LAYER3,LAYER_3_X,0)
+        --love.graphics.draw(BACKGROUND_LAYER3,LAYER_3_X,0)
         love.graphics.draw(BACKGROUND_LAYER4,LAYER_4_X,0)
         
+        
+
         love.graphics.setFont(mediumfont)
         love.graphics.printf("Start Game",0,VIRTUAL_HEIGHT/2,VIRTUAL_WIDTH,'center')
         love.graphics.setFont(smallfont)
         love.graphics.printf("Touch to start",0,(VIRTUAL_HEIGHT/2)+20,VIRTUAL_WIDTH,'center')
         
+        
+
     end
-    push:finish()
+    
+    --push:finish()
 end
