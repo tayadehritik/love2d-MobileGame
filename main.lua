@@ -25,10 +25,12 @@ end
 
 function love.update(dt)
 
-    backgroundlayer3x = backgroundlayer3x - (1/2);
-    backgroundlayer2x = backgroundlayer2x - (1/3);
-    backgroundlayer1x = backgroundlayer1x - (1/4);
-    backgroundlayer0x = backgroundlayer0x - (1/5);
+    backgroundlayer3x = backgroundlayer3x - (1/3);
+    backgroundlayer2x = backgroundlayer2x - (1/4);
+    backgroundlayer1x = backgroundlayer1x - (1/5);
+    backgroundlayer0x = backgroundlayer0x - (1/6);
+
+    backgroundlayer5x = backgroundlayer5x - (1/2);
 
     checkIfBackgroundImagesClipped()
     
@@ -57,6 +59,8 @@ function love.draw()
     love.graphics.draw(backgroundlayer1,backgroundlayer1x,0);
     love.graphics.draw(backgroundlayer2,backgroundlayer2x,0);
     love.graphics.draw(backgroundlayer3,backgroundlayer3x,0);
-    love.graphics.draw(backgroundlayer5,backgroundlayer5x,0);
-    
+    if(backgroundlayer5x >= -896-120)
+    then
+        love.graphics.draw(backgroundlayer5,backgroundlayer5x,0);
+    end
 end
