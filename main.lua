@@ -74,9 +74,11 @@ Layer4width = BACKGROUND_LAYER4:getWidth();
 Scale_layer1_y =  love.graphics.getHeight()  / BACKGROUND_LAYER0:getHeight() 
 Scale_layer1_x = love.graphics.getWidth() / BACKGROUND_LAYER1:getWidth() 
 
-Scale_layer4_y = love.graphics.getHeight() / 544
-Scale_layer4_x = love.graphics.getWidth() / 166 
+Scale_layer4_y = love.graphics.getHeight() / 166
+Scale_layer4_x = love.graphics.getWidth() / 544
 
+Scale_platformquad_y = love.graphics.getHeight() / 48
+Scale_platformquad_x = love.graphics.getWidth() / 48
 timepassed = 0
 
 GRAVITY = 100
@@ -187,6 +189,13 @@ end
 function love.resize(width, height)
     Scale_layer1_y =  love.graphics.getHeight()  / BACKGROUND_LAYER0:getHeight() 
     Scale_layer1_x = love.graphics.getWidth() / BACKGROUND_LAYER1:getWidth() 
+    
+    Scale_layer4_y = love.graphics.getHeight() / 166
+    Scale_layer4_x = love.graphics.getWidth() / 544
+
+    Scale_platformquad_y = love.graphics.getHeight() / 48
+    Scale_platformquad_x = love.graphics.getWidth() / 48
+
     VIRTUAL_HEIGHT = love.graphics.getHeight()
     VIRTUAL_WIDTH = love.graphics.getWidth()
 end
@@ -267,8 +276,8 @@ function playstate(dt)
     SPRITE0_X = SPRITE0_X - 2
     SPRITE1_X = SPRITE1_X - 2
     SPRITE2_X = SPRITE2_X - 2
-
-    if(LAYER_4_X <= -544)
+    --TODO = fix layer4 animation
+    if(LAYER_4_X <= -VIRTUAL_WIDTH)
     then
         LAYER_4_X = 0
     end
@@ -337,7 +346,7 @@ function love.draw()
         love.graphics.draw(BACKGROUND_LAYER1,LAYER_1_X,0-24,0, Scale_layer1_x, Scale_layer1_y)
         love.graphics.draw(BACKGROUND_LAYER2,LAYER_2_X,0,0, Scale_layer1_x, Scale_layer1_y)
         --love.graphics.draw(BACKGROUND_LAYER3,LAYER_3_X,2)
-       love.graphics.draw(BACKGROUND_LAYER4,LAYER_4_X,0-24,0,Scale_layer1_x, Scale_layer1_y)
+       love.graphics.draw(BACKGROUND_LAYER4,LAYER_4_X,0-24 ,0,Scale_layer4_x,Scale_layer4_y)
 
         love.graphics.draw(TILE_SET,SPRITE0,SPRITE0_X,SPRITE0_Y)
         love.graphics.draw(TILE_SET,SPRITE1,SPRITE1_X,SPRITE1_Y)
@@ -354,7 +363,7 @@ function love.draw()
         end
         for i=FLOORX,-48,- 48
         do
-            love.graphics.draw(TILE_SET,Platform_Quad,i,VIRTUAL_HEIGHT-48,0,2,2)
+            love.graphics.draw(TILE_SET,Platform_Quad,i,VIRTUAL_HEIGHT-48)
         end
         
 
