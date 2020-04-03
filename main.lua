@@ -17,6 +17,9 @@ backgroundlayer5x = 0
 
 backgroundcolor = love.graphics.newImage("assets/layers/backgroundcolor.png")
 
+ship = love.graphics.newImage("assets/layers/ship.png")
+
+
 function love.load()
 
     love.window.setMode(896,414,{vsync = true, fullscreen = false, resizable = true})
@@ -63,4 +66,6 @@ function love.draw()
     then
         love.graphics.draw(backgroundlayer5,backgroundlayer5x,0);
     end
+
+    love.graphics.draw(ship,896/3,412/2);
 end
