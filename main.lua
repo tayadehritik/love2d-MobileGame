@@ -38,7 +38,7 @@ multiplier = 1
 
 function love.update(dt)
 
-   
+    shipy2 = shipy + 74
     backgroundlayer0x = backgroundlayer0x - (multiplier/6)
     backgroundlayer1x = backgroundlayer1x - (multiplier/5)
     backgroundlayer2x = backgroundlayer2x - (multiplier/4)
@@ -51,12 +51,12 @@ function love.update(dt)
 
     if(shipexpectedy > shipy)
     then
-        shipy = shipy + 1
-    else
-        if(shipy2 ~= shipexpectedy)
+        if(shipy2 <= shipexpectedy)
         then
-            shipy = shipy - 1
+            shipy = shipy + 1
         end
+    else
+        shipy = shipy - 1        
     end
 
 end
@@ -91,6 +91,12 @@ function love.touchpressed( id, x, y, dx, dy, pressure )
     shipexpectedy = y
 end
 
+
+function love.mousepressed( x, y, button, istouch, presses )
+    shipexpectedy = y
+end
+
+
 function love.draw()
     love.graphics.draw(backgroundcolor,0,0);
     love.graphics.draw(backgroundlayer0,backgroundlayer0x,0);
@@ -107,7 +113,5 @@ function love.draw()
 
     love.graphics.draw(ship,shipx,shipy);
 
-    local touches = love.touch.getTouches()
-    love.graphics.print(shipy,896/2,412/2);
     
 end
