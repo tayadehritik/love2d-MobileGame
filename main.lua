@@ -17,8 +17,30 @@ backgroundlayer5x = 0
 
 backgroundcolor = love.graphics.newImage("assets/layers/backgroundcolor.png")
 
+asteroid0 = love.graphics.newImage("assets/layers/asteroid(0).png")
+
+asteroid1 = asteroid0
+asteroid1x = 896
+asteroid1y = 414/2
+
+asteroid2 = asteroid0
+asteroid2x = 896
+asteroid2y = 414/3
+
+asteroid3 = asteroid0
+
+
+asteroid4 = asteroid0
+
+
+asteroid5 = asteroid0
+
+
+asteroid6 = asteroid0
+
+
 ship = love.graphics.newImage("assets/layers/ship.png")
-shipx = 896/4
+shipx = 896/6
 shipy = 414/2
 
 shipx2 = shipx + 180
@@ -37,16 +59,17 @@ end
 multiplier = 1
 
 function love.update(dt)
-
+  
     shipy2 = shipy + 74
     backgroundlayer0x = backgroundlayer0x - (multiplier/6)
     backgroundlayer1x = backgroundlayer1x - (multiplier/5)
     backgroundlayer2x = backgroundlayer2x - (multiplier/4)
     backgroundlayer3x = backgroundlayer3x - (multiplier/3)
     backgroundlayer5x = backgroundlayer5x - (multiplier/2)
-    
+    asteroid1x = asteroid1x - 1
+    asteroid2x = asteroid2x - 1
     checkIfBackgroundImagesClipped()
-
+    
     differenceShipY = shipy - shipexpectedy
 
     if(shipexpectedy > shipy)
@@ -59,10 +82,32 @@ function love.update(dt)
         shipy = shipy - 1        
     end
 
+
+    checkIfAsteroidClipped(dt)
+
 end
 
 x = 0
 globaly = 0
+
+
+function checkIfAsteroidClipped(dt)
+
+    math.randomseed(dt)
+    if(asteroid1x <= -50)
+    then 
+        asteroid1x = 896
+        asteroid1y = math.random(5,414-50)
+
+    end
+
+    if(asteroid2x <= -50)
+    then 
+        asteroid2x = 896
+        asteroid2y = math.random(5,414-50)
+    end
+
+end
 
 function checkIfBackgroundImagesClipped()
 
@@ -81,6 +126,7 @@ function checkIfBackgroundImagesClipped()
     if(backgroundlayer3x <= -896) then
         backgroundlayer3x = 0
     end
+
 
 
     
@@ -106,12 +152,13 @@ function love.draw()
     love.graphics.draw(backgroundlayer5,backgroundlayer5x,0);
     --love.graphics.print(backgroundlayer1x,0,0)
 
-    if(backgroundlayer5x >= -896-120)
+    if(backgroundlayer5x >= -120)
     then
         love.graphics.draw(backgroundlayer5,backgroundlayer5x,0);
     end
 
-    love.graphics.draw(ship,shipx,shipy);
-
+    love.graphics.draw(ship,shipx,shipy)
+    love.graphics.draw(asteroid0,asteroid1x,asteroid1y,0)
+    love.graphics.draw(asteroid1,asteroid2x,asteroid2y,0)
     
 end
