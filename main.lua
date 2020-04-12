@@ -23,6 +23,11 @@ backgroundlayer5x = 0
 backgroundcolor = love.graphics.newImage("assets/layers/backgroundcolor.png")
 
 asteroid0 = love.graphics.newImage("assets/layers/asteroid(0).png")
+asteroid0width = 30
+asteroid0height = 30
+
+gamestate = "startmenu"
+
 
 asteroid1 = asteroid0
 asteroid1x = 896
@@ -53,6 +58,13 @@ shipy2 = shipy + 74
 
 shipexpectedy = 414/2
 
+shipwidth = 176
+shipheight = 54
+
+score = 0
+
+font = love.graphics.newFont("Roboto-Bold.ttf", 25)
+
 activateLightSpeed = false
 deactivateLightSpeed = false
 lightSpeedDuration = 0
@@ -60,6 +72,9 @@ deactivateLightSpeedDuration = 0
 function love.load()
 
     love.window.setMode(896,414,{vsync = true, fullscreen = false, resizable = true})
+    love.graphics.setColor(255,255,255)
+    love.graphics.setFont(font)
+    
 
 end
 
@@ -69,40 +84,51 @@ multiplier = 5
 
 function love.update(dt)
   
-    shipy2 = shipy + 74
-  
-    backgroundlayer0x = backgroundlayer0x - (multiplier/7)
-    backgroundlayer1x = backgroundlayer1x - (multiplier/6)
-    backgroundlayer2x = backgroundlayer2x - (multiplier/5)
-    backgroundlayer3x = backgroundlayer3x - (multiplier/4)
-    backgroundlayer5x = backgroundlayer5x - (multiplier/2)
-    asteroid1x = asteroid1x - 1
-    asteroid2x = asteroid2x - 1
-    checkIfBackgroundImagesClipped()
-    
-    differenceShipY = shipy - shipexpectedy
 
-    if(shipexpectedy > shipy)
+    if(gamestate == "startmenu")
     then
-        if(shipy2 <= shipexpectedy)
-        then
-            shipy = shipy + 1
-        end
+
     else
-        shipy = shipy - 1        
-    end
+
+        shipy2 = shipy + 74
+    
+        backgroundlayer0x = backgroundlayer0x - (multiplier/7)
+        backgroundlayer1x = backgroundlayer1x - (multiplier/6)
+        backgroundlayer2x = backgroundlayer2x - (multiplier/5)
+        backgroundlayer3x = backgroundlayer3x - (multiplier/4)
+        backgroundlayer5x = backgroundlayer5x - (multiplier/2)
+        asteroid1x = asteroid1x - (multiplier/3)
+        asteroid2x = asteroid2x - (multiplier/3)
+        checkIfBackgroundImagesClipped()
+        checkShipCollisionWithAsteroids(asteroid1x,asteroid1y,asteroid0width,asteroid0height)
+        
+        score = score + dt
+        
+        differenceShipY = shipy - shipexpectedy
+
+        if(shipexpectedy > shipy)
+        then
+            if(shipy2 <= shipexpectedy)
+            then
+                shipy = shipy + 1
+            end
+        else
+            shipy = shipy - 1        
+        end
 
 
-    checkIfAsteroidClipped(dt)
+        checkIfAsteroidClipped(dt)
 
-    if(activateLightSpeed == true)
-    then
-        whenLightSpeed(dt)
-    end
+        if(activateLightSpeed == true)
+        then
+            whenLightSpeed(dt)
+        end
 
-    if(deactivateLightSpeed == true)
-    then
-        whenDeactivatingLightSpeed(dt)
+        if(deactivateLightSpeed == true)
+        then
+            whenDeactivatingLightSpeed(dt)
+        end
+
     end
 
 end
@@ -148,15 +174,21 @@ end
 function love.touchpressed( id, x, y, dx, dy, pressure )
     -- test if the touch happened in the upper half of the screen
     shipexpectedy = y
-    activateLightSpeed = true
-    multiplier = multiplier + 20
+    if(x >= 200 and activateLightSpeed == false)
+    then
+        activateLightSpeed = true
+        multiplier = multiplier + 20
+    end
 end
-
+    
 
 function love.mousepressed( x, y, button, istouch, presses )
     shipexpectedy = y
-    activateLightSpeed = true
-    multiplier = multiplier + 20
+    if(x >= 200 and activateLightSpeed == false)
+    then
+        activateLightSpeed = true
+        multiplier = multiplier + 20
+    end
 end
 
 
@@ -165,7 +197,7 @@ function whenLightSpeed(dt)
     scalefactor = scalefactor + 0.001
     translatefactor = translatefactor - 0.1
     lightSpeedDuration = lightSpeedDuration + dt
-    if(lightSpeedDuration >= 5)
+    if(lightSpeedDuration >= 3)
     then
         activateLightSpeed = false
         multiplier = 5
@@ -178,7 +210,7 @@ function whenDeactivatingLightSpeed(dt)
     scalefactor = scalefactor - 0.001
     translatefactor = translatefactor + 0.1
     deactivateLightSpeedDuration = deactivateLightSpeedDuration + dt
-    if(deactivateLightSpeedDuration >= 5)
+    if(deactivateLightSpeedDuration >= 3)
     then
         deactivateLightSpeed = false
         deactivateLightSpeedDuration = 0
@@ -186,26 +218,51 @@ function whenDeactivatingLightSpeed(dt)
     
 end
 
-function love.draw()
-    
-    love.graphics.scale(scalefactor, scalefactor)
-    love.graphics.translate(0, translatefactor)
-    love.graphics.draw(backgroundcolor,0,0);
-    love.graphics.draw(backgroundlayer0,backgroundlayer0x,0);
-    love.graphics.draw(backgroundlayer1,backgroundlayer1x,0);
- 
-    love.graphics.draw(backgroundlayer3,backgroundlayer3x,0);
-    love.graphics.draw(backgroundlayer5,backgroundlayer5x,0);
-    --love.graphics.print(backgroundlayer1x,0,0)
 
-    if(backgroundlayer5x >= -120)
+
+function checkShipCollisionWithAsteroids(secondObjectX, secondObjectY, secondObjectWidth, secondWidthObjectHeight)
+
+    if(shipx < (secondObjectX+secondObjectWidth) and
+       (shipx+shipwidth) > secondObjectX and
+        shipy < (secondObjectY+secondWidthObjectHeight) and
+        (shipy + shipheight) > secondObjectY)
     then
-        love.graphics.draw(backgroundlayer5,backgroundlayer5x,0);
+        score = 500
     end
 
-    love.graphics.draw(ship,shipx,shipy)
-    love.graphics.draw(asteroid0,asteroid1x,asteroid1y,0)
-    love.graphics.draw(asteroid1,asteroid2x,asteroid2y,0)
-    love.graphics.print(lightSpeedDuration, shipexpectedx,shipexpectedy)
+end
+
+
+function love.draw()
+
+    if(gamestate == "startmenu")
+    then
+        love.graphics.draw(backgroundcolor,0,0);
+        love.graphics.draw(backgroundlayer0,backgroundlayer0x,0);
+        love.graphics.draw(backgroundlayer1,backgroundlayer1x,0);
+        love.graphics.draw(backgroundlayer3,backgroundlayer3x,0);
+        love.graphics.draw(backgroundlayer5,backgroundlayer5x,0);
+        love.graphics.print("Start",896/2,414/2)
+    else
+        love.graphics.scale(scalefactor, scalefactor)
+        love.graphics.translate(0, translatefactor)
+        love.graphics.draw(backgroundcolor,0,0);
+        love.graphics.draw(backgroundlayer0,backgroundlayer0x,0);
+        love.graphics.draw(backgroundlayer1,backgroundlayer1x,0);
+    
+        love.graphics.draw(backgroundlayer3,backgroundlayer3x,0);
+        love.graphics.draw(backgroundlayer5,backgroundlayer5x,0);
+        --love.graphics.print(backgroundlayer1x,0,0)
+
+        if(backgroundlayer5x >= -120)
+        then
+            love.graphics.draw(backgroundlayer5,backgroundlayer5x,0);
+        end
+        love.graphics.draw(asteroid0,asteroid1x,asteroid1y,0)
+        love.graphics.draw(asteroid1,asteroid2x,asteroid2y,90)
+        love.graphics.draw(ship,shipx,shipy)
+        love.graphics.print(math.floor(score+0.5),20,20)
+        
+    end
     
 end

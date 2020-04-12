@@ -53,6 +53,10 @@ shipy2 = shipy + 74
 
 shipexpectedy = 414/2
 
+score = 0
+
+font = love.graphics.newFont("Roboto-Bold.ttf", 25)
+
 activateLightSpeed = false
 deactivateLightSpeed = false
 lightSpeedDuration = 0
@@ -60,6 +64,9 @@ deactivateLightSpeedDuration = 0
 function love.load()
 
     love.window.setMode(896,414,{vsync = true, fullscreen = false, resizable = true})
+    love.graphics.setColor(255,255,255)
+    love.graphics.setFont(font)
+    
 
 end
 
@@ -76,9 +83,11 @@ function love.update(dt)
     backgroundlayer2x = backgroundlayer2x - (multiplier/5)
     backgroundlayer3x = backgroundlayer3x - (multiplier/4)
     backgroundlayer5x = backgroundlayer5x - (multiplier/2)
-    asteroid1x = asteroid1x - 1
-    asteroid2x = asteroid2x - 1
+    asteroid1x = asteroid1x - (multiplier/3)
+    asteroid2x = asteroid2x - (multiplier/3)
     checkIfBackgroundImagesClipped()
+    
+    score = score + dt
     
     differenceShipY = shipy - shipexpectedy
 
@@ -148,15 +157,21 @@ end
 function love.touchpressed( id, x, y, dx, dy, pressure )
     -- test if the touch happened in the upper half of the screen
     shipexpectedy = y
-    activateLightSpeed = true
-    multiplier = multiplier + 20
+    if(x >= 200 and activateLightSpeed == false)
+    then
+        activateLightSpeed = true
+        multiplier = multiplier + 20
+    end
 end
-
+    
 
 function love.mousepressed( x, y, button, istouch, presses )
     shipexpectedy = y
-    activateLightSpeed = true
-    multiplier = multiplier + 20
+    if(x >= 200 and activateLightSpeed == false)
+    then
+        activateLightSpeed = true
+        multiplier = multiplier + 20
+    end
 end
 
 
@@ -165,7 +180,7 @@ function whenLightSpeed(dt)
     scalefactor = scalefactor + 0.001
     translatefactor = translatefactor - 0.1
     lightSpeedDuration = lightSpeedDuration + dt
-    if(lightSpeedDuration >= 5)
+    if(lightSpeedDuration >= 3)
     then
         activateLightSpeed = false
         multiplier = 5
@@ -178,7 +193,7 @@ function whenDeactivatingLightSpeed(dt)
     scalefactor = scalefactor - 0.001
     translatefactor = translatefactor + 0.1
     deactivateLightSpeedDuration = deactivateLightSpeedDuration + dt
-    if(deactivateLightSpeedDuration >= 5)
+    if(deactivateLightSpeedDuration >= 3)
     then
         deactivateLightSpeed = false
         deactivateLightSpeedDuration = 0
@@ -202,10 +217,11 @@ function love.draw()
     then
         love.graphics.draw(backgroundlayer5,backgroundlayer5x,0);
     end
-
-    love.graphics.draw(ship,shipx,shipy)
     love.graphics.draw(asteroid0,asteroid1x,asteroid1y,0)
-    love.graphics.draw(asteroid1,asteroid2x,asteroid2y,0)
-    love.graphics.print(lightSpeedDuration, shipexpectedx,shipexpectedy)
+    love.graphics.draw(asteroid1,asteroid2x,asteroid2y,90)
+    love.graphics.draw(ship,shipx,shipy)
+    love.graphics.print(math.floor(score+0.5),20,20)
+    
+    
     
 end
