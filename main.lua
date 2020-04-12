@@ -4,83 +4,54 @@
 
 ]]--
 backgroundlayer0 = love.graphics.newImage("assets/layers/backgroundlayer0(5).png")
-backgroundlayer0x = 0
 
 backgroundlayer1 = love.graphics.newImage("assets/layers/backgroundlayer1(8).png")
-backgroundlayer1x = 0
-
-backgroundlayer2x = 0
 
 backgroundlayer3 = love.graphics.newImage("assets/layers/backgroundlayer3(10).png")
-backgroundlayer3x = 0
-
-scalefactor = 1
-translatefactor = 0
 
 backgroundlayer5 = love.graphics.newImage("assets/layers/backgroundlayer5(still).png")
-backgroundlayer5x = 0
+
 
 backgroundcolor = love.graphics.newImage("assets/layers/backgroundcolor.png")
 
 asteroid0 = love.graphics.newImage("assets/layers/asteroid(0).png")
-asteroid0width = 30
-asteroid0height = 30
 
-gamestate = "startmenu"
+
+
+
+
 
 
 asteroid1 = asteroid0
-asteroid1x = 896
-asteroid1y = 414/2
+
 
 asteroid2 = asteroid0
-asteroid2x = 896
-asteroid2y = 414/3
 
-asteroid3 = asteroid0
-
-
-asteroid4 = asteroid0
-
-
-asteroid5 = asteroid0
-
-
-asteroid6 = asteroid0
 
 
 ship = love.graphics.newImage("assets/layers/ship.png")
-shipx = 896/6
-shipy = 414/2
 
-shipx2 = shipx + 180
-shipy2 = shipy + 74
-
-shipexpectedy = 414/2
-
-shipwidth = 176
-shipheight = 54
-
-score = 0
 
 font = love.graphics.newFont("Roboto-Bold.ttf", 25)
 
-activateLightSpeed = false
-deactivateLightSpeed = false
-lightSpeedDuration = 0
-deactivateLightSpeedDuration = 0
+
+Start = "START"
+
+
+
 function love.load()
 
     love.window.setMode(896,414,{vsync = true, fullscreen = false, resizable = true})
     love.graphics.setColor(255,255,255)
     love.graphics.setFont(font)
+    resetGame()
     
 
 end
 
 
 
-multiplier = 5
+
 
 function love.update(dt)
   
@@ -133,8 +104,6 @@ function love.update(dt)
 
 end
 
-x = 0
-globaly = 0
 
 
 function checkIfAsteroidClipped(dt)
@@ -174,6 +143,7 @@ end
 function love.touchpressed( id, x, y, dx, dy, pressure )
     -- test if the touch happened in the upper half of the screen
     shipexpectedy = y
+    checkIfClickedOnStart(x,y)
     if(x >= 200 and activateLightSpeed == false)
     then
         activateLightSpeed = true
@@ -184,6 +154,7 @@ end
 
 function love.mousepressed( x, y, button, istouch, presses )
     shipexpectedy = y
+    checkIfClickedOnStart(x,y)
     if(x >= 200 and activateLightSpeed == false)
     then
         activateLightSpeed = true
@@ -191,6 +162,15 @@ function love.mousepressed( x, y, button, istouch, presses )
     end
 end
 
+
+function checkIfClickedOnStart(x, y)
+        
+    if(x >= startx and x <= (startx+startwidth) and  y >= starty and y <= (starty+startheight) )
+    then
+        gamestate = "other"
+    end
+
+end
 
 
 function whenLightSpeed(dt)
@@ -227,11 +207,49 @@ function checkShipCollisionWithAsteroids(secondObjectX, secondObjectY, secondObj
         shipy < (secondObjectY+secondWidthObjectHeight) and
         (shipy + shipheight) > secondObjectY)
     then
-        score = 500
+        resetGame()
     end
 
 end
 
+function resetGame()
+    backgroundlayer0x = 0
+    backgroundlayer1x = 0
+    backgroundlayer2x = 0
+    backgroundlayer3x = 0
+    backgroundlayer5x = 0
+    scalefactor = 1
+    translatefactor = 0
+    asteroid0width = 30
+    asteroid0height = 30
+    gamestate = "startmenu"
+    asteroid1x = 1792
+    asteroid1y = 414/2
+    asteroid2x = 1792
+    asteroid2y = 414/3
+    shipx = 896/6
+    shipy = 414/2
+
+    shipx2 = shipx + 180
+    shipy2 = shipy + 74
+    shipexpectedy = 414/2
+
+    shipwidth = 176
+    shipheight = 54
+
+    score = 0
+    startwidth = font:getWidth(Start)
+    startheight = font:getHeight(Start)
+    startx = (896/2) - (startwidth/2)
+    starty = (414/2) - (startheight/2)
+
+
+    activateLightSpeed = false
+    deactivateLightSpeed = false
+    lightSpeedDuration = 0
+    deactivateLightSpeedDuration = 0
+    multiplier = 5
+end
 
 function love.draw()
 
@@ -242,7 +260,7 @@ function love.draw()
         love.graphics.draw(backgroundlayer1,backgroundlayer1x,0);
         love.graphics.draw(backgroundlayer3,backgroundlayer3x,0);
         love.graphics.draw(backgroundlayer5,backgroundlayer5x,0);
-        love.graphics.print("Start",896/2,414/2)
+        love.graphics.print(Start,startx,starty)
     else
         love.graphics.scale(scalefactor, scalefactor)
         love.graphics.translate(0, translatefactor)
