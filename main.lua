@@ -4,10 +4,9 @@ backgroundlayer0x = 0
 backgroundlayer1 = love.graphics.newImage("assets/layers/backgroundlayer1(8).png")
 backgroundlayer1x = 0
 
-backgroundlayer2 = love.graphics.newImage("assets/layers/backgroundlayer2(10).png")
 backgroundlayer2x = 0
 
-backgroundlayer3 = love.graphics.newImage("assets/layers/backgroundlayer3(16).png")
+backgroundlayer3 = love.graphics.newImage("assets/layers/backgroundlayer3(10).png")
 backgroundlayer3x = 0
 
 
@@ -56,7 +55,7 @@ end
 
 
 
-multiplier = 1
+multiplier = 5
 
 function love.update(dt)
   
@@ -83,7 +82,7 @@ function love.update(dt)
     end
 
 
-    checkIfAsteroidClipped(dt)
+    --checkIfAsteroidClipped(dt)
 
 end
 
@@ -119,16 +118,9 @@ function checkIfBackgroundImagesClipped()
         backgroundlayer1x = 0
     end
 
-    if(backgroundlayer2x <= -896) then
-        backgroundlayer2x = 0
-    end
-
     if(backgroundlayer3x <= -896) then
         backgroundlayer3x = 0
     end
-
-
-
     
 
 end
@@ -147,7 +139,7 @@ function love.draw()
     love.graphics.draw(backgroundcolor,0,0);
     love.graphics.draw(backgroundlayer0,backgroundlayer0x,0);
     love.graphics.draw(backgroundlayer1,backgroundlayer1x,0);
-    love.graphics.draw(backgroundlayer2,backgroundlayer2x,0);
+ 
     love.graphics.draw(backgroundlayer3,backgroundlayer3x,0);
     love.graphics.draw(backgroundlayer5,backgroundlayer5x,0);
     --love.graphics.print(backgroundlayer1x,0,0)
@@ -160,5 +152,6 @@ function love.draw()
     love.graphics.draw(ship,shipx,shipy)
     love.graphics.draw(asteroid0,asteroid1x,asteroid1y,0)
     love.graphics.draw(asteroid1,asteroid2x,asteroid2y,0)
+    love.graphics.scale(2, 2)
     
 end

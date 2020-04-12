@@ -61,10 +61,10 @@ multiplier = 1
 function love.update(dt)
   
     shipy2 = shipy + 74
-    backgroundlayer0x = backgroundlayer0x - (multiplier/6)
-    backgroundlayer1x = backgroundlayer1x - (multiplier/5)
-    backgroundlayer2x = backgroundlayer2x - (multiplier/4)
-    backgroundlayer3x = backgroundlayer3x - (multiplier/3)
+    backgroundlayer0x = backgroundlayer0x - (multiplier/7)
+    backgroundlayer1x = backgroundlayer1x - (multiplier/6)
+    backgroundlayer2x = backgroundlayer2x - (multiplier/5)
+    backgroundlayer3x = backgroundlayer3x - (multiplier/4)
     backgroundlayer5x = backgroundlayer5x - (multiplier/2)
     asteroid1x = asteroid1x - 1
     asteroid2x = asteroid2x - 1
