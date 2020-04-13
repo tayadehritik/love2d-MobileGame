@@ -39,11 +39,17 @@ Start = "START"
 
 
 
+function love.conf(t)
+    t.screen.fullscreen = true
+end
+
+
 function love.load()
 
     love.window.setMode(896,414,{vsync = true, fullscreen = false, resizable = true})
     love.graphics.setColor(255,255,255)
     love.graphics.setFont(font)
+    love.window.setFullscreen(true)
     resetGame()
     
 
