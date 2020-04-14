@@ -1,7 +1,7 @@
 --[[
-    TODO: animation for the ship
+    DONE: animation for the ship
     DONE: scaling and zooming in
-
+    TODO: lightspeed button
 ]]--
 backgroundlayer0 = love.graphics.newImage("assets/layers/backgroundlayer0(5).png")
 
@@ -168,24 +168,28 @@ function checkIfBackgroundImagesClipped()
 end
 function love.touchpressed( id, x, y, dx, dy, pressure )
     -- test if the touch happened in the upper half of the screen
+    
     shipexpectedy = y
-    checkIfClickedOnStart(x,y)
-    if(x >= 200 and activateLightSpeed == false)
+    
+    if(x >= 200 and activateLightSpeed == false and gamestate ~= "startmenu")
     then
         activateLightSpeed = true
         multiplier = multiplier + 20
     end
+    checkIfClickedOnStart(x,y)
 end
     
 
 function love.mousepressed( x, y, button, istouch, presses )
+    
     shipexpectedy = y
-    checkIfClickedOnStart(x,y)
-    if(x >= 200 and activateLightSpeed == false)
+    
+    if(x >= 200 and activateLightSpeed == false and gamestate ~= "startmenu")
     then
         activateLightSpeed = true
         multiplier = multiplier + 20
     end
+    checkIfClickedOnStart(x,y)
 end
 
 
@@ -256,8 +260,8 @@ function resetGame()
     shipx = 896/6
     shipy = 414/2
 
-    shipx2 = shipx + 180
-    shipy2 = shipy + 74
+    shipx2 = shipx + 182
+    shipy2 = shipy + 55
     shipexpectedy = 414/2
 
     shipwidth = 176

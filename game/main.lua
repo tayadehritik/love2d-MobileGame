@@ -1,6 +1,6 @@
 --[[
     TODO: animation for the ship
-    TODO: scaling and zooming in
+    DONE: scaling and zooming in
 
 ]]--
 backgroundlayer0 = love.graphics.newImage("assets/layers/backgroundlayer0(5).png")
@@ -17,7 +17,8 @@ backgroundcolor = love.graphics.newImage("assets/layers/backgroundcolor.png")
 asteroid0 = love.graphics.newImage("assets/layers/asteroid(0).png")
 
 
-
+shipanimationframe = 0
+shipanimation = {}
 
 
 
@@ -27,9 +28,8 @@ asteroid1 = asteroid0
 
 asteroid2 = asteroid0
 
+shipspritesheet = love.graphics.newImage("assets/layers/shipspritesheet.png")
 
-
-ship = love.graphics.newImage("assets/layers/ship.png")
 
 
 font = love.graphics.newFont("Roboto-Bold.ttf", 25)
@@ -37,7 +37,7 @@ font = love.graphics.newFont("Roboto-Bold.ttf", 25)
 
 Start = "START"
 
-
+fps = 0
 
 function love.conf(t)
     t.screen.fullscreen = true
@@ -50,6 +50,15 @@ function love.load()
     love.graphics.setColor(255,255,255)
     love.graphics.setFont(font)
     love.window.setFullscreen(true)
+    indexforquads = 0
+    for yforquad=0,990,55
+    do
+        
+        indexforquads = indexforquads+1
+        shipanimation[indexforquads] = love.graphics.newQuad(0,yforquad,182,55,shipspritesheet:getDimensions())
+        
+    end
+
     resetGame()
     
 
@@ -66,7 +75,7 @@ function love.update(dt)
     then
 
     else
-
+        fps = love.timer.getFPS( )
         shipy2 = shipy + 74
     
         backgroundlayer0x = backgroundlayer0x - (multiplier/7)
@@ -106,6 +115,17 @@ function love.update(dt)
             whenDeactivatingLightSpeed(dt)
         end
 
+
+        if(shipanimationframe < 18)
+        then
+            shipanimationframe = shipanimationframe + 1
+            shipanimation.image = shipanimation[shipanimationframe]
+        else
+            shipanimationframe = 1
+        end
+            
+
+
     end
 
 end
@@ -117,14 +137,14 @@ function checkIfAsteroidClipped(dt)
     math.randomseed(dt)
     if(asteroid1x <= -50)
     then 
-        asteroid1x = 896
+        asteroid1x = 1792
         asteroid1y = math.random(5,414-50)
 
     end
 
     if(asteroid2x <= -50)
     then 
-        asteroid2x = 896
+        asteroid2x = 1792
         asteroid2y = math.random(5,414-50)
     end
 
@@ -186,7 +206,7 @@ function whenLightSpeed(dt)
     if(lightSpeedDuration >= 3)
     then
         activateLightSpeed = false
-        multiplier = 5
+        multiplier = 20
         deactivateLightSpeed = true
         lightSpeedDuration = 0
     end
@@ -254,7 +274,12 @@ function resetGame()
     deactivateLightSpeed = false
     lightSpeedDuration = 0
     deactivateLightSpeedDuration = 0
-    multiplier = 5
+    multiplier = 20
+
+    
+    shipanimationframe = 1
+    shipanimation.image = shipanimation[1]
+
 end
 
 function love.draw()
@@ -284,8 +309,8 @@ function love.draw()
         end
         love.graphics.draw(asteroid0,asteroid1x,asteroid1y,0)
         love.graphics.draw(asteroid1,asteroid2x,asteroid2y,90)
-        love.graphics.draw(ship,shipx,shipy)
-        love.graphics.print(math.floor(score+0.5),20,20)
+        love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy)
+        love.graphics.print(math.floor(0.5+score),20,20)
         
     end
     
