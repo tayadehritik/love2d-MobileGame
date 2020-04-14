@@ -21,7 +21,7 @@ shipanimationframe = 0
 shipanimation = {}
 
 
-
+punch = love.graphics.newImage("assets/layers/punch.png")
 
 asteroid1 = asteroid0
 
@@ -169,12 +169,11 @@ end
 function love.touchpressed( id, x, y, dx, dy, pressure )
     -- test if the touch happened in the upper half of the screen
     
-    shipexpectedy = y
-    
-    if(x >= 200 and activateLightSpeed == false and gamestate ~= "startmenu")
+ 
+    punchStatus = checkIfClickedOnPunch(x,y)
+    if(punchStatus ~= true)
     then
-        activateLightSpeed = true
-        multiplier = multiplier + 20
+        shipexpectedy = y
     end
     checkIfClickedOnStart(x,y)
 end
@@ -182,12 +181,11 @@ end
 
 function love.mousepressed( x, y, button, istouch, presses )
     
-    shipexpectedy = y
-    
-    if(x >= 200 and activateLightSpeed == false and gamestate ~= "startmenu")
+  
+    punchStatus = checkIfClickedOnPunch(x,y)
+    if(punchStatus ~= true)
     then
-        activateLightSpeed = true
-        multiplier = multiplier + 20
+        shipexpectedy = y
     end
     checkIfClickedOnStart(x,y)
 end
@@ -200,6 +198,23 @@ function checkIfClickedOnStart(x, y)
         gamestate = "other"
     end
 
+end
+
+function checkIfClickedOnPunch(x,y)
+
+    if(x >= punchx and x <= (punchx+50) and  y >= punchy and y <= (punchy+50) )
+    then
+       
+
+        if(activateLightSpeed == false and gamestate ~= "startmenu" and deactivateLightSpeed == false)
+        then
+            activateLightSpeed = true
+            multiplier = multiplier + 20
+            return true   
+        end
+    
+         
+    end
 end
 
 
@@ -284,6 +299,9 @@ function resetGame()
     shipanimationframe = 1
     shipanimation.image = shipanimation[1]
 
+    punchx = 20
+    punchy = 414-50-20
+
 end
 
 function love.draw()
@@ -315,7 +333,10 @@ function love.draw()
         love.graphics.draw(asteroid1,asteroid2x,asteroid2y,90)
         love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy)
         love.graphics.print(math.floor(0.5+score),20,20)
-        
+        if(activateLightSpeed == false and deactivateLightSpeed == false)
+        then
+            love.graphics.draw(punch,punchx,punchy)
+        end
     end
     
 end
