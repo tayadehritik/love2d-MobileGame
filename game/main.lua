@@ -50,11 +50,11 @@ function love.load()
     love.graphics.setFont(font)
     love.window.setFullscreen(true)
     indexforquads = 0
-    for yforquad=0,990,55
+    for yforquad=0,1980,110
     do
         
         indexforquads = indexforquads+1
-        shipanimation[indexforquads] = love.graphics.newQuad(0,yforquad,182,55,shipspritesheet:getDimensions())
+        shipanimation[indexforquads] = love.graphics.newQuad(0,yforquad,364,110,shipspritesheet:getDimensions())
         
     end
 
@@ -351,12 +351,12 @@ function love.draw()
         end
         love.graphics.draw(asteroid0,asteroid1x,asteroid1y,0)
         love.graphics.draw(asteroid1,asteroid2x,asteroid2y,90)
-        love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy)
+        love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy,0,0.5,0.5)
         
         love.graphics.print(printstatus,20,20)
         if(activateLightSpeed == false and deactivateLightSpeed == false)
         then
-            love.graphics.draw(punch,punchx,punchy)
+            love.graphics.draw(punch,punchx,punchy,0,0.5,0.5)
         end
     end
     

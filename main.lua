@@ -48,13 +48,13 @@ function love.load()
     love.window.setMode(896,414,{vsync = true, fullscreen = false, resizable = true})
     love.graphics.setColor(255,255,255)
     love.graphics.setFont(font)
-    love.window.setFullscreen(true)
+    --love.window.setFullscreen(true)
     indexforquads = 0
-    for yforquad=0,990,55
+    for yforquad=0,1980,110
     do
         
         indexforquads = indexforquads+1
-        shipanimation[indexforquads] = love.graphics.newQuad(0,yforquad,182,55,shipspritesheet:getDimensions())
+        shipanimation[indexforquads] = love.graphics.newQuad(0,yforquad,364,110,shipspritesheet:getDimensions())
         
     end
 
@@ -89,19 +89,19 @@ function love.update(dt)
         
         score = score + dt
         
-        differenceShipY = shipy - shipexpectedy
-
+        
 
         if(mouseTouchStatus == true)
         then
-            if(shipexpectedy > shipy)
+            if(shipexpectedy > (shipy+shipheight))
             then
-                if(shipy2 <= shipexpectedy)
-                then
-                    shipy = shipy + 1
-                end
+                shipy = shipy + 1
             else
-                shipy = shipy - 1        
+                if(shipy >= shipexpectedy)
+                then
+                    shipy = shipy - 1
+                end
+                        
             end
         end
 
@@ -153,8 +153,7 @@ function checkIfAsteroidClipped(dt)
     then 
         asteroid2x = 1792
         asteroid2y = math.random(5,414-50)
-    end
-
+    end 
 end
 
 function checkIfBackgroundImagesClipped()
@@ -290,11 +289,11 @@ function resetGame()
     shipy = 414/2
 
     shipx2 = shipx + 182
-    shipy2 = shipy + 55
+    shipy2 = shipy + 54
     shipexpectedy = 414/2
 
-    shipwidth = 176
-    shipheight = 54
+    shipwidth = 182
+    shipheight = 55
 
     score = 0
     startwidth = font:getWidth(Start)
@@ -351,12 +350,12 @@ function love.draw()
         end
         love.graphics.draw(asteroid0,asteroid1x,asteroid1y,0)
         love.graphics.draw(asteroid1,asteroid2x,asteroid2y,90)
-        love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy)
+        love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy,0,0.5,0.5)
         
         love.graphics.print(printstatus,20,20)
         if(activateLightSpeed == false and deactivateLightSpeed == false)
         then
-            love.graphics.draw(punch,punchx,punchy)
+            love.graphics.draw(punch,punchx,punchy,0,0.5,0.5)
         end
     end
     
