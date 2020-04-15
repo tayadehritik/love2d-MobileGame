@@ -91,16 +91,19 @@ function love.update(dt)
         
         differenceShipY = shipy - shipexpectedy
 
-        if(shipexpectedy > shipy)
-        then
-            if(shipy2 <= shipexpectedy)
-            then
-                shipy = shipy + 1
-            end
-        else
-            shipy = shipy - 1        
-        end
 
+        if(mouseTouchStatus == true)
+        then
+            if(shipexpectedy > shipy)
+            then
+                if(shipy2 <= shipexpectedy)
+                then
+                    shipy = shipy + 1
+                end
+            else
+                shipy = shipy - 1        
+            end
+        end
 
         checkIfAsteroidClipped(dt)
 
@@ -180,16 +183,23 @@ end
 
 function love.mousepressed( x, y, button, istouch, presses )
     
-  
+    mouseTouchStatus = true
     punchStatusMouse = checkIfClickedOnPunch(x,y)
     if(punchStatusMouse ~= true)
     then
         shipexpectedy = y
-        
+
     end
     checkIfClickedOnStart(x,y)
 end
 
+
+
+function love.mousereleased( x, y, button, istouch, presses )
+
+    mouseTouchStatus = false
+
+end
 
 function checkIfClickedOnStart(x, y)
         
@@ -302,6 +312,9 @@ function resetGame()
     
     shipanimationframe = 1
     shipanimation.image = shipanimation[1]
+
+
+    mouseTouchStatus = false
 
     
 
