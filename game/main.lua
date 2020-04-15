@@ -1,7 +1,7 @@
 --[[
-    TODO: animation for the ship
+    DONE: animation for the ship
     DONE: scaling and zooming in
-
+    TODO: lightspeed button
 ]]--
 backgroundlayer0 = love.graphics.newImage("assets/layers/backgroundlayer0(5).png")
 
@@ -20,12 +20,11 @@ asteroid0 = love.graphics.newImage("assets/layers/asteroid(0).png")
 shipanimationframe = 0
 shipanimation = {}
 
-
-
+punch = love.graphics.newImage("assets/layers/punch.png")
 
 asteroid1 = asteroid0
 
-
+printstatus = "0"
 asteroid2 = asteroid0
 
 shipspritesheet = love.graphics.newImage("assets/layers/shipspritesheet.png")
@@ -120,15 +119,20 @@ function love.update(dt)
         then
             shipanimationframe = shipanimationframe + 1
             shipanimation.image = shipanimation[shipanimationframe]
+
         else
             shipanimationframe = 1
         end
-            
 
+            
+       
+        
 
     end
 
 end
+
+
 
 
 
@@ -168,24 +172,22 @@ function checkIfBackgroundImagesClipped()
 end
 function love.touchpressed( id, x, y, dx, dy, pressure )
     -- test if the touch happened in the upper half of the screen
-    shipexpectedy = y
-    checkIfClickedOnStart(x,y)
-    if(x >= 200 and activateLightSpeed == false)
-    then
-        activateLightSpeed = true
-        multiplier = multiplier + 20
-    end
+    
+ 
+    
 end
     
 
 function love.mousepressed( x, y, button, istouch, presses )
-    shipexpectedy = y
-    checkIfClickedOnStart(x,y)
-    if(x >= 200 and activateLightSpeed == false)
+    
+  
+    punchStatusMouse = checkIfClickedOnPunch(x,y)
+    if(punchStatusMouse ~= true)
     then
-        activateLightSpeed = true
-        multiplier = multiplier + 20
+        shipexpectedy = y
+        
     end
+    checkIfClickedOnStart(x,y)
 end
 
 
@@ -196,6 +198,27 @@ function checkIfClickedOnStart(x, y)
         gamestate = "other"
     end
 
+end
+
+function checkIfClickedOnPunch(x,y)
+
+    if(x >= punchx and x <= (punchx+50) and  y >= punchy and y <= (punchy+50) )
+    then
+       
+
+        if(activateLightSpeed == false and gamestate ~= "startmenu" and deactivateLightSpeed == false)
+        then
+            activateLightSpeed = true
+            multiplier = multiplier + 20
+            return true   
+        else
+            return false
+        end
+
+    else
+        return false
+         
+    end
 end
 
 
@@ -256,8 +279,8 @@ function resetGame()
     shipx = 896/6
     shipy = 414/2
 
-    shipx2 = shipx + 180
-    shipy2 = shipy + 74
+    shipx2 = shipx + 182
+    shipy2 = shipy + 55
     shipexpectedy = 414/2
 
     shipwidth = 176
@@ -280,6 +303,11 @@ function resetGame()
     shipanimationframe = 1
     shipanimation.image = shipanimation[1]
 
+    
+
+    punchx = 20
+    punchy = 414-50-20
+
 end
 
 function love.draw()
@@ -292,6 +320,7 @@ function love.draw()
         love.graphics.draw(backgroundlayer3,backgroundlayer3x,0);
         love.graphics.draw(backgroundlayer5,backgroundlayer5x,0);
         love.graphics.print(Start,startx,starty)
+       
     else
         love.graphics.scale(scalefactor, scalefactor)
         love.graphics.translate(0, translatefactor)
@@ -310,8 +339,12 @@ function love.draw()
         love.graphics.draw(asteroid0,asteroid1x,asteroid1y,0)
         love.graphics.draw(asteroid1,asteroid2x,asteroid2y,90)
         love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy)
-        love.graphics.print(math.floor(0.5+score),20,20)
         
+        love.graphics.print(printstatus,20,20)
+        if(activateLightSpeed == false and deactivateLightSpeed == false)
+        then
+            love.graphics.draw(punch,punchx,punchy)
+        end
     end
     
 end
