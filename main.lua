@@ -11,11 +11,17 @@ backgroundlayer3 = love.graphics.newImage("assets/layers/backgroundlayer3(10).pn
 
 backgroundlayer5 = love.graphics.newImage("assets/layers/backgroundlayer5(still).png")
 
+startbutton = love.graphics.newImage("assets/layers/startbutton.png")
 
 backgroundcolor = love.graphics.newImage("assets/layers/backgroundcolor.png")
 
 asteroid0 = love.graphics.newImage("assets/layers/asteroid(0).png")
 
+PlayAreaWidth = 896
+PlayAreaHeight = 414
+
+WindowScaleFactorY = 1
+WindowScaleFactorX = 1
 
 shipanimationframe = 0
 shipanimation = {}
@@ -38,16 +44,25 @@ Start = "START"
 
 fps = 0
 
-function love.conf(t)
-    t.screen.fullscreen = true
-end
 
 
 function love.load()
 
-    love.window.setMode(896,414,{vsync = true, fullscreen = false, resizable = true})
+    love.window.setMode(896,414,{vsync = true, fullscreen = true, resizable = true})
     love.graphics.setColor(255,255,255)
     love.graphics.setFont(font)
+
+
+    
+
+
+    WindowWidth = love.graphics.getWidth()
+    WindowHeight = love.graphics.getHeight()
+    
+    WindowScaleFactorY = WindowHeight / PlayAreaHeight
+    WindowScaleFactorX = WindowWidth / PlayAreaWidth
+
+
     --love.window.setFullscreen(true)
     indexforquads = 0
     for yforquad=0,1980,110
@@ -63,12 +78,15 @@ function love.load()
 
 end
 
+width = 0
+
 
 
 
 
 function love.update(dt)
-  
+    
+    width = love.graphics.getDimensions()
 
     if(gamestate == "startmenu")
     then
@@ -93,11 +111,11 @@ function love.update(dt)
 
         if(mouseTouchStatus == true)
         then
-            if(shipexpectedy > (shipy+shipheight))
+            if(shipexpectedy > getScaledY(shipy+shipheight))
             then
                 shipy = shipy + 1
             else
-                if(shipy >= shipexpectedy)
+                if(getScaledY(shipy) >= shipexpectedy)
                 then
                     shipy = shipy - 1
                 end
@@ -202,7 +220,7 @@ end
 
 function checkIfClickedOnStart(x, y)
         
-    if(x >= startx and x <= (startx+startwidth) and  y >= starty and y <= (starty+startheight) )
+    if(x >= getScaledX(startx) and x <= (getScaledX(startx+startwidth)) and  y >= getScaledY(starty) and y <= (getScaledY(starty+startheight)) )
     then
         gamestate = "other"
     end
@@ -211,7 +229,7 @@ end
 
 function checkIfClickedOnPunch(x,y)
 
-    if(x >= punchx and x <= (punchx+50) and  y >= punchy and y <= (punchy+50) )
+    if(x >= getScaledX(punchx) and x <= (getScaledX(punchx+50)) and  y >= getScaledY(punchy) and y <= (getScaledY(punchy+50)) )
     then
        
 
@@ -233,7 +251,8 @@ end
 
 function whenLightSpeed(dt)
     scalefactor = scalefactor + 0.001
-    translatefactor = translatefactor - 0.1
+    translatefactory = translatefactory - 0.1
+   
     lightSpeedDuration = lightSpeedDuration + dt
     if(lightSpeedDuration >= 3)
     then
@@ -246,7 +265,8 @@ end
 
 function whenDeactivatingLightSpeed(dt)
     scalefactor = scalefactor - 0.001
-    translatefactor = translatefactor + 0.1
+    translatefactory = translatefactory + 0.1
+   
     deactivateLightSpeedDuration = deactivateLightSpeedDuration + dt
     if(deactivateLightSpeedDuration >= 3)
     then
@@ -260,10 +280,10 @@ end
 
 function checkShipCollisionWithAsteroids(secondObjectX, secondObjectY, secondObjectWidth, secondWidthObjectHeight)
 
-    if(shipx < (secondObjectX+secondObjectWidth) and
-       (shipx+shipwidth) > secondObjectX and
-        shipy < (secondObjectY+secondWidthObjectHeight) and
-        (shipy + shipheight) > secondObjectY)
+    if(getScaledX(shipx) < getScaledX(secondObjectX+secondObjectWidth) and
+       getScaledX(shipx+shipwidth) > getScaledX(secondObjectX) and
+        getScaledY(shipy) < getScaledY(secondObjectY+secondWidthObjectHeight) and
+        getScaledY(shipy + shipheight) > getScaledY(secondObjectY))
     then
         resetGame()
     end
@@ -277,7 +297,8 @@ function resetGame()
     backgroundlayer3x = 0
     backgroundlayer5x = 0
     scalefactor = 1
-    translatefactor = 0
+    translatefactory = 0
+    translatefactorx = 0
     asteroid0width = 30
     asteroid0height = 30
     gamestate = "startmenu"
@@ -296,10 +317,11 @@ function resetGame()
     shipheight = 55
 
     score = 0
-    startwidth = font:getWidth(Start)
-    startheight = font:getHeight(Start)
-    startx = (896/2) - (startwidth/2)
-    starty = (414/2) - (startheight/2)
+    startwidth = 122
+    startheight = 50
+    startx = PlayAreaWidth/2 - (122/2)
+    starty = PlayAreaHeight/2 - (50/2)
+    
 
 
     activateLightSpeed = false
@@ -320,28 +342,45 @@ function resetGame()
     punchx = 20
     punchy = 414-50-20
 
+    
+
 end
 
-function love.draw()
 
+
+function getScaledX(x)
+    x = WindowScaleFactorX * x
+    return x
+end
+
+function getScaledY(y)
+    y = WindowScaleFactorY * y
+    return y
+end
+
+
+
+function love.draw()
+    love.graphics.scale(WindowScaleFactorX,WindowScaleFactorY)
     if(gamestate == "startmenu")
     then
-        love.graphics.draw(backgroundcolor,0,0);
-        love.graphics.draw(backgroundlayer0,backgroundlayer0x,0);
-        love.graphics.draw(backgroundlayer1,backgroundlayer1x,0);
-        love.graphics.draw(backgroundlayer3,backgroundlayer3x,0);
-        love.graphics.draw(backgroundlayer5,backgroundlayer5x,0);
-        love.graphics.print(Start,startx,starty)
+        love.graphics.draw(backgroundcolor,0,0,0,0.5,0.5);
+        love.graphics.draw(backgroundlayer0,backgroundlayer0x,0,0,0.5,0.5);
+        love.graphics.draw(backgroundlayer1,backgroundlayer1x,0,0,0.5,0.5);
+        love.graphics.draw(backgroundlayer3,backgroundlayer3x,0,0,0.5,0.5);
+        love.graphics.draw(backgroundlayer5,backgroundlayer5x,0,0,0.5,0.5);
+        love.graphics.draw(startbutton,startx,starty,0,0.5,0.5)
        
     else
         love.graphics.scale(scalefactor, scalefactor)
-        love.graphics.translate(0, translatefactor)
-        love.graphics.draw(backgroundcolor,0,0);
-        love.graphics.draw(backgroundlayer0,backgroundlayer0x,0);
-        love.graphics.draw(backgroundlayer1,backgroundlayer1x,0);
-    
-        love.graphics.draw(backgroundlayer3,backgroundlayer3x,0);
-        love.graphics.draw(backgroundlayer5,backgroundlayer5x,0);
+        love.graphics.translate(translatefactorx, translatefactory)
+         
+        love.graphics.draw(backgroundcolor,0,0,0,0.5,0.5);
+        love.graphics.draw(backgroundlayer0,backgroundlayer0x,0,0,0.5,0.5);
+        love.graphics.draw(backgroundlayer1,backgroundlayer1x,0,0,0.5,0.5);
+        love.graphics.draw(backgroundlayer3,backgroundlayer3x,0,0,0.5,0.5);
+        love.graphics.draw(backgroundlayer5,backgroundlayer5x,0,0,0.5,0.5);
+        
         --love.graphics.print(backgroundlayer1x,0,0)
 
         if(backgroundlayer5x >= -120)
@@ -351,8 +390,8 @@ function love.draw()
         love.graphics.draw(asteroid0,asteroid1x,asteroid1y,0)
         love.graphics.draw(asteroid1,asteroid2x,asteroid2y,90)
         love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy,0,0.5,0.5)
-        
-        love.graphics.print(printstatus,20,20)
+        love.graphics.print(PlayAreaHeight,80,20)
+        love.graphics.print(WindowHeight,20,20)
         if(activateLightSpeed == false and deactivateLightSpeed == false)
         then
             love.graphics.draw(punch,punchx,punchy,0,0.5,0.5)
