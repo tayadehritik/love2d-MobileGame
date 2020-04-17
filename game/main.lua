@@ -194,28 +194,28 @@ function checkIfPlanetsClipped(dt)
     if(planet1x <= -896)
     then
         planet1x = 896
-        planet1y = math.random(7,414-7)
+        planet1y = math.random(6,414-6)
         planet1angle = math.random(-0.9,0.9)
     end
 
     if(planet1greenx <= -896)
     then
         planet1greenx = 896
-        planet1greeny = math.random(7,414-7)
+        planet1greeny = math.random(6,414-6)
         planet1greenangle = math.random(-0.9,0.9)
     end
 
     if(planet2x <= -896)
     then
         planet2x = 896
-        planet2y = math.random(10,414-10)
+        planet2y = math.random(11,414-11)
         planet2angle = math.random(-0.9,0.9)
     end
 
     if(planet2bluex <= -896)
     then
         planet2bluex = 896
-        planet2bluey = math.random(10,414-10)
+        planet2bluey = math.random(11,414-11)
         planet2blueangle = math.random(-0.9,0.9)
     end
 
@@ -390,7 +390,7 @@ function resetGame()
     planet1angle = math.random(-0.9,0.9)
 
     planet1greenx = 896
-    planet1greeny = math.random(7,414-7)
+    planet1greeny = math.random(6,414-6)
     planet1greenangle = math.random(-0.9,0.9)
 
     planet2x = PlayAreaWidth/2
@@ -399,7 +399,7 @@ function resetGame()
 
 
     planet2bluex = 896
-    planet2bluey = math.random(10,414-10)
+    planet2bluey = math.random(11,414-11)
     planet2greenangle = math.random(-0.9,0.9)
     punchx = 20
     punchy = 414-50-20
@@ -442,10 +442,10 @@ function love.draw()
         
         
 
-        love.graphics.draw(planet2,planet2x,planet2y,planet2angle,24/(24*3),10/(10*3))
-        love.graphics.draw(planet2blue,planet2bluex,planet2bluey,planet2blueangle,24/(24*3),10/(10*3))
-        love.graphics.draw(planet1,planet1x,planet1y,planet1angle,20/(20*3),7/(7*3))
-        love.graphics.draw(planet1green,planet1greenx,planet1greeny,planet1greenangle,20/(20*3),7/(7*3))
+        love.graphics.draw(planet2,planet2x,planet2y,planet2angle,24/(24*3),11/(11*3))
+        love.graphics.draw(planet2blue,planet2bluex,planet2bluey,planet2blueangle,24/(24*3),11/(11*3))
+        love.graphics.draw(planet1,planet1x,planet1y,planet1angle,16/(16*3),6/(6*3))
+        love.graphics.draw(planet1green,planet1greenx,planet1greeny,planet1greenangle,16/(16*3),6/(5*3))
         love.graphics.draw(backgroundlayer0,backgroundlayer0x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer1,backgroundlayer1x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer3,backgroundlayer3x,0,0,0.5,0.5);
