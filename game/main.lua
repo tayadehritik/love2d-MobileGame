@@ -17,6 +17,13 @@ backgroundcolor = love.graphics.newImage("assets/layers/backgroundcolor.png")
 
 asteroid0 = love.graphics.newImage("assets/layers/asteroid(0).png")
 
+planet1 = love.graphics.newImage("assets/layers/planet1.png")
+planet1green = love.graphics.newImage("assets/layers/planet1-green.png")
+
+
+planet2 = love.graphics.newImage("assets/layers/planet2.png")
+planet2blue = love.graphics.newImage("assets/layers/planet2-blue.png")
+
 PlayAreaWidth = 896
 PlayAreaHeight = 414
 
@@ -69,7 +76,7 @@ function love.load()
     do
         
         indexforquads = indexforquads+1
-        shipanimation[indexforquads] = love.graphics.newQuad(0,yforquad,364,110,shipspritesheet:getDimensions())
+        shipanimation[indexforquads] = love.graphics.newQuad(0,yforquad,340,110,shipspritesheet:getDimensions())
         
     end
 
@@ -95,14 +102,21 @@ function love.update(dt)
         fps = love.timer.getFPS( )
         shipy2 = shipy + 74
     
+        
         backgroundlayer0x = backgroundlayer0x - (multiplier/7)
+        planet1x = planet1x - (multiplier/7)
+        planet1greenx = planet1greenx - (multiplier/7)
         backgroundlayer1x = backgroundlayer1x - (multiplier/6)
+        planet2x = planet2x -(multiplier/6)
+        planet2bluex = planet2bluex - (multiplier/6)
         backgroundlayer2x = backgroundlayer2x - (multiplier/5)
         backgroundlayer3x = backgroundlayer3x - (multiplier/4)
         backgroundlayer5x = backgroundlayer5x - (multiplier/2)
         asteroid1x = asteroid1x - (multiplier/3)
         asteroid2x = asteroid2x - (multiplier/3)
+        checkIfPlanetsClipped(dt)
         checkIfBackgroundImagesClipped()
+        checkShipCollisionWithAsteroids(asteroid2x,asteroid2y,asteroid0width,asteroid0height)
         checkShipCollisionWithAsteroids(asteroid1x,asteroid1y,asteroid0width,asteroid0height)
         
         score = score + dt
@@ -172,6 +186,39 @@ function checkIfAsteroidClipped(dt)
         asteroid2x = 1792
         asteroid2y = math.random(5,414-50)
     end 
+end
+
+function checkIfPlanetsClipped(dt)
+    math.randomseed(dt)
+
+    if(planet1x <= -896)
+    then
+        planet1x = 896
+        planet1y = math.random(7,414-7)
+        planet1angle = math.random(-0.9,0.9)
+    end
+
+    if(planet1greenx <= -896)
+    then
+        planet1greenx = 896
+        planet1greeny = math.random(7,414-7)
+        planet1greenangle = math.random(-0.9,0.9)
+    end
+
+    if(planet2x <= -896)
+    then
+        planet2x = 896
+        planet2y = math.random(10,414-10)
+        planet2angle = math.random(-0.9,0.9)
+    end
+
+    if(planet2bluex <= -896)
+    then
+        planet2bluex = 896
+        planet2bluey = math.random(10,414-10)
+        planet2blueangle = math.random(-0.9,0.9)
+    end
+
 end
 
 function checkIfBackgroundImagesClipped()
@@ -301,6 +348,7 @@ function resetGame()
     translatefactorx = 0
     asteroid0width = 30
     asteroid0height = 30
+    
     gamestate = "startmenu"
     asteroid1x = 1792
     asteroid1y = 414/2
@@ -337,8 +385,22 @@ function resetGame()
 
     mouseTouchStatus = false
 
-    
+    planet1x = PlayAreaWidth/2
+    planet1y = PlayAreaHeight/2
+    planet1angle = math.random(-0.9,0.9)
 
+    planet1greenx = 896
+    planet1greeny = math.random(7,414-7)
+    planet1greenangle = math.random(-0.9,0.9)
+
+    planet2x = PlayAreaWidth/2
+    planet2y = PlayAreaHeight/3
+    planet2angle = math.random(-0.9,0.9)
+
+
+    planet2bluex = 896
+    planet2bluey = math.random(10,414-10)
+    planet2greenangle = math.random(-0.9,0.9)
     punchx = 20
     punchy = 414-50-20
 
@@ -372,10 +434,18 @@ function love.draw()
         love.graphics.draw(startbutton,startx,starty,0,0.5,0.5)
        
     else
+        love.graphics.draw(backgroundcolor,0,0,0,0.5,0.5);
+        love.graphics.print(PlayAreaHeight,80,20)
+        love.graphics.print(WindowHeight,20,20)
         love.graphics.scale(scalefactor, scalefactor)
         love.graphics.translate(translatefactorx, translatefactory)
-         
-        love.graphics.draw(backgroundcolor,0,0,0,0.5,0.5);
+        
+        
+
+        love.graphics.draw(planet2,planet2x,planet2y,planet2angle,24/(24*3),10/(10*3))
+        love.graphics.draw(planet2blue,planet2bluex,planet2bluey,planet2blueangle,24/(24*3),10/(10*3))
+        love.graphics.draw(planet1,planet1x,planet1y,planet1angle,20/(20*3),7/(7*3))
+        love.graphics.draw(planet1green,planet1greenx,planet1greeny,planet1greenangle,20/(20*3),7/(7*3))
         love.graphics.draw(backgroundlayer0,backgroundlayer0x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer1,backgroundlayer1x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer3,backgroundlayer3x,0,0,0.5,0.5);
@@ -390,8 +460,8 @@ function love.draw()
         love.graphics.draw(asteroid0,asteroid1x,asteroid1y,0)
         love.graphics.draw(asteroid1,asteroid2x,asteroid2y,90)
         love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy,0,0.5,0.5)
-        love.graphics.print(PlayAreaHeight,80,20)
-        love.graphics.print(WindowHeight,20,20)
+        
+       
         if(activateLightSpeed == false and deactivateLightSpeed == false)
         then
             love.graphics.draw(punch,punchx,punchy,0,0.5,0.5)
