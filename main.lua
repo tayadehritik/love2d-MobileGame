@@ -13,6 +13,9 @@ backgroundlayer5 = love.graphics.newImage("assets/layers/backgroundlayer5(still)
 
 startbutton = love.graphics.newImage("assets/layers/startbutton.png")
 
+restartbutton = love.graphics.newImage("assets/layers/restart.png")
+
+
 backgroundcolor = love.graphics.newImage("assets/layers/backgroundcolor.png")
 
 asteroid0 = love.graphics.newImage("assets/layers/asteroid(0).png")
@@ -44,7 +47,7 @@ shipspritesheet = love.graphics.newImage("assets/layers/shipspritesheet.png")
 
 
 
-font = love.graphics.newFont("Roboto-Bold.ttf", 25)
+font = love.graphics.newFont("Montserrat-ExtraBold.ttf", 36)
 
 
 Start = "START"
@@ -59,7 +62,7 @@ function love.load()
     love.graphics.setColor(255,255,255)
     love.graphics.setFont(font)
 
-
+    love.window.setFullscreen(true)
     
 
 
@@ -97,6 +100,17 @@ function love.update(dt)
 
     if(gamestate == "startmenu")
     then
+        backgroundlayer0x = backgroundlayer0x - (multiplier/7)
+        planet1x = planet1x - (multiplier/7)
+        planet1greenx = planet1greenx - (multiplier/7)
+        backgroundlayer1x = backgroundlayer1x - (multiplier/6)
+        planet2x = planet2x -(multiplier/6)
+        planet2bluex = planet2bluex - (multiplier/6)
+        backgroundlayer2x = backgroundlayer2x - (multiplier/5)
+        backgroundlayer3x = backgroundlayer3x - (multiplier/4)
+        backgroundlayer5x = backgroundlayer5x - (multiplier/2)
+        checkIfPlanetsClipped(dt)
+        checkIfBackgroundImagesClipped()
 
     elseif(gamestate == "play")
     then
@@ -122,17 +136,22 @@ function love.update(dt)
         
         score = score + dt
         
+
+        scorex = (PlayAreaWidth/2) - ((font:getWidth("SCORE : "..math.floor(0.5+score))*0.5)/2)
+        scorey = (PlayAreaHeight/2)- ((font:getHeight("SCORE : "..math.floor(0.5+score))*0.5)/2)
+        restartbuttony = scorey + 10 +(font:getHeight("SCORE : "..math.floor(0.5+score))*0.5)
+        
         
 
         if(mouseTouchStatus == true)
         then
             if(shipexpectedy > getScaledY(shipy+shipheight))
             then
-                shipy = shipy + 1
+                shipy = shipy + 1.5
             else
                 if(getScaledY(shipy) >= shipexpectedy)
                 then
-                    shipy = shipy - 1
+                    shipy = shipy - 1.5
                 end
                         
             end
@@ -173,14 +192,14 @@ function checkIfAsteroidClipped(dt)
     math.randomseed(dt)
     if(asteroid1x <= -50)
     then 
-        asteroid1x = 1792
+        asteroid1x = math.random(896,1792)
         asteroid1y = math.random(5,414-50)
 
     end
 
     if(asteroid2x <= -50)
     then 
-        asteroid2x = 1792
+        asteroid2x = math.random(896,1792)
         asteroid2y = math.random(5,414-50)
     end 
 end
@@ -248,10 +267,19 @@ function love.mousepressed( x, y, button, istouch, presses )
     punchStatusMouse = checkIfClickedOnPunch(x,y)
     if(punchStatusMouse ~= true)
     then
-        shipexpectedy = y
+        --shipexpectedy = y
+
+        if(y > getScaledY(shipy + shipheight))
+        then
+            shipexpectedy = getScaledY(414-5)
+        else
+            shipexpectedy = getScaledY(5)
+        end
 
     end
     checkIfClickedOnStart(x,y)
+    checkIfClickedOnRestart(x,y)
+  
 end
 
 
@@ -264,8 +292,17 @@ end
 
 function checkIfClickedOnStart(x, y)
         
-    if(x >= getScaledX(startx) and x <= (getScaledX(startx+startwidth)) and  y >= getScaledY(starty) and y <= (getScaledY(starty+startheight)) )
+    if(x >= getScaledX(startx) and x <= (getScaledX(startx+startwidth)) and  y >= getScaledY(starty) and y <= (getScaledY(starty+startheight)) and gamestate == "startmenu")
     then
+        gamestate = "play"
+    end
+
+end
+
+function checkIfClickedOnRestart(x,y)
+    if(x >= getScaledX(restartbuttonx) and x <= (getScaledX(restartbuttonx+50)) and  y >= getScaledY(restartbuttony) and y <= (getScaledY(restartbuttony+50)) and gamestate == "pause")
+    then
+        resetGame()
         gamestate = "play"
     end
 
@@ -362,12 +399,18 @@ function resetGame()
     shipheight = 55-5
 
     score = 0
+    scorex = 0
+    scorey = 0
+
+
     startwidth = 122
     startheight = 50
     startx = PlayAreaWidth/2 - (122/2)
     starty = PlayAreaHeight/2 - (50/2)
     
 
+    restartbuttonx = PlayAreaWidth/2 - (50/2)
+    restartbuttony = 0
 
     activateLightSpeed = false
     deactivateLightSpeed = false
@@ -430,11 +473,10 @@ function love.draw()
         love.graphics.draw(backgroundlayer5,backgroundlayer5x,0,0,0.5,0.5);
         love.graphics.draw(startbutton,startx,starty,0,0.5,0.5)
     
-    elseif(gamestate == "play" or gamestate == "pause")
+    elseif(gamestate == "play")
     then
         love.graphics.draw(backgroundcolor,0,0,0,0.5,0.5);
-        love.graphics.print(PlayAreaHeight,80,20)
-        love.graphics.print(WindowHeight,20,20)
+        love.graphics.print(math.floor(0.5+score),20,20,0,0.5,0.5)
         love.graphics.scale(scalefactor, scalefactor)
         love.graphics.translate(translatefactorx, translatefactory)
         
@@ -465,6 +507,17 @@ function love.draw()
         then
             love.graphics.draw(punch,punchx,punchy,0,0.5,0.5)
         end
+
+    elseif(gamestate == "pause")
+    then
+        love.graphics.draw(backgroundcolor,0,0,0,0.5,0.5);
+        love.graphics.draw(backgroundlayer0,backgroundlayer0x,0,0,0.5,0.5);
+        love.graphics.draw(backgroundlayer1,backgroundlayer1x,0,0,0.5,0.5);
+        love.graphics.draw(backgroundlayer3,backgroundlayer3x,0,0,0.5,0.5);
+        love.graphics.draw(backgroundlayer5,backgroundlayer5x,0,0,0.5,0.5);
+        love.graphics.print("SCORE : "..math.floor(0.5+score),scorex,scorey,0,0.5,0.5)
+        love.graphics.draw(restartbutton,restartbuttonx,restartbuttony,0,0.5,0.5)
+
     end
     
 end
