@@ -43,6 +43,7 @@ asteroid1 = asteroid0
 printstatus = "0"
 asteroid2 = asteroid0
 
+
 shipspritesheet = love.graphics.newImage("assets/layers/shipspritesheet.png")
 
 
@@ -131,8 +132,19 @@ function love.update(dt)
         asteroid2x = asteroid2x - (multiplier/3)
         checkIfPlanetsClipped(dt)
         checkIfBackgroundImagesClipped()
-        checkShipCollisionWithAsteroids(asteroid2x,asteroid2y,asteroid0width,asteroid0height)
-        checkShipCollisionWithAsteroids(asteroid1x,asteroid1y,asteroid0width,asteroid0height)
+        
+        checkCollisionBetweenTwoObjects(shipx+100,shipy+2,70,22,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
+        checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
+        checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
+        checkCollisionBetweenTwoObjects(shipx+24,shipy+13,70,15,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
+
+
+
+        checkCollisionBetweenTwoObjects(shipx+100,shipy+2,70,22,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
+        checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
+        checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
+        checkCollisionBetweenTwoObjects(shipx+24,shipy+13,70,15,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
+        
         
         score = score + dt
         
@@ -143,15 +155,15 @@ function love.update(dt)
         
         
 
-        if(mouseTouchStatus == true)
+        if(mouseTouchStatus == true or keyPressedStatus == true)
         then
             if(shipexpectedy > getScaledY(shipy+shipheight))
             then
-                shipy = shipy + 1.5
+                shipy = shipy + 1.5 + dt
             else
                 if(getScaledY(shipy) >= shipexpectedy)
                 then
-                    shipy = shipy - 1.5
+                    shipy = shipy - 1.5 - dt
                 end
                         
             end
@@ -169,6 +181,8 @@ function love.update(dt)
             whenDeactivatingLightSpeed(dt)
         end
 
+
+        multiplier = multiplier + dt
 
         if(shipanimationframe < 18)
         then
@@ -259,6 +273,48 @@ function love.touchpressed( id, x, y, dx, dy, pressure )
  
     
 end
+
+function love.keypressed( key, scancode, isrepeat )
+    print(scancode)
+    
+    if key == "escape" then
+        love.event.quit()
+     end
+
+
+    if(key == "return" and (gamestate == "startmenu" or gamestate == "pause"))
+    then
+        if(gamestate == "pause")
+        then
+            resetGame()
+        end
+        gamestate = "play"
+    end
+
+
+    if(key == "space")
+    then
+        if(activateLightSpeed == false and gamestate ~= "startmenu" and deactivateLightSpeed == false)
+        then
+            activateLightSpeed = true
+            multiplier = multiplier + 20
+              
+        end
+    end
+
+    if(key == "up")
+    then
+        keyPressedStatus = true
+        shipexpectedy = getScaledY(5)
+    end
+
+    if(key == "down")
+    then
+        keyPressedStatus = true
+        shipexpectedy = getScaledY(414-5)
+    end
+
+end
     
 
 function love.mousepressed( x, y, button, istouch, presses )
@@ -282,7 +338,9 @@ function love.mousepressed( x, y, button, istouch, presses )
   
 end
 
-
+function love.keyreleased( key, scancode )
+    keyPressedStatus = false
+end
 
 function love.mousereleased( x, y, button, istouch, presses )
 
@@ -359,15 +417,18 @@ end
 
 
 
-function checkShipCollisionWithAsteroids(secondObjectX, secondObjectY, secondObjectWidth, secondWidthObjectHeight)
 
-    if(getScaledX(shipx+5) < getScaledX(secondObjectX+secondObjectWidth) and
-       getScaledX((shipx+5)+shipwidth) > getScaledX(secondObjectX) and
-        getScaledY(shipy+5) < getScaledY(secondObjectY+secondWidthObjectHeight) and
-        getScaledY((shipy+5) + shipheight) > getScaledY(secondObjectY))
+
+function checkCollisionBetweenTwoObjects(object1X,object1Y,object1Width,object1Height,object2X,object2Y,object2Width,object2Height)
+
+    if(getScaledX(object1X) < getScaledX(object2X+object2Width) and
+       getScaledX((object1X)+object1Width) > getScaledX(object2X) and
+        getScaledY(object1Y) < getScaledY(object2Y+object2Height) and
+        getScaledY((object1Y) + object1Height) > getScaledY(object2Y))
     then
         gamestate = "pause"
     end
+
 
 end
 
@@ -501,8 +562,6 @@ function love.draw()
         love.graphics.draw(asteroid1,asteroid2x,asteroid2y,90,0.5,0.5)
         love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy,0,0.5,0.5)
         
-        
-       
         if(activateLightSpeed == false and deactivateLightSpeed == false)
         then
             love.graphics.draw(punch,punchx,punchy,0,0.5,0.5)
