@@ -98,7 +98,8 @@ function love.update(dt)
     if(gamestate == "startmenu")
     then
 
-    else
+    elseif(gamestate == "play")
+    then
         fps = love.timer.getFPS( )
         shipy2 = shipy + 74
     
@@ -158,10 +159,6 @@ function love.update(dt)
         else
             shipanimationframe = 1
         end
-
-            
-       
-        
 
     end
 
@@ -269,7 +266,7 @@ function checkIfClickedOnStart(x, y)
         
     if(x >= getScaledX(startx) and x <= (getScaledX(startx+startwidth)) and  y >= getScaledY(starty) and y <= (getScaledY(starty+startheight)) )
     then
-        gamestate = "other"
+        gamestate = "play"
     end
 
 end
@@ -327,12 +324,12 @@ end
 
 function checkShipCollisionWithAsteroids(secondObjectX, secondObjectY, secondObjectWidth, secondWidthObjectHeight)
 
-    if(getScaledX(shipx) < getScaledX(secondObjectX+secondObjectWidth) and
-       getScaledX(shipx+shipwidth) > getScaledX(secondObjectX) and
-        getScaledY(shipy) < getScaledY(secondObjectY+secondWidthObjectHeight) and
-        getScaledY(shipy + shipheight) > getScaledY(secondObjectY))
+    if(getScaledX(shipx+5) < getScaledX(secondObjectX+secondObjectWidth) and
+       getScaledX((shipx+5)+shipwidth) > getScaledX(secondObjectX) and
+        getScaledY(shipy+5) < getScaledY(secondObjectY+secondWidthObjectHeight) and
+        getScaledY((shipy+5) + shipheight) > getScaledY(secondObjectY))
     then
-        resetGame()
+        gamestate = "pause"
     end
 
 end
@@ -361,8 +358,8 @@ function resetGame()
     shipy2 = shipy + 54
     shipexpectedy = 414/2
 
-    shipwidth = 182
-    shipheight = 55
+    shipwidth = 170-5
+    shipheight = 55-5
 
     score = 0
     startwidth = 122
@@ -432,8 +429,9 @@ function love.draw()
         love.graphics.draw(backgroundlayer3,backgroundlayer3x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer5,backgroundlayer5x,0,0,0.5,0.5);
         love.graphics.draw(startbutton,startx,starty,0,0.5,0.5)
-       
-    else
+    
+    elseif(gamestate == "play" or gamestate == "pause")
+    then
         love.graphics.draw(backgroundcolor,0,0,0,0.5,0.5);
         love.graphics.print(PlayAreaHeight,80,20)
         love.graphics.print(WindowHeight,20,20)
@@ -457,9 +455,10 @@ function love.draw()
         then
             love.graphics.draw(backgroundlayer5,backgroundlayer5x,0);
         end
-        love.graphics.draw(asteroid0,asteroid1x,asteroid1y,0)
-        love.graphics.draw(asteroid1,asteroid2x,asteroid2y,90)
+        love.graphics.draw(asteroid0,asteroid1x,asteroid1y,0,0.5,0.5)
+        love.graphics.draw(asteroid1,asteroid2x,asteroid2y,90,0.5,0.5)
         love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy,0,0.5,0.5)
+        
         
        
         if(activateLightSpeed == false and deactivateLightSpeed == false)
