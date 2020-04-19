@@ -15,7 +15,6 @@ startbutton = love.graphics.newImage("assets/layers/startbutton.png")
 
 restartbutton = love.graphics.newImage("assets/layers/restart.png")
 
-
 backgroundcolor = love.graphics.newImage("assets/layers/backgroundcolor.png")
 
 asteroid0 = love.graphics.newImage("assets/layers/asteroid(0).png")
@@ -36,6 +35,10 @@ WindowScaleFactorX = 1
 shipanimationframe = 0
 shipanimation = {}
 
+
+asteroidanimationframe = 0
+asteroidanimation = {}
+
 punch = love.graphics.newImage("assets/layers/punch.png")
 
 asteroid1 = asteroid0
@@ -43,6 +46,8 @@ asteroid1 = asteroid0
 printstatus = "0"
 asteroid2 = asteroid0
 
+asteroid3 = asteroid0
+asteroid4 = asteroid0
 
 shipspritesheet = love.graphics.newImage("assets/layers/shipspritesheet.png")
 
@@ -81,7 +86,7 @@ function love.load()
         
         indexforquads = indexforquads+1
         shipanimation[indexforquads] = love.graphics.newQuad(0,yforquad,340,110,shipspritesheet:getDimensions())
-        
+    
     end
 
     resetGame()
@@ -130,6 +135,8 @@ function love.update(dt)
         backgroundlayer5x = backgroundlayer5x - (multiplier/2)
         asteroid1x = asteroid1x - (multiplier/3)
         asteroid2x = asteroid2x - (multiplier/3)
+        asteroid3x = asteroid3x - (multiplier/3)
+        asteroid4x = asteroid4x - (multiplier/3)
         checkIfPlanetsClipped(dt)
         checkIfBackgroundImagesClipped()
         
@@ -146,6 +153,21 @@ function love.update(dt)
         checkCollisionBetweenTwoObjects(shipx+24,shipy+13,70,15,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
         
         
+
+        checkCollisionBetweenTwoObjects(shipx+100,shipy+2,70,22,asteroid3x,asteroid3y,asteroid0width,asteroid0height);
+        checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid3x,asteroid3y,asteroid0width,asteroid0height);
+        checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid3x,asteroid3y,asteroid0width,asteroid0height);
+        checkCollisionBetweenTwoObjects(shipx+24,shipy+13,70,15,asteroid3x,asteroid3y,asteroid0width,asteroid0height);
+
+
+        checkCollisionBetweenTwoObjects(shipx+100,shipy+2,70,22,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
+        checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
+        checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
+        checkCollisionBetweenTwoObjects(shipx+24,shipy+13,70,15,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
+
+
+
+
         score = score + dt
         
 
@@ -155,15 +177,15 @@ function love.update(dt)
         
         
 
-        if(mouseTouchStatus == true)
+        if(mouseTouchStatus == true or keyPressedStatus == true)
         then
             if(shipexpectedy > getScaledY(shipy+shipheight))
             then
-                shipy = shipy + 1.5
+                shipy = shipy + 2 + (dt/50)
             else
                 if(getScaledY(shipy) >= shipexpectedy)
                 then
-                    shipy = shipy - 1.5
+                    shipy = shipy - 2 - (dt/50)
                 end
                         
             end
@@ -182,6 +204,8 @@ function love.update(dt)
         end
 
 
+        multiplier = multiplier + (dt/50)
+
         if(shipanimationframe < 18)
         then
             shipanimationframe = shipanimationframe + 1
@@ -190,6 +214,9 @@ function love.update(dt)
         else
             shipanimationframe = 1
         end
+
+        
+
 
     end
 
@@ -214,6 +241,22 @@ function checkIfAsteroidClipped(dt)
         asteroid2x = math.random(896,1792)
         asteroid2y = math.random(5,414-50)
     end 
+
+    if(asteroid3x <= -50)
+    then 
+        asteroid3x = math.random(896,1792)
+        asteroid3y = math.random(5,414-50)
+
+    end
+
+    if(asteroid4x <= -50)
+    then 
+        asteroid4x = math.random(896,1792)
+        asteroid4y = math.random(5,414-50)
+
+    end
+
+
 end
 
 function checkIfPlanetsClipped(dt)
@@ -271,6 +314,47 @@ function love.touchpressed( id, x, y, dx, dy, pressure )
  
     
 end
+
+function love.keypressed( key, scancode, isrepeat )
+    
+    if key == "escape" then
+        love.event.quit()
+     end
+
+
+    if(key == "return" and (gamestate == "startmenu" or gamestate == "pause"))
+    then
+        if(gamestate == "pause")
+        then
+            resetGame()
+        end
+        gamestate = "play"
+    end
+
+
+    if(key == "space")
+    then
+        if(activateLightSpeed == false and gamestate ~= "startmenu" and deactivateLightSpeed == false)
+        then
+            activateLightSpeed = true
+            multiplier = multiplier + 20
+              
+        end
+    end
+
+    if(key == "up")
+    then
+        keyPressedStatus = true
+        shipexpectedy = getScaledY(5)
+    end
+
+    if(key == "down")
+    then
+        keyPressedStatus = true
+        shipexpectedy = getScaledY(414-5)
+    end
+
+end
     
 
 function love.mousepressed( x, y, button, istouch, presses )
@@ -294,7 +378,9 @@ function love.mousepressed( x, y, button, istouch, presses )
   
 end
 
-
+function love.keyreleased( key, scancode )
+    keyPressedStatus = false
+end
 
 function love.mousereleased( x, y, button, istouch, presses )
 
@@ -400,9 +486,16 @@ function resetGame()
     
     gamestate = "startmenu"
     asteroid1x = 1792
-    asteroid1y = 414/2
+    asteroid1y = math.random(30,414-30)
     asteroid2x = 1792
-    asteroid2y = 414/3
+    asteroid2y = math.random(30,414-30)
+    asteroid3x = 1792
+    asteroid3y = math.random(30,414-30)
+    asteroid4x = 1792
+    asteroid4y = math.random(30,414-30)
+
+
+
     shipx = 896/6
     shipy = 414/2
 
@@ -434,9 +527,8 @@ function resetGame()
     multiplier = 20
 
     
-    shipanimationframe = 1
+    shipanimationframe = 0
     shipanimation.image = shipanimation[1]
-
 
     mouseTouchStatus = false
 
@@ -512,14 +604,36 @@ function love.draw()
         then
             love.graphics.draw(backgroundlayer5,backgroundlayer5x,0);
         end
-        love.graphics.draw(asteroid0,asteroid1x,asteroid1y,0,0.5,0.5)
-        love.graphics.draw(asteroid1,asteroid2x,asteroid2y,90,0.5,0.5)
+        love.graphics.draw(asteroid0,asteroid1x,asteroid1y,0,30/(30*4),30/(30*4))
+
+        love.graphics.draw(asteroid1,asteroid2x,asteroid2y,0,30/(30*4),30/(30*4))
+        love.graphics.draw(asteroid3,asteroid3x,asteroid3y,0,30/(30*4),30/(30*4))
+        love.graphics.draw(asteroid4,asteroid4x,asteroid4y,0,30/(30*4),30/(30*4))
         love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy,0,0.5,0.5)
         
         if(activateLightSpeed == false and deactivateLightSpeed == false)
         then
             love.graphics.draw(punch,punchx,punchy,0,0.5,0.5)
         end
+
+        --[[
+        love.graphics.rectangle("line",shipx+100,shipy+2,70,22)
+        love.graphics.rectangle("line",shipx+99,shipy+39,36,15)
+        love.graphics.rectangle("line",shipx+48,shipy+39,49,6)
+        love.graphics.rectangle("line",shipx+24,shipy+13,70,15)
+
+        love.graphics.rectangle("line",asteroid1x,asteroid1y,asteroid0width,asteroid0height)
+        love.graphics.rectangle("line",asteroid2x,asteroid2y,asteroid0width,asteroid0height)
+        love.graphics.rectangle("line",asteroid3x,asteroid3y,asteroid0width,asteroid0height)
+        love.graphics.rectangle("line",asteroid4x,asteroid4y,asteroid0width,asteroid0height)
+        
+        checkCollisionBetweenTwoObjects(shipx+100,shipy+2,70,22,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
+        checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
+        checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
+        checkCollisionBetweenTwoObjects(shipx+24,shipy+13,70,15,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
+        ]]--
+        
+
 
     elseif(gamestate == "pause")
     then
