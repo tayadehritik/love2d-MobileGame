@@ -22,6 +22,7 @@ asteroid0 = love.graphics.newImage("assets/layers/asteroid(0).png")
 planet1 = love.graphics.newImage("assets/layers/planet1.png")
 planet1green = love.graphics.newImage("assets/layers/planet1-green.png")
 
+particle = love.graphics.newImage("assets/layers/particle.png")
 
 planet2 = love.graphics.newImage("assets/layers/planet2.png")
 planet2blue = love.graphics.newImage("assets/layers/planet2-blue.png")
@@ -69,7 +70,14 @@ function love.load()
     love.graphics.setFont(font)
 
     love.window.setFullscreen(true)
-    
+    local img = love.graphics.newImage('assets/layers/particle.png')
+ 
+	psystem = love.graphics.newParticleSystem(img, 32)
+	psystem:setParticleLifetime(2, 5) -- Particles live at least 2s and at most 5s.
+	psystem:setEmissionRate(5)
+	psystem:setSizeVariation(1)
+	psystem:setLinearAcceleration(0, -20, 20, 20) -- Random movement in all directions.
+	psystem:setColors(1, 1, 1, 1, 1, 1, 1, 0) -- Fade to transparency.
 
 
     WindowWidth = love.graphics.getWidth()
@@ -103,7 +111,8 @@ width = 0
 function love.update(dt)
     
     width = love.graphics.getDimensions()
-
+    
+    psystem:update(dt)
     if(gamestate == "startmenu")
     then
         backgroundlayer0x = backgroundlayer0x - (multiplier/7)
@@ -140,27 +149,27 @@ function love.update(dt)
         checkIfPlanetsClipped(dt)
         checkIfBackgroundImagesClipped()
         
-        checkCollisionBetweenTwoObjects(shipx+100,shipy+2,70,22,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
+        checkCollisionBetweenTwoObjects(shipx+110,shipy+8,50,22-8,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
         checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
         checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
         checkCollisionBetweenTwoObjects(shipx+24,shipy+13,70,15,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
 
 
 
-        checkCollisionBetweenTwoObjects(shipx+100,shipy+2,70,22,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
+        checkCollisionBetweenTwoObjects(shipx+110,shipy+8,50,22-8,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
         checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
         checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
         checkCollisionBetweenTwoObjects(shipx+24,shipy+13,70,15,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
         
         
 
-        checkCollisionBetweenTwoObjects(shipx+100,shipy+2,70,22,asteroid3x,asteroid3y,asteroid0width,asteroid0height);
+        checkCollisionBetweenTwoObjects(shipx+110,shipy+8,50,22-8,asteroid3x,asteroid3y,asteroid0width,asteroid0height);
         checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid3x,asteroid3y,asteroid0width,asteroid0height);
         checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid3x,asteroid3y,asteroid0width,asteroid0height);
         checkCollisionBetweenTwoObjects(shipx+24,shipy+13,70,15,asteroid3x,asteroid3y,asteroid0width,asteroid0height);
 
 
-        checkCollisionBetweenTwoObjects(shipx+100,shipy+2,70,22,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
+        checkCollisionBetweenTwoObjects(shipx+110,shipy+8,50,22-8,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
         checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
         checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
         checkCollisionBetweenTwoObjects(shipx+24,shipy+13,70,15,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
@@ -485,13 +494,13 @@ function resetGame()
     asteroid0height = 30
     
     gamestate = "startmenu"
-    asteroid1x = 1792
+    asteroid1x = math.random(896+30,1792-30)
     asteroid1y = math.random(30,414-30)
-    asteroid2x = 1792
+    asteroid2x = math.random(896+30,1792-30)
     asteroid2y = math.random(30,414-30)
-    asteroid3x = 1792
+    asteroid3x = math.random(896+30,1792-30)
     asteroid3y = math.random(30,414-30)
-    asteroid4x = 1792
+    asteroid4x = math.random(896+30,1792-30)
     asteroid4y = math.random(30,414-30)
 
 
@@ -571,9 +580,11 @@ end
 
 function love.draw()
     love.graphics.scale(WindowScaleFactorX,WindowScaleFactorY)
+   
     if(gamestate == "startmenu")
     then
         love.graphics.draw(backgroundcolor,0,0,0,0.5,0.5);
+        
         love.graphics.draw(backgroundlayer0,backgroundlayer0x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer1,backgroundlayer1x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer3,backgroundlayer3x,0,0,0.5,0.5);
@@ -583,6 +594,7 @@ function love.draw()
     elseif(gamestate == "play")
     then
         love.graphics.draw(backgroundcolor,0,0,0,0.5,0.5);
+        
         love.graphics.print(math.floor(0.5+score),20,20,0,0.5,0.5)
         love.graphics.scale(scalefactor, scalefactor)
         love.graphics.translate(translatefactorx, translatefactory)
@@ -605,28 +617,31 @@ function love.draw()
             love.graphics.draw(backgroundlayer5,backgroundlayer5x,0);
         end
         love.graphics.draw(asteroid0,asteroid1x,asteroid1y,0,30/(30*4),30/(30*4))
-
+        love.graphics.draw(psystem,asteroid1x+(asteroid0width/2), asteroid1y+(asteroid0height/2))
         love.graphics.draw(asteroid1,asteroid2x,asteroid2y,0,30/(30*4),30/(30*4))
+        love.graphics.draw(psystem,asteroid2x+(asteroid0width/2), asteroid2y+(asteroid0height/2))
         love.graphics.draw(asteroid3,asteroid3x,asteroid3y,0,30/(30*4),30/(30*4))
+        love.graphics.draw(psystem,asteroid3x+(asteroid0width/2), asteroid3y+(asteroid0height/2))
         love.graphics.draw(asteroid4,asteroid4x,asteroid4y,0,30/(30*4),30/(30*4))
+        love.graphics.draw(psystem,asteroid4x+(asteroid0width/2), asteroid4y+(asteroid0height/2))
         love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy,0,0.5,0.5)
         
         if(activateLightSpeed == false and deactivateLightSpeed == false)
         then
             love.graphics.draw(punch,punchx,punchy,0,0.5,0.5)
         end
-
-        --[[
-        love.graphics.rectangle("line",shipx+100,shipy+2,70,22)
+ --[[
+        
+        love.graphics.rectangle("line",shipx+110,shipy+8,50,22-8)
         love.graphics.rectangle("line",shipx+99,shipy+39,36,15)
         love.graphics.rectangle("line",shipx+48,shipy+39,49,6)
         love.graphics.rectangle("line",shipx+24,shipy+13,70,15)
-
+        
         love.graphics.rectangle("line",asteroid1x,asteroid1y,asteroid0width,asteroid0height)
         love.graphics.rectangle("line",asteroid2x,asteroid2y,asteroid0width,asteroid0height)
         love.graphics.rectangle("line",asteroid3x,asteroid3y,asteroid0width,asteroid0height)
         love.graphics.rectangle("line",asteroid4x,asteroid4y,asteroid0width,asteroid0height)
-        
+       
         checkCollisionBetweenTwoObjects(shipx+100,shipy+2,70,22,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
         checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
         checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
