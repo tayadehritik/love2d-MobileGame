@@ -13,6 +13,9 @@ backgroundlayer5 = love.graphics.newImage("assets/layers/backgroundlayer5(still)
 
 startbutton = love.graphics.newImage("assets/layers/startbutton.png")
 
+up = love.graphics.newImage("assets/layers/up.png")
+down = love.graphics.newImage("assets/layers/down.png")
+
 restartbutton = love.graphics.newImage("assets/layers/restart.png")
 
 backgroundcolor = love.graphics.newImage("assets/layers/backgroundcolor.png")
@@ -21,6 +24,10 @@ asteroid0 = love.graphics.newImage("assets/layers/asteroid(0).png")
 
 ach1 = love.graphics.newImage("assets/layers/ach1.png")
 ach2 = love.graphics.newImage("assets/layers/ach2.png")
+ach3 = love.graphics.newImage("assets/layers/ach3.png")
+ach4 = love.graphics.newImage("assets/layers/ach4.png")
+ach5 = love.graphics.newImage("assets/layers/ach5.png")
+
 planet1 = love.graphics.newImage("assets/layers/planet1.png")
 planet1green = love.graphics.newImage("assets/layers/planet1-green.png")
 
@@ -71,11 +78,11 @@ fps = 0
 
 function love.load()
 
-    love.window.setMode(896,414,{vsync = true, fullscreen = false, resizable = true})
+    love.window.setMode(896,414,{vsync = true, fullscreen = true, resizable = true})
     love.graphics.setColor(255,255,255)
     love.graphics.setFont(font)
 
-    --love.window.setFullscreen(true)
+    love.window.setFullscreen(true)
     local img = love.graphics.newImage('assets/layers/particle.png')
  
 	psystem = love.graphics.newParticleSystem(img, 32)
@@ -102,6 +109,14 @@ function love.load()
         shipanimation[indexforquads] = love.graphics.newQuad(0,yforquad,340,110,shipspritesheet:getDimensions())
     
     end
+
+
+    space_background = love.audio.newSource("assets/sounds/space_background.ogg", "stream")
+    clicksound = love.audio.newSource("assets/sounds/click.wav","static")
+    crashsound = love.audio.newSource("assets/sounds/crash.wav","static")
+    space_background:setVolume(0.5)
+    space_background:setLooping(true)
+    --space_background:play()
 
     resetGame()
     
@@ -201,7 +216,7 @@ function love.update(dt)
         
         
 
-        if(mouseTouchStatus == true or keyPressedStatus == true)
+        if(keyPressedStatus == true)
         then
             if(shipexpectedy > getScaledY(shipy+shipheight))
             then
@@ -228,10 +243,10 @@ function love.update(dt)
         end
 
 
-        if(score % 500 == 0)
+        if(score % 100 == 0)
         then
             multiplier = multiplier + 1
-            shipupdownspeed = shipupdownspeed + 1
+            shipupdownspeed = shipupdownspeed + 0.5
         end
 
         if(shipanimationframe < 18)
@@ -262,11 +277,28 @@ function checkAchievementUnlocked()
         achievement.status = true
     end
 
-    if(math.floor(0.5+score) == 50)
+    if(math.floor(0.5+score) == 100)
     then
         achievement.status = true
     end
 
+    if(math.floor(0.5+score) == 500)
+    then
+        achievement.status = true
+    end
+
+    if(math.floor(0.5+score) == 1000)
+    then
+        achievement.status = true
+    end
+
+    if(math.floor(0.5+score) == 2000)
+    then
+        achievement.status = true
+    end
+    
+    
+    
 
 
 end
@@ -390,10 +422,13 @@ function love.keypressed( key, scancode, isrepeat )
         then
             resetGame()
         end
+        space_background:play()
+        clicksound:play()
         gamestate = "play"
+
     end
 
-
+    --[[
     if(key == "space")
     then
         if(activateLightSpeed == false and gamestate ~= "startmenu" and deactivateLightSpeed == false)
@@ -403,7 +438,7 @@ function love.keypressed( key, scancode, isrepeat )
               
         end
     end
-
+]]--
     if(key == "up")
     then
         keyPressedStatus = true
@@ -422,7 +457,8 @@ end
 function love.mousepressed( x, y, button, istouch, presses )
     
     mouseTouchStatus = true
-    punchStatusMouse = checkIfClickedOnPunch(x,y)
+    --punchStatusMouse = checkIfClickedOnPunch(x,y)
+    --[[
     if(punchStatusMouse ~= true)
     then
         --shipexpectedy = y
@@ -435,8 +471,11 @@ function love.mousepressed( x, y, button, istouch, presses )
         end
 
     end
+    ]]
     checkIfClickedOnStart(x,y)
     checkIfClickedOnRestart(x,y)
+    checkIfClickedOnUp(x,y)
+    checkIfClickedOnDown(x,y)
   
 end
 
@@ -447,7 +486,7 @@ end
 function love.mousereleased( x, y, button, istouch, presses )
 
     mouseTouchStatus = false
-
+    keyPressedStatus = false
 end
 
 function checkIfClickedOnStart(x, y)
@@ -455,6 +494,8 @@ function checkIfClickedOnStart(x, y)
     if(x >= getScaledX(startx) and x <= (getScaledX(startx+startwidth)) and  y >= getScaledY(starty) and y <= (getScaledY(starty+startheight)) and gamestate == "startmenu")
     then
         gamestate = "play"
+        clicksound:play()
+        space_background:play()
     end
 
 end
@@ -463,7 +504,29 @@ function checkIfClickedOnRestart(x,y)
     if(x >= getScaledX(restartbuttonx) and x <= (getScaledX(restartbuttonx+50)) and  y >= getScaledY(restartbuttony) and y <= (getScaledY(restartbuttony+50)) and gamestate == "pause")
     then
         resetGame()
+        clicksound:play()
         gamestate = "play"
+    end
+
+end
+
+
+function checkIfClickedOnUp(x,y)
+    if(x >= getScaledX(upx) and x <= (getScaledX(upx+50)) and  y >= getScaledY(upy) and y <= (getScaledY(upy+50)) and gamestate == "play")
+    then
+        keyPressedStatus = true
+        --clicksound:play()
+        shipexpectedy = getScaledY(5)
+    end
+end
+
+function checkIfClickedOnDown(x,y)
+
+    if(x >= getScaledX(downx) and x <= (getScaledX(downx+50)) and  y >= getScaledY(downy) and y <= (getScaledY(downy+50)) and gamestate == "play")
+    then
+        keyPressedStatus = true
+        --clicksound:play()
+        shipexpectedy = getScaledY(414-5)
     end
 
 end
@@ -477,7 +540,8 @@ function checkIfClickedOnPunch(x,y)
         if(activateLightSpeed == false and gamestate ~= "startmenu" and deactivateLightSpeed == false)
         then
             activateLightSpeed = true
-            multiplier = multiplier + 20
+            
+            multiplier = multiplier + 1
             return true   
         else
             return false
@@ -493,11 +557,13 @@ end
 function whenLightSpeed(dt)
     scalefactor = scalefactor + 0.001
     translatefactory = translatefactory - 0.1
-   
+    score = score + 0.1
+    shipupdownspeed = shipupdownspeed + 0.01
     lightSpeedDuration = lightSpeedDuration + dt
     if(lightSpeedDuration >= 3)
     then
         activateLightSpeed = false
+        
         multiplier = 10
         deactivateLightSpeed = true
         lightSpeedDuration = 0
@@ -507,7 +573,7 @@ end
 function whenDeactivatingLightSpeed(dt)
     scalefactor = scalefactor - 0.001
     translatefactory = translatefactory + 0.1
-   
+    shipupdownspeed = shipupdownspeed - 0.01
     deactivateLightSpeedDuration = deactivateLightSpeedDuration + dt
     if(deactivateLightSpeedDuration >= 3)
     then
@@ -528,6 +594,8 @@ function checkCollisionBetweenTwoObjects(object1X,object1Y,object1Width,object1H
         getScaledY(object1Y) < getScaledY(object2Y+object2Height) and
         getScaledY((object1Y) + object1Height) > getScaledY(object2Y))
     then
+        crashsound:play()
+        space_background:stop()
         gamestate = "pause"
     end
 
@@ -615,12 +683,22 @@ function resetGame()
 
     achievementimages[1] = ach1
     achievementimages[2] = ach2
-    maxindexforarchievement = 2
+    achievementimages[3] = ach3
+    achievementimages[4] = ach4
+    achievementimages[5] = ach5
+    maxindexforarchievement = 5
     achievementindex = 1
     achievement.x = 1792-95
     achievement.y = math.random(95,414-95)
     achievement.image = achievementimages[achievementindex]
     achievement.status = false
+
+
+    upx = 20
+    upy = PlayAreaHeight-50-20
+
+    downx = PlayAreaWidth-50-20
+    downy = PlayAreaHeight-50-20
 
 
 
@@ -658,7 +736,7 @@ function love.draw()
         love.graphics.draw(backgroundcolor,0,0,0,0.5,0.5);
         
         love.graphics.print(math.floor(0.5+score),20,20,0,0.5,0.5)
-        love.graphics.print((achievement.status and 'true' or 'false'),20+40,20)
+        
         love.graphics.scale(scalefactor, scalefactor)
         love.graphics.translate(translatefactorx, translatefactory)
         
@@ -676,10 +754,7 @@ function love.draw()
         love.graphics.draw(achievement.image,achievement.x,achievement.y,0,0.5,0.5)
         --love.graphics.print(backgroundlayer1x,0,0)
 
-        if(backgroundlayer5x >= -120)
-        then
-            love.graphics.draw(backgroundlayer5,backgroundlayer5x,0);
-        end
+        
         love.graphics.draw(psystem,asteroid1x+(asteroid0width/2), asteroid1y+(asteroid0height/2))
         love.graphics.draw(psystem,asteroid2x+(asteroid0width/2), asteroid2y+(asteroid0height/2))
         love.graphics.draw(psystem,asteroid4x+(asteroid0width/2), asteroid4y+(asteroid0height/2))
@@ -697,15 +772,16 @@ function love.draw()
         love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy,0,0.5,0.5)
         
 
-        
+        love.graphics.draw(up,upx,upy,0,0.5,0.5)
+        love.graphics.draw(down,downx,downy,0,0.5,0.5)
         if(activateLightSpeed == false and deactivateLightSpeed == false)
         then
             
-            love.graphics.draw(punch,punchx,punchy,0,0.5,0.5)
-            love.graphics.draw(achievement.image,punchx+50+10,punchy,0,95/(95*4),95/(95*4))
+            --love.graphics.draw(punch,punchx,punchy,0,0.5,0.5)
+            --love.graphics.draw(achievement.image,punchx+50+10,punchy,0,95/(95*4),95/(95*4))
         end
- --[[
-        
+ 
+       --[[   
         love.graphics.rectangle("line",shipx+110,shipy+8,50,22-8)
         love.graphics.rectangle("line",shipx+99,shipy+39,36,15)
         love.graphics.rectangle("line",shipx+48,shipy+39,49,6)

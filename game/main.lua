@@ -13,11 +13,20 @@ backgroundlayer5 = love.graphics.newImage("assets/layers/backgroundlayer5(still)
 
 startbutton = love.graphics.newImage("assets/layers/startbutton.png")
 
+up = love.graphics.newImage("assets/layers/up.png")
+down = love.graphics.newImage("assets/layers/down.png")
+
 restartbutton = love.graphics.newImage("assets/layers/restart.png")
 
 backgroundcolor = love.graphics.newImage("assets/layers/backgroundcolor.png")
 
 asteroid0 = love.graphics.newImage("assets/layers/asteroid(0).png")
+
+ach1 = love.graphics.newImage("assets/layers/ach1.png")
+ach2 = love.graphics.newImage("assets/layers/ach2.png")
+ach3 = love.graphics.newImage("assets/layers/ach3.png")
+ach4 = love.graphics.newImage("assets/layers/ach4.png")
+ach5 = love.graphics.newImage("assets/layers/ach5.png")
 
 planet1 = love.graphics.newImage("assets/layers/planet1.png")
 planet1green = love.graphics.newImage("assets/layers/planet1-green.png")
@@ -37,6 +46,8 @@ shipanimationframe = 0
 shipanimation = {}
 
 
+achievement = {}
+achievementimages = {}
 asteroidanimationframe = 0
 asteroidanimation = {}
 
@@ -49,6 +60,8 @@ asteroid2 = asteroid0
 
 asteroid3 = asteroid0
 asteroid4 = asteroid0
+
+shipupdownspeed = 0
 
 shipspritesheet = love.graphics.newImage("assets/layers/shipspritesheet.png")
 
@@ -115,15 +128,16 @@ function love.update(dt)
     psystem:update(dt)
     if(gamestate == "startmenu")
     then
-        backgroundlayer0x = backgroundlayer0x - (multiplier/7)
-        planet1x = planet1x - (multiplier/7)
-        planet1greenx = planet1greenx - (multiplier/7)
-        backgroundlayer1x = backgroundlayer1x - (multiplier/6)
-        planet2x = planet2x -(multiplier/6)
-        planet2bluex = planet2bluex - (multiplier/6)
-        backgroundlayer2x = backgroundlayer2x - (multiplier/5)
-        backgroundlayer3x = backgroundlayer3x - (multiplier/4)
-        backgroundlayer5x = backgroundlayer5x - (multiplier/2)
+        
+        backgroundlayer0x = backgroundlayer0x - (multiplier/9)
+        planet1x = planet1x - (multiplier/9)
+        planet1greenx = planet1greenx - (multiplier/9)
+        backgroundlayer1x = backgroundlayer1x - (multiplier/8)
+        planet2x = planet2x -(multiplier/8)
+        planet2bluex = planet2bluex - (multiplier/8)
+        backgroundlayer2x = backgroundlayer2x - (multiplier/6)
+        backgroundlayer3x = backgroundlayer3x - (multiplier/5)
+        backgroundlayer5x = backgroundlayer5x - (multiplier/4)
         checkIfPlanetsClipped(dt)
         checkIfBackgroundImagesClipped()
 
@@ -133,19 +147,27 @@ function love.update(dt)
         shipy2 = shipy + 74
     
         
-        backgroundlayer0x = backgroundlayer0x - (multiplier/7)
-        planet1x = planet1x - (multiplier/7)
-        planet1greenx = planet1greenx - (multiplier/7)
-        backgroundlayer1x = backgroundlayer1x - (multiplier/6)
-        planet2x = planet2x -(multiplier/6)
-        planet2bluex = planet2bluex - (multiplier/6)
-        backgroundlayer2x = backgroundlayer2x - (multiplier/5)
-        backgroundlayer3x = backgroundlayer3x - (multiplier/4)
-        backgroundlayer5x = backgroundlayer5x - (multiplier/2)
-        asteroid1x = asteroid1x - (multiplier/3)
-        asteroid2x = asteroid2x - (multiplier/3)
-        asteroid3x = asteroid3x - (multiplier/3)
-        asteroid4x = asteroid4x - (multiplier/3)
+        backgroundlayer0x = backgroundlayer0x - (multiplier/9)
+        planet1x = planet1x - (multiplier/9)
+        planet1greenx = planet1greenx - (multiplier/9)
+        backgroundlayer1x = backgroundlayer1x - (multiplier/8)
+        planet2x = planet2x -(multiplier/8)
+        planet2bluex = planet2bluex - (multiplier/8)
+        backgroundlayer2x = backgroundlayer2x - (multiplier/6)
+        backgroundlayer3x = backgroundlayer3x - (multiplier/5)
+        backgroundlayer5x = backgroundlayer5x - (multiplier/4)
+
+        checkAchievementUnlocked()
+        checkAchievementClipped(dt)
+
+        if(achievement.status == true)
+        then
+            achievement.x = achievement.x - (multiplier/4)
+        end
+        asteroid1x = asteroid1x - (multiplier/2)
+        asteroid2x = asteroid2x - (multiplier/2)
+        asteroid3x = asteroid3x - (multiplier/2)
+        asteroid4x = asteroid4x - (multiplier/2)
         checkIfPlanetsClipped(dt)
         checkIfBackgroundImagesClipped()
         
@@ -186,15 +208,15 @@ function love.update(dt)
         
         
 
-        if(mouseTouchStatus == true or keyPressedStatus == true)
+        if(keyPressedStatus == true)
         then
             if(shipexpectedy > getScaledY(shipy+shipheight))
             then
-                shipy = shipy + 2 + (dt/50)
+                shipy = shipy + 2 + shipupdownspeed
             else
                 if(getScaledY(shipy) >= shipexpectedy)
                 then
-                    shipy = shipy - 2 - (dt/50)
+                    shipy = shipy - 2 - shipupdownspeed
                 end
                         
             end
@@ -213,7 +235,11 @@ function love.update(dt)
         end
 
 
-        multiplier = multiplier + (dt/50)
+        if(score % 50 == 0)
+        then
+            multiplier = multiplier + 1
+            shipupdownspeed = shipupdownspeed + 0.5
+        end
 
         if(shipanimationframe < 18)
         then
@@ -223,6 +249,8 @@ function love.update(dt)
         else
             shipanimationframe = 1
         end
+       
+        
 
         
 
@@ -234,6 +262,55 @@ end
 
 
 
+function checkAchievementUnlocked()
+
+    if(math.floor(0.5+score) == 10)
+    then
+        achievement.status = true
+    end
+
+    if(math.floor(0.5+score) == 100)
+    then
+        achievement.status = true
+    end
+
+    if(math.floor(0.5+score) == 300)
+    then
+        achievement.status = true
+    end
+
+    if(math.floor(0.5+score) == 600)
+    then
+        achievement.status = true
+    end
+
+    if(math.floor(0.5+score) == 1000)
+    then
+        achievement.status = true
+    end
+    
+    
+    
+
+
+end
+
+
+function checkAchievementClipped(dt)
+    math.randomseed(dt)
+    if(achievement.x <= -95)
+    then
+        achievement.x = 896+95
+        achievement.y = math.random(95,414-95)
+        if(achievementindex < maxindexforarchievement)
+        then
+            achievementindex = achievementindex + 1
+            achievement.image = achievementimages[achievementindex]
+        end
+        achievement.status = false   
+    end
+
+end
 
 function checkIfAsteroidClipped(dt)
 
@@ -340,7 +417,7 @@ function love.keypressed( key, scancode, isrepeat )
         gamestate = "play"
     end
 
-
+    --[[
     if(key == "space")
     then
         if(activateLightSpeed == false and gamestate ~= "startmenu" and deactivateLightSpeed == false)
@@ -350,7 +427,7 @@ function love.keypressed( key, scancode, isrepeat )
               
         end
     end
-
+]]--
     if(key == "up")
     then
         keyPressedStatus = true
@@ -369,7 +446,8 @@ end
 function love.mousepressed( x, y, button, istouch, presses )
     
     mouseTouchStatus = true
-    punchStatusMouse = checkIfClickedOnPunch(x,y)
+    --punchStatusMouse = checkIfClickedOnPunch(x,y)
+    --[[
     if(punchStatusMouse ~= true)
     then
         --shipexpectedy = y
@@ -382,8 +460,11 @@ function love.mousepressed( x, y, button, istouch, presses )
         end
 
     end
+    ]]
     checkIfClickedOnStart(x,y)
     checkIfClickedOnRestart(x,y)
+    checkIfClickedOnUp(x,y)
+    checkIfClickedOnDown(x,y)
   
 end
 
@@ -394,7 +475,7 @@ end
 function love.mousereleased( x, y, button, istouch, presses )
 
     mouseTouchStatus = false
-
+    keyPressedStatus = false
 end
 
 function checkIfClickedOnStart(x, y)
@@ -415,6 +496,25 @@ function checkIfClickedOnRestart(x,y)
 
 end
 
+
+function checkIfClickedOnUp(x,y)
+    if(x >= getScaledX(upx) and x <= (getScaledX(upx+50)) and  y >= getScaledY(upy) and y <= (getScaledY(upy+50)) and gamestate == "play")
+    then
+        keyPressedStatus = true
+        shipexpectedy = getScaledY(5)
+    end
+end
+
+function checkIfClickedOnDown(x,y)
+
+    if(x >= getScaledX(downx) and x <= (getScaledX(downx+50)) and  y >= getScaledY(downy) and y <= (getScaledY(downy+50)) and gamestate == "play")
+    then
+        keyPressedStatus = true
+        shipexpectedy = getScaledY(414-5)
+    end
+
+end
+
 function checkIfClickedOnPunch(x,y)
 
     if(x >= getScaledX(punchx) and x <= (getScaledX(punchx+50)) and  y >= getScaledY(punchy) and y <= (getScaledY(punchy+50)) )
@@ -424,7 +524,8 @@ function checkIfClickedOnPunch(x,y)
         if(activateLightSpeed == false and gamestate ~= "startmenu" and deactivateLightSpeed == false)
         then
             activateLightSpeed = true
-            multiplier = multiplier + 20
+            
+            multiplier = multiplier + 1
             return true   
         else
             return false
@@ -440,12 +541,14 @@ end
 function whenLightSpeed(dt)
     scalefactor = scalefactor + 0.001
     translatefactory = translatefactory - 0.1
-   
+    score = score + 0.1
+    shipupdownspeed = shipupdownspeed + 0.01
     lightSpeedDuration = lightSpeedDuration + dt
     if(lightSpeedDuration >= 3)
     then
         activateLightSpeed = false
-        multiplier = 20
+        
+        multiplier = 10
         deactivateLightSpeed = true
         lightSpeedDuration = 0
     end
@@ -454,7 +557,7 @@ end
 function whenDeactivatingLightSpeed(dt)
     scalefactor = scalefactor - 0.001
     translatefactory = translatefactory + 0.1
-   
+    shipupdownspeed = shipupdownspeed - 0.01
     deactivateLightSpeedDuration = deactivateLightSpeedDuration + dt
     if(deactivateLightSpeedDuration >= 3)
     then
@@ -503,7 +606,7 @@ function resetGame()
     asteroid4x = math.random(896+30,1792-30)
     asteroid4y = math.random(30,414-30)
 
-
+    shipupdownspeed = 0
 
     shipx = 896/6
     shipy = 414/2
@@ -533,7 +636,7 @@ function resetGame()
     deactivateLightSpeed = false
     lightSpeedDuration = 0
     deactivateLightSpeedDuration = 0
-    multiplier = 20
+    multiplier = 10
 
     
     shipanimationframe = 0
@@ -560,7 +663,26 @@ function resetGame()
     punchx = 20
     punchy = 414-50-20
 
-    
+    achievementimages[1] = ach1
+    achievementimages[2] = ach2
+    achievementimages[3] = ach3
+    achievementimages[4] = ach4
+    achievementimages[5] = ach5
+    maxindexforarchievement = 5
+    achievementindex = 1
+    achievement.x = 1792-95
+    achievement.y = math.random(95,414-95)
+    achievement.image = achievementimages[achievementindex]
+    achievement.status = false
+
+
+    upx = 20
+    upy = PlayAreaHeight-50-20
+
+    downx = PlayAreaWidth-50-20
+    downy = PlayAreaHeight-50-20
+
+
 
 end
 
@@ -588,7 +710,7 @@ function love.draw()
         love.graphics.draw(backgroundlayer0,backgroundlayer0x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer1,backgroundlayer1x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer3,backgroundlayer3x,0,0,0.5,0.5);
-        love.graphics.draw(backgroundlayer5,backgroundlayer5x,0,0,0.5,0.5);
+        
         love.graphics.draw(startbutton,startx,starty,0,0.5,0.5)
     
     elseif(gamestate == "play")
@@ -596,6 +718,7 @@ function love.draw()
         love.graphics.draw(backgroundcolor,0,0,0,0.5,0.5);
         
         love.graphics.print(math.floor(0.5+score),20,20,0,0.5,0.5)
+        
         love.graphics.scale(scalefactor, scalefactor)
         love.graphics.translate(translatefactorx, translatefactory)
         
@@ -605,30 +728,39 @@ function love.draw()
         love.graphics.draw(planet2blue,planet2bluex,planet2bluey,planet2blueangle,24/(24*3),11/(11*3))
         love.graphics.draw(planet1,planet1x,planet1y,planet1angle,16/(16*3),6/(6*3))
         love.graphics.draw(planet1green,planet1greenx,planet1greeny,planet1greenangle,16/(16*3),6/(5*3))
+
         love.graphics.draw(backgroundlayer0,backgroundlayer0x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer1,backgroundlayer1x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer3,backgroundlayer3x,0,0,0.5,0.5);
-        love.graphics.draw(backgroundlayer5,backgroundlayer5x,0,0,0.5,0.5);
         
+        love.graphics.draw(achievement.image,achievement.x,achievement.y,0,0.5,0.5)
         --love.graphics.print(backgroundlayer1x,0,0)
 
-        if(backgroundlayer5x >= -120)
-        then
-            love.graphics.draw(backgroundlayer5,backgroundlayer5x,0);
-        end
-        love.graphics.draw(asteroid0,asteroid1x,asteroid1y,0,30/(30*4),30/(30*4))
+        
         love.graphics.draw(psystem,asteroid1x+(asteroid0width/2), asteroid1y+(asteroid0height/2))
-        love.graphics.draw(asteroid1,asteroid2x,asteroid2y,0,30/(30*4),30/(30*4))
         love.graphics.draw(psystem,asteroid2x+(asteroid0width/2), asteroid2y+(asteroid0height/2))
-        love.graphics.draw(asteroid3,asteroid3x,asteroid3y,0,30/(30*4),30/(30*4))
-        love.graphics.draw(psystem,asteroid3x+(asteroid0width/2), asteroid3y+(asteroid0height/2))
-        love.graphics.draw(asteroid4,asteroid4x,asteroid4y,0,30/(30*4),30/(30*4))
         love.graphics.draw(psystem,asteroid4x+(asteroid0width/2), asteroid4y+(asteroid0height/2))
+        love.graphics.draw(psystem,asteroid3x+(asteroid0width/2), asteroid3y+(asteroid0height/2))
+
+
+        love.graphics.draw(asteroid0,asteroid1x,asteroid1y,0,30/(30*4),30/(30*4))
+        
+        love.graphics.draw(asteroid1,asteroid2x,asteroid2y,0,30/(30*4),30/(30*4))
+        
+        love.graphics.draw(asteroid3,asteroid3x,asteroid3y,0,30/(30*4),30/(30*4))
+      
+        love.graphics.draw(asteroid4,asteroid4x,asteroid4y,0,30/(30*4),30/(30*4))
+        
         love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy,0,0.5,0.5)
         
+
+        love.graphics.draw(up,upx,upy,0,0.5,0.5)
+        love.graphics.draw(down,downx,downy,0,0.5,0.5)
         if(activateLightSpeed == false and deactivateLightSpeed == false)
         then
-            love.graphics.draw(punch,punchx,punchy,0,0.5,0.5)
+            
+            --love.graphics.draw(punch,punchx,punchy,0,0.5,0.5)
+            --love.graphics.draw(achievement.image,punchx+50+10,punchy,0,95/(95*4),95/(95*4))
         end
  --[[
         
@@ -656,7 +788,7 @@ function love.draw()
         love.graphics.draw(backgroundlayer0,backgroundlayer0x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer1,backgroundlayer1x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer3,backgroundlayer3x,0,0,0.5,0.5);
-        love.graphics.draw(backgroundlayer5,backgroundlayer5x,0,0,0.5,0.5);
+        
         love.graphics.print("SCORE : "..math.floor(0.5+score),scorex,scorey,0,0.5,0.5)
         love.graphics.draw(restartbutton,restartbuttonx,restartbuttony,0,0.5,0.5)
 
