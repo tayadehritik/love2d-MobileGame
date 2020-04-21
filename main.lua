@@ -111,13 +111,12 @@ function love.load()
     end
 
 
-    space_background = love.audio.newSource("assets/sounds/space_background.ogg", "stream")
+    
     clicksound = love.audio.newSource("assets/sounds/click.wav","static")
     crashsound = love.audio.newSource("assets/sounds/crash.wav","static")
-    space_background:setVolume(0.5)
-    space_background:setLooping(true)
-    --space_background:play()
+    shipthrusters = love.audio.newSource("assets/sounds/ship_thrusters.mp3","static")
 
+    shipthrusters:setLooping(true)
     resetGame()
     
 
@@ -218,6 +217,12 @@ function love.update(dt)
 
         if(keyPressedStatus == true)
         then
+            if(shipthrusterplaying == false)
+            then
+                --shipthrusters:play()
+                shipthrusterplaying = true
+            end
+
             if(shipexpectedy > getScaledY(shipy+shipheight))
             then
                 shipy = shipy + 2 + shipupdownspeed
@@ -422,7 +427,7 @@ function love.keypressed( key, scancode, isrepeat )
         then
             resetGame()
         end
-        space_background:play()
+        
         clicksound:play()
         gamestate = "play"
 
@@ -481,12 +486,16 @@ end
 
 function love.keyreleased( key, scancode )
     keyPressedStatus = false
+    shipthrusters:stop()
+    shipthrusterplaying = false
 end
 
 function love.mousereleased( x, y, button, istouch, presses )
 
     mouseTouchStatus = false
     keyPressedStatus = false
+    shipthrusters:stop()
+    shipthrusterplaying = false
 end
 
 function checkIfClickedOnStart(x, y)
@@ -495,7 +504,7 @@ function checkIfClickedOnStart(x, y)
     then
         gamestate = "play"
         clicksound:play()
-        space_background:play()
+        
     end
 
 end
@@ -506,6 +515,7 @@ function checkIfClickedOnRestart(x,y)
         resetGame()
         clicksound:play()
         gamestate = "play"
+        
     end
 
 end
@@ -595,7 +605,6 @@ function checkCollisionBetweenTwoObjects(object1X,object1Y,object1Width,object1H
         getScaledY((object1Y) + object1Height) > getScaledY(object2Y))
     then
         crashsound:play()
-        space_background:stop()
         gamestate = "pause"
     end
 
@@ -700,7 +709,7 @@ function resetGame()
     downx = PlayAreaWidth-50-20
     downy = PlayAreaHeight-50-20
 
-
+    shipthrusterplaying = false
 
 end
 

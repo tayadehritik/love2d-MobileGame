@@ -110,6 +110,13 @@ function love.load()
     
     end
 
+
+    
+    clicksound = love.audio.newSource("assets/sounds/click.wav","static")
+    crashsound = love.audio.newSource("assets/sounds/crash.wav","static")
+    shipthrusters = love.audio.newSource("assets/sounds/ship_thrusters.mp3","static")
+
+    shipthrusters:setLooping(true)
     resetGame()
     
 
@@ -210,6 +217,12 @@ function love.update(dt)
 
         if(keyPressedStatus == true)
         then
+            if(shipthrusterplaying == false)
+            then
+                --shipthrusters:play()
+                shipthrusterplaying = true
+            end
+
             if(shipexpectedy > getScaledY(shipy+shipheight))
             then
                 shipy = shipy + 2 + shipupdownspeed
@@ -235,7 +248,7 @@ function love.update(dt)
         end
 
 
-        if(score % 50 == 0)
+        if(score % 100 == 0)
         then
             multiplier = multiplier + 1
             shipupdownspeed = shipupdownspeed + 0.5
@@ -274,17 +287,17 @@ function checkAchievementUnlocked()
         achievement.status = true
     end
 
-    if(math.floor(0.5+score) == 300)
-    then
-        achievement.status = true
-    end
-
-    if(math.floor(0.5+score) == 600)
+    if(math.floor(0.5+score) == 500)
     then
         achievement.status = true
     end
 
     if(math.floor(0.5+score) == 1000)
+    then
+        achievement.status = true
+    end
+
+    if(math.floor(0.5+score) == 2000)
     then
         achievement.status = true
     end
@@ -414,7 +427,10 @@ function love.keypressed( key, scancode, isrepeat )
         then
             resetGame()
         end
+        
+        clicksound:play()
         gamestate = "play"
+
     end
 
     --[[
@@ -470,12 +486,16 @@ end
 
 function love.keyreleased( key, scancode )
     keyPressedStatus = false
+    shipthrusters:stop()
+    shipthrusterplaying = false
 end
 
 function love.mousereleased( x, y, button, istouch, presses )
 
     mouseTouchStatus = false
     keyPressedStatus = false
+    shipthrusters:stop()
+    shipthrusterplaying = false
 end
 
 function checkIfClickedOnStart(x, y)
@@ -483,6 +503,8 @@ function checkIfClickedOnStart(x, y)
     if(x >= getScaledX(startx) and x <= (getScaledX(startx+startwidth)) and  y >= getScaledY(starty) and y <= (getScaledY(starty+startheight)) and gamestate == "startmenu")
     then
         gamestate = "play"
+        clicksound:play()
+        
     end
 
 end
@@ -491,7 +513,9 @@ function checkIfClickedOnRestart(x,y)
     if(x >= getScaledX(restartbuttonx) and x <= (getScaledX(restartbuttonx+50)) and  y >= getScaledY(restartbuttony) and y <= (getScaledY(restartbuttony+50)) and gamestate == "pause")
     then
         resetGame()
+        clicksound:play()
         gamestate = "play"
+        
     end
 
 end
@@ -501,6 +525,7 @@ function checkIfClickedOnUp(x,y)
     if(x >= getScaledX(upx) and x <= (getScaledX(upx+50)) and  y >= getScaledY(upy) and y <= (getScaledY(upy+50)) and gamestate == "play")
     then
         keyPressedStatus = true
+        --clicksound:play()
         shipexpectedy = getScaledY(5)
     end
 end
@@ -510,6 +535,7 @@ function checkIfClickedOnDown(x,y)
     if(x >= getScaledX(downx) and x <= (getScaledX(downx+50)) and  y >= getScaledY(downy) and y <= (getScaledY(downy+50)) and gamestate == "play")
     then
         keyPressedStatus = true
+        --clicksound:play()
         shipexpectedy = getScaledY(414-5)
     end
 
@@ -578,6 +604,7 @@ function checkCollisionBetweenTwoObjects(object1X,object1Y,object1Width,object1H
         getScaledY(object1Y) < getScaledY(object2Y+object2Height) and
         getScaledY((object1Y) + object1Height) > getScaledY(object2Y))
     then
+        crashsound:play()
         gamestate = "pause"
     end
 
@@ -682,7 +709,7 @@ function resetGame()
     downx = PlayAreaWidth-50-20
     downy = PlayAreaHeight-50-20
 
-
+    shipthrusterplaying = false
 
 end
 
@@ -762,8 +789,8 @@ function love.draw()
             --love.graphics.draw(punch,punchx,punchy,0,0.5,0.5)
             --love.graphics.draw(achievement.image,punchx+50+10,punchy,0,95/(95*4),95/(95*4))
         end
- --[[
-        
+ 
+       --[[   
         love.graphics.rectangle("line",shipx+110,shipy+8,50,22-8)
         love.graphics.rectangle("line",shipx+99,shipy+39,36,15)
         love.graphics.rectangle("line",shipx+48,shipy+39,49,6)
