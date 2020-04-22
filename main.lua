@@ -222,17 +222,22 @@ function love.update(dt)
                 --shipthrusters:play()
                 shipthrusterplaying = true
             end
-
+            
             if(shipexpectedy > getScaledY(shipy+shipheight))
             then
-                shipy = shipy + 2 + shipupdownspeed
+                shipy = lerppos(shipy,shipy+(10+shipupdownspeed),0.2)
+                --shipy = shipy + 2 + shipupdownspeed--shipy + ((shipy+20+shipupdownspeed)-shipy) * 0.2
             else
                 if(getScaledY(shipy) >= shipexpectedy)
                 then
-                    shipy = shipy - 2 - shipupdownspeed
+                    
+                    shipy = lerppos(shipy,shipy-(10+shipupdownspeed),0.2)
+                    --shipy = shipy - 2 - shipupdownspeed--shipy - ((shipy+20+shipupdownspeed)-shipy)*0.2
                 end
                         
             end
+            
+
         end
 
         checkIfAsteroidClipped(dt)
@@ -323,6 +328,16 @@ function checkAchievementClipped(dt)
         achievement.status = false   
     end
 
+end
+
+function lerppos(initial_value, target_value, speed)
+	local result = (1-speed) * initial_value + speed*target_value
+	return result
+end
+
+function lerpneg(initial_value, target_value, speed)
+	local result = (1-speed) * initial_value - speed*target_value
+	return result
 end
 
 function checkIfAsteroidClipped(dt)
