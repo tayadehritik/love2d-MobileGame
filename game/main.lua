@@ -215,24 +215,38 @@ function love.update(dt)
         
         
 
-        if(keyPressedStatus == true)
+        if(keyPressedStatus == true or mouseTouchStatus == true)
         then
+
+            x,y = love.mouse.getPosition()
+            
+            shipexpectedy = y
+
             if(shipthrusterplaying == false)
             then
                 --shipthrusters:play()
                 shipthrusterplaying = true
             end
 
+            shipy = lerppos(shipy,shipexpectedy,0.1)
+
+            --[[
             if(shipexpectedy > getScaledY(shipy+shipheight))
             then
-                shipy = shipy + 2 + shipupdownspeed
+                
+                --shipy = lerppos(shipy,shipy+(10+shipupdownspeed),0.2)
+                --shipy = shipy + 2 + shipupdownspeed--shipy + ((shipy+20+shipupdownspeed)-shipy) * 0.2
             else
                 if(getScaledY(shipy) >= shipexpectedy)
                 then
-                    shipy = shipy - 2 - shipupdownspeed
+                    
+                    shipy = lerppos(shipy,shipy-(10+shipupdownspeed),0.2)
+                    --shipy = shipy - 2 - shipupdownspeed--shipy - ((shipy+20+shipupdownspeed)-shipy)*0.2
                 end
                         
             end
+            ]]--
+
         end
 
         checkIfAsteroidClipped(dt)
@@ -323,6 +337,16 @@ function checkAchievementClipped(dt)
         achievement.status = false   
     end
 
+end
+
+function lerppos(initial_value, target_value, speed)
+	local result = (1-speed) * initial_value + speed*target_value
+	return result
+end
+
+function lerpneg(initial_value, target_value, speed)
+	local result = (1-speed) * initial_value - speed*target_value
+	return result
 end
 
 function checkIfAsteroidClipped(dt)
@@ -462,6 +486,7 @@ end
 function love.mousepressed( x, y, button, istouch, presses )
     
     mouseTouchStatus = true
+    print(x)
     --punchStatusMouse = checkIfClickedOnPunch(x,y)
     --[[
     if(punchStatusMouse ~= true)

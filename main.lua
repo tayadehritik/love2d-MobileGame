@@ -82,7 +82,7 @@ function love.load()
     love.graphics.setColor(255,255,255)
     love.graphics.setFont(font)
 
-    love.window.setFullscreen(true)
+    --love.window.setFullscreen(true)
     local img = love.graphics.newImage('assets/layers/particle.png')
  
 	psystem = love.graphics.newParticleSystem(img, 32)
@@ -215,16 +215,23 @@ function love.update(dt)
         
         
 
-        if(keyPressedStatus == true)
+        if(keyPressedStatus == true or mouseTouchStatus == true)
         then
+
+            x,y = love.mouse.getPosition()
+            
+            shipexpectedy = y
+            
             if(shipthrusterplaying == false)
             then
                 --shipthrusters:play()
                 shipthrusterplaying = true
             end
-            
+
+           --[[
             if(shipexpectedy > getScaledY(shipy+shipheight))
             then
+
                 shipy = lerppos(shipy,shipy+(10+shipupdownspeed),0.2)
                 --shipy = shipy + 2 + shipupdownspeed--shipy + ((shipy+20+shipupdownspeed)-shipy) * 0.2
             else
@@ -236,7 +243,7 @@ function love.update(dt)
                 end
                         
             end
-            
+            ]]--
 
         end
 
@@ -477,6 +484,7 @@ end
 function love.mousepressed( x, y, button, istouch, presses )
     
     mouseTouchStatus = true
+    
     --punchStatusMouse = checkIfClickedOnPunch(x,y)
     --[[
     if(punchStatusMouse ~= true)
