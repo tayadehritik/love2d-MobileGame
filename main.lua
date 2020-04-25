@@ -33,6 +33,7 @@ planet1green = love.graphics.newImage("assets/layers/planet1-green.png")
 
 particle = love.graphics.newImage("assets/layers/particle.png")
 
+
 planet2 = love.graphics.newImage("assets/layers/planet2.png")
 planet2blue = love.graphics.newImage("assets/layers/planet2-blue.png")
 
@@ -82,8 +83,10 @@ function love.load()
     love.graphics.setColor(255,255,255)
     love.graphics.setFont(font)
 
-    --love.window.setFullscreen(true)
+    love.window.setFullscreen(true)
     local img = love.graphics.newImage('assets/layers/particle.png')
+
+    local lightspeedparticle = love.graphics.newImage("assets/layers/lightspeedparticle.png")
  
 	psystem = love.graphics.newParticleSystem(img, 32)
 	psystem:setParticleLifetime(2, 5) -- Particles live at least 2s and at most 5s.
@@ -92,6 +95,13 @@ function love.load()
 	psystem:setLinearAcceleration(0, -20, 20, 20) -- Random movement in all directions.
 	psystem:setColors(1, 1, 1, 1, 1, 1, 1, 0) -- Fade to transparency.
 
+
+    lightspeedsystem = love.graphics.newParticleSystem(lightspeedparticle,32)
+    lightspeedsystem:setParticleLifetime(2)
+    lightspeedsystem:setEmissionRate(200)
+    lightspeedsystem:setSizeVariation(1)
+    lightspeedsystem:setLinearAcceleration(-120,-40,0,40)
+    lightspeedsystem:setColors(1, 1, 1, 1, 1, 1, 1, 0) 
 
     WindowWidth = love.graphics.getWidth()
     WindowHeight = love.graphics.getHeight()
@@ -133,6 +143,8 @@ function love.update(dt)
     width = love.graphics.getDimensions()
     
     psystem:update(dt)
+    lightspeedsystem:update(dt)
+
     if(gamestate == "startmenu")
     then
         
@@ -177,33 +189,36 @@ function love.update(dt)
         asteroid4x = asteroid4x - (multiplier/2)
         checkIfPlanetsClipped(dt)
         checkIfBackgroundImagesClipped()
-        
-        checkCollisionBetweenTwoObjects(shipx+110,shipy+8,50,22-8,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
-        checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
-        checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
-        checkCollisionBetweenTwoObjects(shipx+24,shipy+13,70,15,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
+
+        if(activateLightSpeed == false)
+        then
+            
+            checkCollisionBetweenTwoObjects(shipx+110,shipy+8,50,22-8,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
+            checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
+            checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
+            checkCollisionBetweenTwoObjects(shipx+24,shipy+13,70,15,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
 
 
 
-        checkCollisionBetweenTwoObjects(shipx+110,shipy+8,50,22-8,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
-        checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
-        checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
-        checkCollisionBetweenTwoObjects(shipx+24,shipy+13,70,15,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
-        
-        
+            checkCollisionBetweenTwoObjects(shipx+110,shipy+8,50,22-8,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
+            checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
+            checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
+            checkCollisionBetweenTwoObjects(shipx+24,shipy+13,70,15,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
+            
+            
 
-        checkCollisionBetweenTwoObjects(shipx+110,shipy+8,50,22-8,asteroid3x,asteroid3y,asteroid0width,asteroid0height);
-        checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid3x,asteroid3y,asteroid0width,asteroid0height);
-        checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid3x,asteroid3y,asteroid0width,asteroid0height);
-        checkCollisionBetweenTwoObjects(shipx+24,shipy+13,70,15,asteroid3x,asteroid3y,asteroid0width,asteroid0height);
-
-
-        checkCollisionBetweenTwoObjects(shipx+110,shipy+8,50,22-8,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
-        checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
-        checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
-        checkCollisionBetweenTwoObjects(shipx+24,shipy+13,70,15,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
+            checkCollisionBetweenTwoObjects(shipx+110,shipy+8,50,22-8,asteroid3x,asteroid3y,asteroid0width,asteroid0height);
+            checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid3x,asteroid3y,asteroid0width,asteroid0height);
+            checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid3x,asteroid3y,asteroid0width,asteroid0height);
+            checkCollisionBetweenTwoObjects(shipx+24,shipy+13,70,15,asteroid3x,asteroid3y,asteroid0width,asteroid0height);
 
 
+            checkCollisionBetweenTwoObjects(shipx+110,shipy+8,50,22-8,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
+            checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
+            checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
+            checkCollisionBetweenTwoObjects(shipx+24,shipy+13,70,15,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
+
+        end
 
 
         score = score + dt
@@ -217,17 +232,38 @@ function love.update(dt)
 
         if(keyPressedStatus == true or mouseTouchStatus == true)
         then
-
+            
             x,y = love.mouse.getPosition()
+            shipexpectedy = y - 27.5
             
-            shipexpectedy = y
+            --[[
+            local touches = love.touch.getTouches()
             
+            for i, id in ipairs(touches) do
+                local x, y = love.touch.getPosition(id)
+                punchStatus = checkIfClickedOnPunch(x,y)
+                if(punchStatus == false)
+                then
+                    alltouches = 'false'
+                    shipexpectedy = y - 27.5
+                else
+                    alltouches = 'true'
+                    break
+                end
+                
+            end
+            
+
+            ]]--
             if(shipthrusterplaying == false)
             then
                 --shipthrusters:play()
                 shipthrusterplaying = true
             end
 
+            shipy = (lerppos((shipy),getReverseScaledY(shipexpectedy),0.1))  
+            
+            
            --[[
             if(shipexpectedy > getScaledY(shipy+shipheight))
             then
@@ -455,17 +491,17 @@ function love.keypressed( key, scancode, isrepeat )
 
     end
 
-    --[[
+    
     if(key == "space")
     then
         if(activateLightSpeed == false and gamestate ~= "startmenu" and deactivateLightSpeed == false)
         then
             activateLightSpeed = true
-            multiplier = multiplier + 20
+            multiplier = multiplier + 40
               
         end
     end
-]]--
+
     if(key == "up")
     then
         keyPressedStatus = true
@@ -485,7 +521,7 @@ function love.mousepressed( x, y, button, istouch, presses )
     
     mouseTouchStatus = true
     
-    --punchStatusMouse = checkIfClickedOnPunch(x,y)
+    punchStatusMouse = checkIfClickedOnPunch(x,y)
     --[[
     if(punchStatusMouse ~= true)
     then
@@ -499,11 +535,11 @@ function love.mousepressed( x, y, button, istouch, presses )
         end
 
     end
-    ]]
+    ]]--
     checkIfClickedOnStart(x,y)
     checkIfClickedOnRestart(x,y)
-    checkIfClickedOnUp(x,y)
-    checkIfClickedOnDown(x,y)
+    --checkIfClickedOnUp(x,y)
+    --checkIfClickedOnDown(x,y)
   
 end
 
@@ -573,8 +609,7 @@ function checkIfClickedOnPunch(x,y)
         if(activateLightSpeed == false and gamestate ~= "startmenu" and deactivateLightSpeed == false)
         then
             activateLightSpeed = true
-            
-            multiplier = multiplier + 1
+            multiplier = multiplier + 40
             return true   
         else
             return false
@@ -596,8 +631,7 @@ function whenLightSpeed(dt)
     if(lightSpeedDuration >= 3)
     then
         activateLightSpeed = false
-        
-        multiplier = 10
+        multiplier = multiplier - 40
         deactivateLightSpeed = true
         lightSpeedDuration = 0
     end
@@ -734,6 +768,8 @@ function resetGame()
 
     shipthrusterplaying = false
 
+    alltouches = 0
+
 end
 
 
@@ -748,6 +784,15 @@ function getScaledY(y)
     return y
 end
 
+function getReverseScaledX(x)
+    x = WindowScaleFactorX / x
+    return x
+end
+
+function getReverseScaledY(y)
+    y = y / WindowScaleFactorY 
+    return y
+end
 
 
 function love.draw()
@@ -762,12 +807,17 @@ function love.draw()
         love.graphics.draw(backgroundlayer3,backgroundlayer3x,0,0,0.5,0.5);
         
         love.graphics.draw(startbutton,startx,starty,0,0.5,0.5)
+
+        
+        
+
     
     elseif(gamestate == "play")
     then
         love.graphics.draw(backgroundcolor,0,0,0,0.5,0.5);
         
         love.graphics.print(math.floor(0.5+score),20,20,0,0.5,0.5)
+        
         
         love.graphics.scale(scalefactor, scalefactor)
         love.graphics.translate(translatefactorx, translatefactory)
@@ -792,7 +842,7 @@ function love.draw()
         love.graphics.draw(psystem,asteroid4x+(asteroid0width/2), asteroid4y+(asteroid0height/2))
         love.graphics.draw(psystem,asteroid3x+(asteroid0width/2), asteroid3y+(asteroid0height/2))
 
-
+        
         love.graphics.draw(asteroid0,asteroid1x,asteroid1y,0,30/(30*4),30/(30*4))
         
         love.graphics.draw(asteroid1,asteroid2x,asteroid2y,0,30/(30*4),30/(30*4))
@@ -800,20 +850,20 @@ function love.draw()
         love.graphics.draw(asteroid3,asteroid3x,asteroid3y,0,30/(30*4),30/(30*4))
       
         love.graphics.draw(asteroid4,asteroid4x,asteroid4y,0,30/(30*4),30/(30*4))
+        love.graphics.draw(lightspeedsystem,shipx+shipwidth,shipy-10)
+        love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy,0,0.52,0.5)
         
-        love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy,0,0.5,0.5)
-        
-
-        love.graphics.draw(up,upx,upy,0,0.5,0.5)
-        love.graphics.draw(down,downx,downy,0,0.5,0.5)
+       
+        --love.graphics.draw(up,upx,upy,0,0.5,0.5)
+        --love.graphics.draw(down,downx,downy,0,0.5,0.5)
         if(activateLightSpeed == false and deactivateLightSpeed == false)
         then
             
-            --love.graphics.draw(punch,punchx,punchy,0,0.5,0.5)
+            love.graphics.draw(punch,punchx,punchy,0,0.5,0.5)
             --love.graphics.draw(achievement.image,punchx+50+10,punchy,0,95/(95*4),95/(95*4))
         end
  
-       --[[   
+           --[[  
         love.graphics.rectangle("line",shipx+110,shipy+8,50,22-8)
         love.graphics.rectangle("line",shipx+99,shipy+39,36,15)
         love.graphics.rectangle("line",shipx+48,shipy+39,49,6)
@@ -823,7 +873,7 @@ function love.draw()
         love.graphics.rectangle("line",asteroid2x,asteroid2y,asteroid0width,asteroid0height)
         love.graphics.rectangle("line",asteroid3x,asteroid3y,asteroid0width,asteroid0height)
         love.graphics.rectangle("line",asteroid4x,asteroid4y,asteroid0width,asteroid0height)
-       
+    
         checkCollisionBetweenTwoObjects(shipx+100,shipy+2,70,22,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
         checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
         checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
