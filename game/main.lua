@@ -86,8 +86,7 @@ function love.load()
     love.window.setFullscreen(true)
     local img = love.graphics.newImage('assets/layers/particle.png')
 
-    local lightspeedparticle = love.graphics.newImage("assets/layers/lightspeedparticle.png")
- 
+   
 	psystem = love.graphics.newParticleSystem(img, 32)
 	psystem:setParticleLifetime(2, 5) -- Particles live at least 2s and at most 5s.
 	psystem:setEmissionRate(5)
@@ -95,13 +94,6 @@ function love.load()
 	psystem:setLinearAcceleration(0, -20, 20, 20) -- Random movement in all directions.
 	psystem:setColors(1, 1, 1, 1, 1, 1, 1, 0) -- Fade to transparency.
 
-
-    lightspeedsystem = love.graphics.newParticleSystem(lightspeedparticle,32)
-    lightspeedsystem:setParticleLifetime(2)
-    lightspeedsystem:setEmissionRate(200)
-    lightspeedsystem:setSizeVariation(1)
-    lightspeedsystem:setLinearAcceleration(-120,-40,0,40)
-    lightspeedsystem:setColors(1, 1, 1, 1, 1, 1, 1, 0) 
 
     WindowWidth = love.graphics.getWidth()
     WindowHeight = love.graphics.getHeight()
@@ -143,7 +135,7 @@ function love.update(dt)
     width = love.graphics.getDimensions()
     
     psystem:update(dt)
-    lightspeedsystem:update(dt)
+    
 
     if(gamestate == "startmenu")
     then
@@ -230,58 +222,39 @@ function love.update(dt)
         
         
 
-        if(keyPressedStatus == true or mouseTouchStatus == true)
-        then
-            
+        
+             --[[
             x,y = love.mouse.getPosition()
             shipexpectedy = y - 27.5
-            
-            --[[
-            local touches = love.touch.getTouches()
-            
-            for i, id in ipairs(touches) do
-                local x, y = love.touch.getPosition(id)
-                punchStatus = checkIfClickedOnPunch(x,y)
-                if(punchStatus == false)
-                then
-                    alltouches = 'false'
-                    shipexpectedy = y - 27.5
-                else
-                    alltouches = 'true'
-                    break
-                end
-                
-            end
-            
-
             ]]--
+           
+            
+           
+
+            
+            
             if(shipthrusterplaying == false)
             then
                 --shipthrusters:play()
                 shipthrusterplaying = true
             end
 
-            shipy = (lerppos((shipy),getReverseScaledY(shipexpectedy),0.1))  
             
-            
-           --[[
-            if(shipexpectedy > getScaledY(shipy+shipheight))
-            then
-
-                shipy = lerppos(shipy,shipy+(10+shipupdownspeed),0.2)
-                --shipy = shipy + 2 + shipupdownspeed--shipy + ((shipy+20+shipupdownspeed)-shipy) * 0.2
-            else
-                if(getScaledY(shipy) >= shipexpectedy)
+                shipy = (lerppos((shipy),getReverseScaledY(shipexpectedy),0.1))
+                print(WindowHeight)
+                if(getScaledY(shipy+shipheight) > WindowHeight)
                 then
-                    
-                    shipy = lerppos(shipy,shipy-(10+shipupdownspeed),0.2)
-                    --shipy = shipy - 2 - shipupdownspeed--shipy - ((shipy+20+shipupdownspeed)-shipy)*0.2
-                end
-                        
-            end
-            ]]--
+                      shipy = getReverseScaledY(WindowHeight) - shipheight
+                end 
+            
+            
+           
+                --shipy = lerppos(shipy,shipexpectedy,0.1) --shipy+(20+shipupdownspeed)
+                --shipy = shipy + 2 + shipupdownspeed--shipy + ((shipy+20+shipupdownspeed)-shipy) * 0.2
+            
+            
 
-        end
+        
 
         checkIfAsteroidClipped(dt)
 
@@ -467,10 +440,25 @@ function checkIfBackgroundImagesClipped()
 end
 function love.touchpressed( id, x, y, dx, dy, pressure )
     -- test if the touch happened in the upper half of the screen
+    touchStatus = true
     
- 
+    puncStatus = checkIfClickedOnPunch(x,y)
+
+    if(punchStatus == false)
+    then
+        shipexpectedy = y 
+    end
     
 end
+function love.touchmoved( id, x, y, dx, dy, pressure )
+
+    shipexpectedy = y 
+
+end
+function love.touchreleased( id, x, y, dx, dy, pressure )
+    touchStatus = false
+end
+
 
 function love.keypressed( key, scancode, isrepeat )
     
@@ -521,7 +509,10 @@ function love.mousepressed( x, y, button, istouch, presses )
     
     mouseTouchStatus = true
     
-    punchStatusMouse = checkIfClickedOnPunch(x,y)
+    --shipexpectedy = y
+   
+      
+    --punchStatusMouse = checkIfClickedOnPunch(x,y)
     --[[
     if(punchStatusMouse ~= true)
     then
@@ -699,8 +690,8 @@ function resetGame()
     shipy2 = shipy + 54
     shipexpectedy = 414/2
 
-    shipwidth = 170-5
-    shipheight = 55-5
+    shipwidth = 170
+    shipheight = 55
 
     score = 0
     scorex = 0
@@ -850,9 +841,10 @@ function love.draw()
         love.graphics.draw(asteroid3,asteroid3x,asteroid3y,0,30/(30*4),30/(30*4))
       
         love.graphics.draw(asteroid4,asteroid4x,asteroid4y,0,30/(30*4),30/(30*4))
-        love.graphics.draw(lightspeedsystem,shipx+shipwidth,shipy-10)
+        
         love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy,0,0.52,0.5)
         
+        love.graphics.circle('fill',shipx,getReverseScaledY(shipexpectedy),10)
        
         --love.graphics.draw(up,upx,upy,0,0.5,0.5)
         --love.graphics.draw(down,downx,downy,0,0.5,0.5)
@@ -863,7 +855,7 @@ function love.draw()
             --love.graphics.draw(achievement.image,punchx+50+10,punchy,0,95/(95*4),95/(95*4))
         end
  
-           --[[  
+           
         love.graphics.rectangle("line",shipx+110,shipy+8,50,22-8)
         love.graphics.rectangle("line",shipx+99,shipy+39,36,15)
         love.graphics.rectangle("line",shipx+48,shipy+39,49,6)
@@ -873,7 +865,7 @@ function love.draw()
         love.graphics.rectangle("line",asteroid2x,asteroid2y,asteroid0width,asteroid0height)
         love.graphics.rectangle("line",asteroid3x,asteroid3y,asteroid0width,asteroid0height)
         love.graphics.rectangle("line",asteroid4x,asteroid4y,asteroid0width,asteroid0height)
-    
+    --[[  
         checkCollisionBetweenTwoObjects(shipx+100,shipy+2,70,22,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
         checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
         checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
