@@ -22,6 +22,8 @@ backgroundcolor = love.graphics.newImage("assets/layers/backgroundcolor.png")
 
 asteroid0 = love.graphics.newImage("assets/layers/asteroid(0).png")
 
+lightspeediconspritesheet = love.graphics.newImage("assets/layers/lightspeediconanimationspritesheet.png")
+
 ach1 = love.graphics.newImage("assets/layers/ach1.png")
 ach2 = love.graphics.newImage("assets/layers/ach2.png")
 ach3 = love.graphics.newImage("assets/layers/ach3.png")
@@ -285,7 +287,7 @@ function love.update(dt)
         end
        
         
-
+        animateLightSpeedIcon(dt)
         
 
 
@@ -761,9 +763,77 @@ function resetGame()
 
     alltouches = 0
 
+    setupLightSpeedAnimation()
+
 end
 
 
+function setupLightSpeedAnimation()
+    lightspeedanimationx = math.random(896+30,1792-30)
+    lightspeedanimationy = math.random(30,414-30)
+    lightspeedanimation = {}
+    lightspeedanimationframe = 1
+    xforquads = 0
+    indexforquadslightspeed = 0
+    for incforquads = 0,(1890*2),140
+    do 
+        indexforquadslightspeed = indexforquadslightspeed + 1
+        lightspeedanimation[indexforquadslightspeed] = love.graphics.newQuad(incforquads, 0,60,60,lightspeediconspritesheet:getDimensions())
+    end
+    print(indexforquadslightspeed)
+    lightspeedanimation.image = lightspeedanimation[lightspeedanimationframe]
+    incrementor = 1
+    lightspeedanimation.duration = 1
+    lightspeedanimation.currentTime = 0
+--[[
+    indexforquads = 0
+    for yforquad=0,1980,110
+    do
+        
+        indexforquads = indexforquads+1
+        shipanimation[indexforquads] = love.graphics.newQuad(0,yforquad,340,110,shipspritesheet:getDimensions())
+    
+    end
+]]--
+end
+
+function animateLightSpeedIcon(dt)
+    
+    lightspeedanimationx = lightspeedanimationx -(multiplier/4)
+    lightspeedanimation.currentTime = lightspeedanimation.currentTime + dt
+    if lightspeedanimation.currentTime >= lightspeedanimation.duration then
+        lightspeedanimation.currentTime = lightspeedanimation.currentTime - lightspeedanimation.duration
+    end
+
+    lightspeedanimationframe = math.floor(lightspeedanimation.currentTime / lightspeedanimation.duration * 24) + 1
+    
+
+    lightspeedanimation.image = lightspeedanimation[lightspeedanimationframe]
+    
+    checkIfLightSpeedIconClipped(dt)
+    --[[
+    if(lightspeedanimationframe < 23)
+    then
+        
+        lightspeedanimationframe = lightspeedanimationframe + incrementor
+        lightspeedanimation.image = lightspeedanimation[lightspeedanimationframe]
+    else
+       lightspeedanimationframe = 1
+    end
+    ]]--
+end
+
+
+function checkIfLightSpeedIconClipped(dt)
+
+    if(lightspeedanimationx < -30)
+    then
+        math.randomseed(dt)
+        lightspeedanimationx = math.random(896, 1792-30)
+        lightspeedanimationy = math.random(30,414-30)
+    end
+    
+end
 
 function getScaledX(x)
     x = WindowScaleFactorX * x
@@ -842,7 +912,9 @@ function love.draw()
       
         love.graphics.draw(asteroid4,asteroid4x,asteroid4y,0,30/(30*4),30/(30*4))
         
-        love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy,0,0.52,0.5)
+        love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy,0,0.5,0.5)
+
+        love.graphics.draw(lightspeediconspritesheet, lightspeedanimation[lightspeedanimationframe],lightspeedanimationx,lightspeedanimationy,0,0.5,0.5)
         
         love.graphics.circle('fill',shipx,getReverseScaledY(shipexpectedy),10)
        
@@ -854,6 +926,8 @@ function love.draw()
             love.graphics.draw(punch,punchx,punchy,0,0.5,0.5)
             --love.graphics.draw(achievement.image,punchx+50+10,punchy,0,95/(95*4),95/(95*4))
         end
+
+    --[[  
  
            
         love.graphics.rectangle("line",shipx+110,shipy+8,50,22-8)
@@ -865,7 +939,7 @@ function love.draw()
         love.graphics.rectangle("line",asteroid2x,asteroid2y,asteroid0width,asteroid0height)
         love.graphics.rectangle("line",asteroid3x,asteroid3y,asteroid0width,asteroid0height)
         love.graphics.rectangle("line",asteroid4x,asteroid4y,asteroid0width,asteroid0height)
-    --[[  
+    
         checkCollisionBetweenTwoObjects(shipx+100,shipy+2,70,22,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
         checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
         checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
