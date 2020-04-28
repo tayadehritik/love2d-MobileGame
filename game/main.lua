@@ -24,6 +24,8 @@ asteroid0 = love.graphics.newImage("assets/layers/asteroid(0).png")
 
 lightspeediconspritesheet = love.graphics.newImage("assets/layers/lightspeediconanimationspritesheet.png")
 
+lightspeediconbreaks = love.graphics.newImage("assets/layers/lightspeediconbreaks.png")
+
 ach1 = love.graphics.newImage("assets/layers/ach1.png")
 ach2 = love.graphics.newImage("assets/layers/ach2.png")
 ach3 = love.graphics.newImage("assets/layers/ach3.png")
@@ -81,11 +83,11 @@ fps = 0
 
 function love.load()
 
-    love.window.setMode(896,414,{vsync = true, fullscreen = false, resizable = true})
+    love.window.setMode(896,414,{vsync = true, fullscreen = true, resizable = true})
     love.graphics.setColor(255,255,255)
     love.graphics.setFont(font)
 
-    --love.window.setFullscreen(true)
+    love.window.setFullscreen(true)
     local img = love.graphics.newImage('assets/layers/particle.png')
 
    
@@ -137,7 +139,7 @@ function love.update(dt)
     width = love.graphics.getDimensions()
     
     psystem:update(dt)
-    
+    lightsystem:update(dt)
 
     if(gamestate == "startmenu")
     then
@@ -289,6 +291,8 @@ function love.update(dt)
         
         animateLightSpeedIcon(dt)
         checkCollisionBetweenShipAndLightSpeedIcon(dt)
+
+
 
 
 
@@ -802,7 +806,7 @@ function resetGame()
     lightSpeedAnimationIconActive = true
 
     setupLightSpeedAnimation()
-
+    setupLightSpeedIconBreakingParticleSystem()
 end
 
 
@@ -874,8 +878,23 @@ function animateLightSpeedIcon(dt)
     
 
     lightspeedanimation.image = lightspeedanimation[lightspeedanimationframe]
+
     
     checkIfLightSpeedIconClipped(dt)
+
+    if(lightsystemactive == true)
+    then
+        lightsystemcurrenttime = lightsystemcurrenttime + dt
+        lightsystemx = lightsystemx - (multiplier/4)
+        if(lightsystemcurrenttime > 1)
+        then
+            lightsystem:stop()
+            lightsystemcurrenttime = 0
+            lightsystemactive = false
+        end
+
+    end
+
     --[[
     if(lightspeedanimationframe < 23)
     then
@@ -893,11 +912,18 @@ function checkCollisionBetweenShipAndLightSpeedIcon(dt)
 
     if(returnCollisionBetweenTwoObjects(shipx,shipy,shipwidth,shipheight,lightspeedanimationx,lightspeedanimationy,30,30) == true)
     then
+        lightsystem:start()
+        lightsystemactive = true
+        lightsystemx = lightspeedanimationx + 15
+        lightsystemy = lightspeedanimationy + 15    
+        
         lightSpeedGameIconActive = true
         lightSpeedAnimationIconActive = false
         math.randomseed(dt)
         lightspeedanimationx = 896+30
         lightspeedanimationy = math.random(30,414-30)
+        
+
     end
 
 
@@ -934,6 +960,27 @@ end
 function getReverseScaledY(y)
     y = y / WindowScaleFactorY 
     return y
+end
+
+function setupLightSpeedIconBreakingParticleSystem()
+
+    lightsystemStatus = false
+
+    lightsystem = love.graphics.newParticleSystem(lightspeediconbreaks, 32)
+    lightsystem:setParticleLifetime(1) -- Particles live at least 2s and at most 5s. 
+    lightsystem:setSpeed(-100,100)
+    
+	lightsystem:setEmissionRate(200)    
+	lightsystem:setSizeVariation(1)
+	lightsystem:setLinearAcceleration(-50, -100, 50, 100) -- Random movement in all directions.
+	lightsystem:setColors(1, 1, 1, 1, 1, 1, 1, 0) -- Fade to transparency.
+    --lightsystem:setRadialAcceleration(-590,590)
+    lightsystem:stop()
+    lightsystemx = 0
+    lightsystemy = 0
+    lightsystemcurrenttime = 0
+    lightsystemactive = false
+
 end
 
 
@@ -1011,7 +1058,7 @@ function love.draw()
             --love.graphics.draw(achievement.image,punchx+50+10,punchy,0,95/(95*4),95/(95*4))
         end
 
-     
+        love.graphics.draw(lightsystem,lightsystemx,lightsystemy)
  
        --[[     
         love.graphics.rectangle("line",shipx+110,shipy+8,50,22-8)
