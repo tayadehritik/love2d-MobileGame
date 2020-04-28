@@ -90,7 +90,7 @@ function love.load()
 
    
 	psystem = love.graphics.newParticleSystem(img, 32)
-	psystem:setParticleLifetime(2, 5) -- Particles live at least 2s and at most 5s.
+	psystem:setParticleLifetime(2, 5) -- Particles live at least 2s and at most 5s. 
 	psystem:setEmissionRate(5)
 	psystem:setSizeVariation(1)
 	psystem:setLinearAcceleration(0, -20, 20, 20) -- Random movement in all directions.
@@ -211,7 +211,7 @@ function love.update(dt)
             checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
             checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
             checkCollisionBetweenTwoObjects(shipx+24,shipy+13,70,15,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
-
+            
         end
 
 
@@ -243,7 +243,7 @@ function love.update(dt)
 
             
                 shipy = (lerppos((shipy),getReverseScaledY(shipexpectedy),0.1))
-                print(WindowHeight)
+                
                 if(getScaledY(shipy+shipheight) > WindowHeight)
                 then
                       shipy = getReverseScaledY(WindowHeight) - shipheight
@@ -288,9 +288,26 @@ function love.update(dt)
        
         
         animateLightSpeedIcon(dt)
+        checkCollisionBetweenShipAndLightSpeedIcon(dt)
+
+
+
+
         
-
-
+    elseif(gamestate == "pause")
+    then
+        backgroundlayer0x = backgroundlayer0x - (multiplier/9)
+        planet1x = planet1x - (multiplier/9)
+        planet1greenx = planet1greenx - (multiplier/9)
+        backgroundlayer1x = backgroundlayer1x - (multiplier/8)
+        planet2x = planet2x -(multiplier/8)
+        planet2bluex = planet2bluex - (multiplier/8)
+        backgroundlayer2x = backgroundlayer2x - (multiplier/6)
+        backgroundlayer3x = backgroundlayer3x - (multiplier/5)
+        backgroundlayer5x = backgroundlayer5x - (multiplier/4)
+        checkIfPlanetsClipped(dt)
+        checkIfBackgroundImagesClipped()
+    
     end
 
 end
@@ -599,7 +616,7 @@ function checkIfClickedOnPunch(x,y)
     then
        
 
-        if(activateLightSpeed == false and gamestate ~= "startmenu" and deactivateLightSpeed == false)
+        if(activateLightSpeed == false and gamestate ~= "startmenu" and deactivateLightSpeed == false and lightSpeedGameIconActive == true)
         then
             activateLightSpeed = true
             multiplier = multiplier + 40
@@ -638,6 +655,8 @@ function whenDeactivatingLightSpeed(dt)
     if(deactivateLightSpeedDuration >= 3)
     then
         deactivateLightSpeed = false
+        lightSpeedGameIconActive = false
+        
         deactivateLightSpeedDuration = 0
     end
     
@@ -660,6 +679,22 @@ function checkCollisionBetweenTwoObjects(object1X,object1Y,object1Width,object1H
 
 
 end
+
+function returnCollisionBetweenTwoObjects(object1X,object1Y,object1Width,object1Height,object2X,object2Y,object2Width,object2Height)
+
+    if(getScaledX(object1X) < getScaledX(object2X+object2Width) and
+       getScaledX((object1X)+object1Width) > getScaledX(object2X) and
+        getScaledY(object1Y) < getScaledY(object2Y+object2Height) and
+        getScaledY((object1Y) + object1Height) > getScaledY(object2Y))
+    then
+        return true
+    else
+        return false
+    end
+
+
+end
+
 
 function resetGame()
     backgroundlayer0x = 0
@@ -763,6 +798,9 @@ function resetGame()
 
     alltouches = 0
 
+    lightSpeedGameIconActive = false
+    lightSpeedAnimationIconActive = true
+
     setupLightSpeedAnimation()
 
 end
@@ -780,7 +818,7 @@ function setupLightSpeedAnimation()
         indexforquadslightspeed = indexforquadslightspeed + 1
         lightspeedanimation[indexforquadslightspeed] = love.graphics.newQuad(incforquads, 0,60,60,lightspeediconspritesheet:getDimensions())
     end
-    print(indexforquadslightspeed)
+    
     lightspeedanimation.image = lightspeedanimation[lightspeedanimationframe]
     incrementor = 1
     lightspeedanimation.duration = 1
@@ -797,9 +835,36 @@ function setupLightSpeedAnimation()
 ]]--
 end
 
+
+function returnIfCurrentlyInLightSpeedOrDeactivatingLightSpeed()
+
+    if(activateLightSpeed == false and gamestate ~= "startmenu" and deactivateLightSpeed == false)
+    then
+        return false
+    else
+        return true
+    end
+
+end
+
+
 function animateLightSpeedIcon(dt)
+
+    if(math.floor(score+0.5) % 100 == 0 and returnIfCurrentlyInLightSpeedOrDeactivatingLightSpeed() == false)
+    then
+        love.graphics.print("here") 
+        lightSpeedAnimationIconActive = true
+    end
+
+
+    if(lightSpeedAnimationIconActive == true)
+    then
+
+        lightspeedanimationx = lightspeedanimationx -(multiplier/4)
+    end
     
-    lightspeedanimationx = lightspeedanimationx -(multiplier/4)
+
+
     lightspeedanimation.currentTime = lightspeedanimation.currentTime + dt
     if lightspeedanimation.currentTime >= lightspeedanimation.duration then
         lightspeedanimation.currentTime = lightspeedanimation.currentTime - lightspeedanimation.duration
@@ -823,14 +888,30 @@ function animateLightSpeedIcon(dt)
     ]]--
 end
 
+function checkCollisionBetweenShipAndLightSpeedIcon(dt)
+   
+
+    if(returnCollisionBetweenTwoObjects(shipx,shipy,shipwidth,shipheight,lightspeedanimationx,lightspeedanimationy,30,30) == true)
+    then
+        lightSpeedGameIconActive = true
+        lightSpeedAnimationIconActive = false
+        math.randomseed(dt)
+        lightspeedanimationx = 896+30
+        lightspeedanimationy = math.random(30,414-30)
+    end
+
+
+end
+
 
 function checkIfLightSpeedIconClipped(dt)
 
     if(lightspeedanimationx < -30)
     then
         math.randomseed(dt)
-        lightspeedanimationx = math.random(896, 1792-30)
+        lightspeedanimationx = 896+30
         lightspeedanimationy = math.random(30,414-30)
+        lightSpeedAnimationIconActive = false
     end
     
 end
@@ -914,32 +995,39 @@ function love.draw()
         
         love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy,0,0.5,0.5)
 
-        love.graphics.draw(lightspeediconspritesheet, lightspeedanimation[lightspeedanimationframe],lightspeedanimationx,lightspeedanimationy,0,0.5,0.5)
-        
+
+        if(lightSpeedAnimationIconActive == true)
+        then
+            love.graphics.draw(lightspeediconspritesheet, lightspeedanimation[lightspeedanimationframe],lightspeedanimationx,lightspeedanimationy,0,0.5,0.5)
+        end
         love.graphics.circle('fill',shipx,getReverseScaledY(shipexpectedy),10)
        
         --love.graphics.draw(up,upx,upy,0,0.5,0.5)
         --love.graphics.draw(down,downx,downy,0,0.5,0.5)
-        if(activateLightSpeed == false and deactivateLightSpeed == false)
+        if(activateLightSpeed == false and deactivateLightSpeed == false and lightSpeedGameIconActive == true)
         then
             
             love.graphics.draw(punch,punchx,punchy,0,0.5,0.5)
             --love.graphics.draw(achievement.image,punchx+50+10,punchy,0,95/(95*4),95/(95*4))
         end
 
-    --[[  
+     
  
-           
+       --[[     
         love.graphics.rectangle("line",shipx+110,shipy+8,50,22-8)
         love.graphics.rectangle("line",shipx+99,shipy+39,36,15)
         love.graphics.rectangle("line",shipx+48,shipy+39,49,6)
         love.graphics.rectangle("line",shipx+24,shipy+13,70,15)
         
+        love.graphics.rectangle("line",shipx,shipy,shipwidth,shipheight)
+
         love.graphics.rectangle("line",asteroid1x,asteroid1y,asteroid0width,asteroid0height)
         love.graphics.rectangle("line",asteroid2x,asteroid2y,asteroid0width,asteroid0height)
         love.graphics.rectangle("line",asteroid3x,asteroid3y,asteroid0width,asteroid0height)
         love.graphics.rectangle("line",asteroid4x,asteroid4y,asteroid0width,asteroid0height)
     
+        love.graphics.rectangle("line",lightspeedanimationx,lightspeedanimationy,30,30)
+
         checkCollisionBetweenTwoObjects(shipx+100,shipy+2,70,22,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
         checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
         checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid2x,asteroid2y,asteroid0width,asteroid0height);
