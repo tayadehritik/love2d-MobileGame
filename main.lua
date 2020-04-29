@@ -213,7 +213,7 @@ function love.update(dt)
             checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
             checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
             checkCollisionBetweenTwoObjects(shipx+24,shipy+13,70,15,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
-            ]]--
+          ]]--
         end
 
 
@@ -882,18 +882,47 @@ function animateLightSpeedIcon(dt)
     
     checkIfLightSpeedIconClipped(dt)
 
+    lightsystemx = lightsystemx - (multiplier/4)
+
     if(lightsystemactive == true)
     then
         lightsystemcurrenttime = lightsystemcurrenttime + dt
-        lightsystemx = lightsystemx - (multiplier/4)
-        if(lightsystemcurrenttime > 1)
+        
+        offsetx = offsetx - (multiplier/4)
+        lightsystem:setPosition(offsetx,0)
+        if(yminlinearAcceleration < 0)
         then
-            lightsystem:stop()
-            lightsystemcurrenttime = 0
-            lightsystemactive = false
+            yminlinearAcceleration = yminlinearAcceleration + 4
+        end
+        if(ymaxlinearAcceleartion > 0 )
+        then
+            ymaxlinearAcceleartion = ymaxlinearAcceleartion - 4
         end
 
+        if(xmaxlinearAcceleration > 0)
+        then
+            xmaxlinearAcceleration = xmaxlinearAcceleration - 10
+            xminlinearAcceleration = xminlinearAcceleration + 10
+        
+        else
+            lightsystem:stop()
+           
+            lightsystemactive =  false
+
+        end
+        lightsystem:setLinearAcceleration(xminlinearAcceleration, yminlinearAcceleration,xmaxlinearAcceleration,ymaxlinearAcceleartion) 
+
+
     end
+
+
+    
+    
+    
+    
+
+
+   
 
     --[[
     if(lightspeedanimationframe < 23)
@@ -912,6 +941,12 @@ function checkCollisionBetweenShipAndLightSpeedIcon(dt)
 
     if(returnCollisionBetweenTwoObjects(shipx,shipy,shipwidth,shipheight,lightspeedanimationx,lightspeedanimationy,30,30) == true)
     then
+         xminlinearAcceleration = -50
+            yminlinearAcceleration = -100
+            xmaxlinearAcceleration = 50
+            ymaxlinearAcceleartion = 100
+            offsetx = 1
+            offsety = 1
         lightsystem:start()
         lightsystemactive = true
         lightsystemx = lightspeedanimationx + 15
@@ -940,6 +975,11 @@ function checkIfLightSpeedIconClipped(dt)
         lightSpeedAnimationIconActive = false
     end
     
+    if(lightsystemx < 0)
+    then
+        lightsystemx = lightspeedanimationx + 15
+    end
+
 end
 
 function getScaledX(x)
@@ -966,22 +1006,37 @@ function setupLightSpeedIconBreakingParticleSystem()
 
     lightsystemStatus = false
 
-    lightsystem = love.graphics.newParticleSystem(lightspeediconbreaks, 32)
+    lightsystem = love.graphics.newParticleSystem(lightspeediconbreaks, 100)
     lightsystem:setParticleLifetime(1) -- Particles live at least 2s and at most 5s. 
-    lightsystem:setSpeed(-100,100)
+    lightsystem:setSpeed(1)
     
-	lightsystem:setEmissionRate(200)    
-	lightsystem:setSizeVariation(1)
-	lightsystem:setLinearAcceleration(-50, -100, 50, 100) -- Random movement in all directions.
+	lightsystem:setEmissionRate(100)    
+    lightsystem:setSizeVariation(1)
+    
+    xminlinearAcceleration = -50
+    yminlinearAcceleration = -100
+    xmaxlinearAcceleration = 50
+    ymaxlinearAcceleartion = 100
+    --lightsystem:setRadialAcceleration(10,10)
+    lightsystem:setLinearAcceleration(xminlinearAcceleration,yminlinearAcceleration,xmaxlinearAcceleration,ymaxlinearAcceleartion)  -- Random movement in all directions.
 	lightsystem:setColors(1, 1, 1, 1, 1, 1, 1, 0) -- Fade to transparency.
     --lightsystem:setRadialAcceleration(-590,590)
     lightsystem:stop()
     lightsystemx = 0
     lightsystemy = 0
+
+    --[[
+    lightsystem:start()
+    lightsystemx = 896/2
+    lightsystemy  = 414/2
+    ]]--
     lightsystemcurrenttime = 0
     lightsystemactive = false
-
+    offsetx = 1
+    offsety = 1
 end
+
+
 
 
 function love.draw()
