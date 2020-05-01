@@ -188,7 +188,7 @@ function love.update(dt)
 
         if(activateLightSpeed == false)
         then
-            --[[
+            
             checkCollisionBetweenTwoObjects(shipx+110,shipy+8,50,22-8,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
             checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
             checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
@@ -213,7 +213,7 @@ function love.update(dt)
             checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
             checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
             checkCollisionBetweenTwoObjects(shipx+24,shipy+13,70,15,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
-          ]]--
+          
         end
 
 
@@ -887,31 +887,14 @@ function animateLightSpeedIcon(dt)
     if(lightsystemactive == true)
     then
         lightsystemcurrenttime = lightsystemcurrenttime + dt
-        
-        offsetx = offsetx - (multiplier/4)
-        lightsystem:setPosition(offsetx,0)
-        if(yminlinearAcceleration < 0)
+        xmaxlinearAcceleration = xmaxlinearAcceleration + 10
+        lightsystem:setLinearAcceleration(xminlinearAcceleration,yminlinearAcceleration,xmaxlinearAcceleration,ymaxlinearAcceleartion)
+        if(xmaxlinearAcceleration >= 350)
         then
-            yminlinearAcceleration = yminlinearAcceleration + 4
-        end
-        if(ymaxlinearAcceleartion > 0 )
-        then
-            ymaxlinearAcceleartion = ymaxlinearAcceleartion - 4
-        end
-
-        if(xmaxlinearAcceleration > 0)
-        then
-            xmaxlinearAcceleration = xmaxlinearAcceleration - 10
-            xminlinearAcceleration = xminlinearAcceleration + 10
-        
-        else
             lightsystem:stop()
-           
-            lightsystemactive =  false
-
+            xmaxlinearAcceleration = 1
+            lightsystemactive = false
         end
-        lightsystem:setLinearAcceleration(xminlinearAcceleration, yminlinearAcceleration,xmaxlinearAcceleration,ymaxlinearAcceleartion) 
-
 
     end
 
@@ -941,12 +924,7 @@ function checkCollisionBetweenShipAndLightSpeedIcon(dt)
 
     if(returnCollisionBetweenTwoObjects(shipx,shipy,shipwidth,shipheight,lightspeedanimationx,lightspeedanimationy,30,30) == true)
     then
-         xminlinearAcceleration = -50
-            yminlinearAcceleration = -100
-            xmaxlinearAcceleration = 50
-            ymaxlinearAcceleartion = 100
-            offsetx = 1
-            offsety = 1
+         
         lightsystem:start()
         lightsystemactive = true
         lightsystemx = lightspeedanimationx + 15
@@ -1006,30 +984,34 @@ function setupLightSpeedIconBreakingParticleSystem()
 
     lightsystemStatus = false
 
-    lightsystem = love.graphics.newParticleSystem(lightspeediconbreaks, 100)
+    lightsystem = love.graphics.newParticleSystem(lightspeediconbreaks, 500)
     lightsystem:setParticleLifetime(1) -- Particles live at least 2s and at most 5s. 
     lightsystem:setSpeed(1)
     
-	lightsystem:setEmissionRate(100)    
-    lightsystem:setSizeVariation(1)
+	lightsystem:setEmissionRate(500)    
     
-    xminlinearAcceleration = -50
-    yminlinearAcceleration = -100
-    xmaxlinearAcceleration = 50
-    ymaxlinearAcceleartion = 100
-    --lightsystem:setRadialAcceleration(10,10)
+    lightsystem:setSizes(0.1,0.1,0.2,0.1,0.3)
+    xminlinearAcceleration = 0
+    yminlinearAcceleration = 0
+    xmaxlinearAcceleration = 1
+    ymaxlinearAcceleartion = 0
+
+    lightsystemRadialAcceleration = 1
+
+    lightsystem:setEmissionArea('borderellipse', 10, 10, 180,true)
+    --lightsystem:setRadialAcceleration(0,lightsystemRadialAcceleration)
     lightsystem:setLinearAcceleration(xminlinearAcceleration,yminlinearAcceleration,xmaxlinearAcceleration,ymaxlinearAcceleartion)  -- Random movement in all directions.
 	lightsystem:setColors(1, 1, 1, 1, 1, 1, 1, 0) -- Fade to transparency.
     --lightsystem:setRadialAcceleration(-590,590)
     lightsystem:stop()
     lightsystemx = 0
     lightsystemy = 0
-
-    --[[
+      
+    --[[   
     lightsystem:start()
     lightsystemx = 896/2
     lightsystemy  = 414/2
-    ]]--
+        ]]-- 
     lightsystemcurrenttime = 0
     lightsystemactive = false
     offsetx = 1
@@ -1094,7 +1076,7 @@ function love.draw()
         love.graphics.draw(asteroid3,asteroid3x,asteroid3y,0,30/(30*4),30/(30*4))
       
         love.graphics.draw(asteroid4,asteroid4x,asteroid4y,0,30/(30*4),30/(30*4))
-        
+        love.graphics.draw(lightsystem,lightsystemx,lightsystemy)
         love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy,0,0.5,0.5)
 
 
@@ -1113,7 +1095,7 @@ function love.draw()
             --love.graphics.draw(achievement.image,punchx+50+10,punchy,0,95/(95*4),95/(95*4))
         end
 
-        love.graphics.draw(lightsystem,lightsystemx,lightsystemy)
+        
  
        --[[     
         love.graphics.rectangle("line",shipx+110,shipy+8,50,22-8)
