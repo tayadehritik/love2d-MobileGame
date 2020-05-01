@@ -123,15 +123,102 @@ function love.load()
     shipthrusters = love.audio.newSource("assets/sounds/ship_thrusters.mp3","static")
 
     shipthrusters:setLooping(true)
+
+    loadandSetupOlivine()
+
     resetGame()
     
 
 end
 
 width = 0
+olivineanimation1 = {}
+olivineanimation2 = {}
+olivineanimation3 = {}
+olivineanimation4 = {}
+
+function olivineanimationcreate (x,y)
+    local animation = {}
+    
+    animation.frame = 0
+    animation.width = 16
+    animation.height = 28
+    animation.x = x--math.random(896,1792-olivineanimation.width)
+    animation.y = y--math.random(0,414-olivineanimation.height)
+    animation.scaleFactorX = 79 / (79 * 5)
+    animation.scaleFactorY = 139 / (139 * 5) 
+    animation.currentTime = 0
+    animation.duration = 1
+    for i=0,12,1
+    do 
+        animation[i] = love.graphics.newImage("assets/ahieveme/ahieveme-olivine-"..i..".png")
+    end
+
+    animation.image = animation[animation.frame]
+
+    return animation
+end
+
+function olivineanimationupdate(localolivine,dt)
+
+    localolivine.currentTime = localolivine.currentTime + dt
+
+    if(localolivine.currentTime > localolivine.duration)
+    then
+        localolivine.currentTime = localolivine.currentTime - localolivine.duration
+    end
+
+    localolivine.frame = math.floor(localolivine.currentTime / localolivine.duration * 12) 
+    
+
+    localolivine.image = localolivine[localolivine.frame]
+
+
+    localolivine.x =  localolivine.x - (multiplier/4)
+
+
+    if(localolivine.x < -16)
+    then
+        math.randomseed(dt)
+        localolivine.x = math.random(896,1792)
+        localolivine.y = math.random(0,414-28)
+    end
+
+
+end
+
+
+function loadandSetupOlivine()
+
+    olivineanimation1 = olivineanimationcreate(896/2,414/2)
+    olivineanimation2 = olivineanimationcreate(896/3,414/2)
+end
 
 
 
+function playOlivineAnimation(dt, temp2Olivine)
+
+   
+
+end
+
+
+
+function updateOlivine(dt)
+
+   olivineanimationupdate(olivineanimation1,dt)
+   olivineanimationupdate(olivineanimation2,dt)
+
+end
+
+
+
+
+function resetOlivine()
+
+
+   
+end
 
 
 function love.update(dt)
@@ -291,6 +378,7 @@ function love.update(dt)
         
         animateLightSpeedIcon(dt)
         checkCollisionBetweenShipAndLightSpeedIcon(dt)
+        updateOlivine(dt)
 
 
 
@@ -807,6 +895,9 @@ function resetGame()
 
     setupLightSpeedAnimation()
     setupLightSpeedIconBreakingParticleSystem()
+
+    resetOlivine()
+
 end
 
 
@@ -951,13 +1042,10 @@ function checkIfLightSpeedIconClipped(dt)
         lightspeedanimationx = 896+30
         lightspeedanimationy = math.random(30,414-30)
         lightSpeedAnimationIconActive = false
+        lightsystemx = lightspeedanimationx
     end
     
-    if(lightsystemx < 0)
-    then
-        lightsystemx = lightspeedanimationx + 15
-    end
-
+    
 end
 
 function getScaledX(x)
@@ -1077,6 +1165,12 @@ function love.draw()
       
         love.graphics.draw(asteroid4,asteroid4x,asteroid4y,0,30/(30*4),30/(30*4))
         love.graphics.draw(lightsystem,lightsystemx,lightsystemy)
+
+        --love.graphics.draw(olivineanimation.image,olivineanimation.x,olivineanimation.y,0,olivineanimation.scaleFactorX,olivineanimation.scaleFactorY)
+
+        love.graphics.draw(olivineanimation1.image,olivineanimation1.x,olivineanimation1.y,0,olivineanimation1.scaleFactorX,olivineanimation1.scaleFactorY)
+        love.graphics.draw(olivineanimation2.image,olivineanimation2.x,olivineanimation2.y,0,olivineanimation2.scaleFactorX,olivineanimation2.scaleFactorY)
+
         love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy,0,0.5,0.5)
 
 

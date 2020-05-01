@@ -132,19 +132,19 @@ function love.load()
 end
 
 width = 0
+olivineanimation1 = {}
+olivineanimation2 = {}
+olivineanimation3 = {}
+olivineanimation4 = {}
 
-olivineanimation = {}
-olivineanimation._index = olivineanimation
-
-function olivineanimation:create (x,y)
+function olivineanimationcreate (x,y)
     local animation = {}
-    setmetatable(animation,olivineanimation)
     
     animation.frame = 0
     animation.width = 16
     animation.height = 28
-    animation.x = 896/2--math.random(896,1792-olivineanimation.width)
-    animation.y = 414/2--math.random(0,414-olivineanimation.height)
+    animation.x = x--math.random(896,1792-olivineanimation.width)
+    animation.y = y--math.random(0,414-olivineanimation.height)
     animation.scaleFactorX = 79 / (79 * 5)
     animation.scaleFactorY = 139 / (139 * 5) 
     animation.currentTime = 0
@@ -159,32 +159,41 @@ function olivineanimation:create (x,y)
     return animation
 end
 
-function olivineanimation:update(dt,val1)
+function olivineanimationupdate(localolivine,dt)
 
-    self.x = self.x - (val1/4)
+    localolivine.currentTime = localolivine.currentTime + dt
 
-    self:animate(dt)
+    if(localolivine.currentTime > localolivine.duration)
+    then
+        localolivine.currentTime = localolivine.currentTime - localolivine.duration
+    end
+
+    localolivine.frame = math.floor(localolivine.currentTime / localolivine.duration * 12) 
+    
+
+    localolivine.image = localolivine[localolivine.frame]
+
+
+    localolivine.x =  localolivine.x - (multiplier/4)
+
+
+    if(localolivine.x < -16)
+    then
+        math.randomseed(dt)
+        localolivine.x = math.random(896,1792)
+        localolivine.y = math.random(0,414-28)
+    end
+
 
 end
 
-function olivineanimation:animate(dt)
-
-end
 
 function loadandSetupOlivine()
 
-   olivineanimation1 = olivineanimation:create{x=896,y=414/2}
-   olivineanimation2 = olivineanimation:create{x=896+16,y = 414/2}
-   olivineanimation1:update(dt,multiplier)
-   
-
+    olivineanimation1 = olivineanimationcreate(896/2,414/2)
+    olivineanimation2 = olivineanimationcreate(896/3,414/2)
 end
 
-
-function createOlivine(x,y)
-
-    
-end
 
 
 function playOlivineAnimation(dt, temp2Olivine)
@@ -197,9 +206,11 @@ end
 
 function updateOlivine(dt)
 
-   
+   olivineanimationupdate(olivineanimation1,dt)
+   olivineanimationupdate(olivineanimation2,dt)
 
 end
+
 
 
 
