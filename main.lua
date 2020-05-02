@@ -228,10 +228,33 @@ end
 
 function checkIfCrashedWithOlivine(localolivine,shipx,shipy,dt,localfadingparticlesystem)
 
+
+    if(localfadingparticlesystem.particleSystem:isActive() == true)
+    then
+        localfadingparticlesystem.currentTime = localfadingparticlesystem.currentTime + dt
+        
+        if(localfadingparticlesystem.currentTime >= localfadingparticlesystem.particleSystem:getParticleLifetime())
+        then
+            localfadingparticlesystem.particleSystem:pause()
+            localfadingparticlesystem.currentTime = 0
+        end
+
+    end
+
+    localfadingparticlesystem.x = localfadingparticlesystem.x - (multiplier/4)
+
+    if(localfadingparticlesystem.x < -10)
+    then
+        localfadingparticlesystem.particleSystem:pause()
+        localfadingparticlesystem.x = localolivine.x + (localolivine.width/2)
+        localfadingparticlesystem.y = localolivine.y + (localolivine.height/2)
+    end
+
     if(returnCollisionBetweenTwoObjects(localolivine.x,localolivine.y,localolivine.width,localolivine.height,shipx,shipy,shipwidth,shipheight) ==  true)
     then
-        print("crashed")
+        --  print("crashed")
         --playanimation
+        OlivinesCollected = OlivinesCollected + 1
         localfadingparticlesystem.x = localolivine.x + (localolivine.width/2)
         localfadingparticlesystem.y = localolivine.y + (localolivine.height/2)
         
@@ -240,8 +263,14 @@ function checkIfCrashedWithOlivine(localolivine,shipx,shipy,dt,localfadingpartic
         localolivine.x = math.random(896,1792)
         localolivine.y = math.random(0+localolivine.height,414-28-localolivine.height)
 
+        localfadingparticlesystem.particleSystem:setParticleLifetime(1)
+        localfadingparticlesystem.particleSystem:setEmissionRate(6)
+        --localfadingparticlesystem.particleSystem:setSpeed(100)
+        --localfadingparticlesystem.particleSystem:setRadialAcceleration(200)
+        localfadingparticlesystem.particleSystem:setEmissionArea('uniform',10,10,0,true)
         localfadingparticlesystem.particleSystem:start()
 
+        
         
 
     end
@@ -291,7 +320,7 @@ function createParticleSyste(image,buffer,x,y)
 	particleSystemTable.particleSystem:setSizeVariation(1)
 	particleSystemTable.particleSystem:setLinearAcceleration(-20, -20, 20, 20) -- Random movement in all directions.
 	particleSystemTable.particleSystem:setColors(1, 1, 1, 1, 1, 1, 1, 0) -- Fade to transparency.
-
+    particleSystemTable.currentTime = 0
     return particleSystemTable
 end
 
@@ -996,6 +1025,8 @@ function resetGame()
 
     resetOlivineAndItsParticleSystems()
 
+    OlivinesCollected = 0
+
 end
 
 
@@ -1228,7 +1259,7 @@ function love.draw()
     then
         love.graphics.draw(backgroundcolor,0,0,0,0.5,0.5);
         
-        love.graphics.print(math.floor(0.5+score),20,20,0,0.5,0.5)
+        love.graphics.print(math.floor(0.5+OlivinesCollected),20,20,0,0.5,0.5)
         
         
         love.graphics.scale(scalefactor, scalefactor)
@@ -1334,7 +1365,7 @@ function love.draw()
         love.graphics.draw(backgroundlayer1,backgroundlayer1x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer3,backgroundlayer3x,0,0,0.5,0.5);
         
-        love.graphics.print("SCORE : "..math.floor(0.5+score),scorex,scorey,0,0.5,0.5)
+        love.graphics.print("SCORE : "..math.floor(0.5+OlivinesCollected),scorex,scorey,0,0.5,0.5)
         love.graphics.draw(restartbutton,restartbuttonx,restartbuttony,0,0.5,0.5)
 
     end
