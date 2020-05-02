@@ -126,6 +126,8 @@ function love.load()
 
     loadandSetupOlivine()
 
+    loadAchievementParticleSystem()
+
     resetGame()
     
 
@@ -136,6 +138,11 @@ olivineanimation1 = {}
 olivineanimation2 = {}
 olivineanimation3 = {}
 olivineanimation4 = {}
+particleAchievementImage = love.graphics.newImage("assets/layers/particleachievement.png")
+
+particleAchievementSystem1 = {}
+particleAchievementSystem2 = {}
+
 
 function olivineanimationcreate (x,y)
     local animation = {}
@@ -181,7 +188,7 @@ function olivineanimationupdate(localolivine,dt)
     then
         math.randomseed(dt)
         localolivine.x = math.random(896,1792)
-        localolivine.y = math.random(0,414-28)
+        localolivine.y = math.random(0+localolivine.height,414-28-localolivine.height)
     end
 
 
@@ -208,18 +215,66 @@ function updateOlivine(dt)
 
    olivineanimationupdate(olivineanimation1,dt)
    olivineanimationupdate(olivineanimation2,dt)
-
-end
-
-
-
-
-function resetOlivine()
-
-
+   checkIfCrashedWithOlivine(olivineanimation1,shipx,shipy)
+   checkIfCrashedWithOlivine(olivineanimation2,shipx,shipy)
    
 end
 
+
+
+function checkIfCrashedWithOlivine(localolivine,shipx,shipy)
+
+end
+
+function resetOlivine()
+   
+end
+
+function loadAchievementParticleSystem()
+
+    particleAchievementSystem1 = createParticleSyste(particleAchievementImage,6,olivineanimation1.x+(olivineanimation1.width/2),olivineanimation1.y + (olivineanimation1.height/2))
+    particleAchievementSystem2 = createParticleSyste(particleAchievementImage,6,olivineanimation2.x+(olivineanimation2.width/2),olivineanimation2.y + (olivineanimation2.height/2))
+end
+
+
+function createParticleSyste(image,buffer,x,y)
+    local particleSystemTable = {}
+    particleSystemTable.x = x
+    particleSystemTable.y = y
+    particleSystemTable.particleSystem = love.graphics.newParticleSystem(image,buffer)
+
+    particleSystemTable.particleSystem:setSizes(0.3,0.2,0.5)
+
+    particleSystemTable.particleSystem:setParticleLifetime(2) -- Particles live at least 2s and at most 5s.
+    --particleSystemTable.particleSystem:setSpeed(3)
+    particleSystemTable.particleSystem:setEmissionRate(buffer)
+	particleSystemTable.particleSystem:setSizeVariation(1)
+	particleSystemTable.particleSystem:setLinearAcceleration(-20, -20, 20, 20) -- Random movement in all directions.
+	particleSystemTable.particleSystem:setColors(1, 1, 1, 1, 1, 1, 1, 0) -- Fade to transparency.
+
+    return particleSystemTable
+end
+
+function updateParticleSystem(dt)
+
+    updateIndividualParticleSystem(particleAchievementSystem1,dt)
+
+    particleAchievementSystem1.x = olivineanimation1.x + (olivineanimation1.width/2)
+    particleAchievementSystem1.y = olivineanimation1.y + (olivineanimation1.height/2)
+
+
+    updateIndividualParticleSystem(particleAchievementSystem2,dt)
+
+    particleAchievementSystem2.x = olivineanimation2.x + (olivineanimation2.width/2)
+    particleAchievementSystem2.y = olivineanimation2.y + (olivineanimation2.height/2)
+
+
+end
+
+
+function updateIndividualParticleSystem(tempParticleSystem,dt)
+    tempParticleSystem.particleSystem:update(dt)
+end
 
 function love.update(dt)
     
@@ -227,6 +282,7 @@ function love.update(dt)
     
     psystem:update(dt)
     lightsystem:update(dt)
+    
 
     if(gamestate == "startmenu")
     then
@@ -379,7 +435,7 @@ function love.update(dt)
         animateLightSpeedIcon(dt)
         checkCollisionBetweenShipAndLightSpeedIcon(dt)
         updateOlivine(dt)
-
+        updateParticleSystem(dt)
 
 
 
@@ -1168,8 +1224,14 @@ function love.draw()
 
         --love.graphics.draw(olivineanimation.image,olivineanimation.x,olivineanimation.y,0,olivineanimation.scaleFactorX,olivineanimation.scaleFactorY)
 
+        love.graphics.draw(particleAchievementSystem1.particleSystem,particleAchievementSystem1.x,particleAchievementSystem1.y)
+        love.graphics.draw(particleAchievementSystem2.particleSystem,particleAchievementSystem2.x,particleAchievementSystem2.y)
+
+
         love.graphics.draw(olivineanimation1.image,olivineanimation1.x,olivineanimation1.y,0,olivineanimation1.scaleFactorX,olivineanimation1.scaleFactorY)
         love.graphics.draw(olivineanimation2.image,olivineanimation2.x,olivineanimation2.y,0,olivineanimation2.scaleFactorX,olivineanimation2.scaleFactorY)
+
+        
 
         love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy,0,0.5,0.5)
 
@@ -1178,7 +1240,7 @@ function love.draw()
         then
             love.graphics.draw(lightspeediconspritesheet, lightspeedanimation[lightspeedanimationframe],lightspeedanimationx,lightspeedanimationy,0,0.5,0.5)
         end
-        love.graphics.circle('fill',shipx,getReverseScaledY(shipexpectedy),10)
+        --love.graphics.circle('fill',shipx,getReverseScaledY(shipexpectedy),10)
        
         --love.graphics.draw(up,upx,upy,0,0.5,0.5)
         --love.graphics.draw(down,downx,downy,0,0.5,0.5)
