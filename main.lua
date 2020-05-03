@@ -393,15 +393,27 @@ function love.update(dt)
         then
             achievement.x = achievement.x - (multiplier/4)
         end
-        asteroid1x = asteroid1x - (multiplier/2)
-        asteroid2x = asteroid2x - (multiplier/2)
-        asteroid3x = asteroid3x - (multiplier/2)
-        asteroid4x = asteroid4x - (multiplier/2)
+
+        if(asteroid1Status == true)
+        then
+            asteroid1x = asteroid1x - (multiplier/2)
+        end
+        if(asteroid2Status == true)
+        then
+            asteroid2x = asteroid2x - (multiplier/2)
+        end
+        if(asteroid3Status == true)
+        then
+            asteroid3x = asteroid3x - (multiplier/2)
+        end
+        if(asteroid4Status == true)
+        then
+            asteroid4x = asteroid4x - (multiplier/2)
+        end
         checkIfPlanetsClipped(dt)
         checkIfBackgroundImagesClipped()
 
-        if(activateLightSpeed == false)
-        then
+        
             
             checkCollisionBetweenTwoObjects(shipx+110,shipy+8,50,22-8,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
             checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
@@ -428,7 +440,7 @@ function love.update(dt)
             checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
             checkCollisionBetweenTwoObjects(shipx+24,shipy+13,70,15,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
           
-        end
+        
 
 
         score = score + dt
@@ -539,16 +551,21 @@ function checkAchievementUnlocked()
     if(math.floor(0.5+score) == 10)
     then
         achievement.status = true
+        asteroid2Status = true
+
+        
     end
 
     if(math.floor(0.5+score) == 100)
     then
         achievement.status = true
+        asteroid3Status = true
     end
 
     if(math.floor(0.5+score) == 500)
     then
         achievement.status = true
+        asteroid4Status = true
     end
 
     if(math.floor(0.5+score) == 1000)
@@ -599,29 +616,57 @@ function checkIfAsteroidClipped(dt)
     math.randomseed(dt)
     if(asteroid1x <= -50)
     then 
-        asteroid1x = math.random(896,1792)
-        asteroid1y = math.random(5,414-50)
+        
+        if(returnIfCurrentlyInLightSpeedOrDeactivatingLightSpeed() == true)
+        then
+            asteroid1x = -40
+
+        else
+
+            asteroid1x = math.random(896,896+100)
+            asteroid1y = math.random(5,414-50)
+        end
 
     end
 
     if(asteroid2x <= -50)
     then 
-        asteroid2x = math.random(896,1792)
-        asteroid2y = math.random(5,414-50)
+         
+        if(returnIfCurrentlyInLightSpeedOrDeactivatingLightSpeed() == true)
+        then
+            asteroid2x = -40
+
+        else
+
+            asteroid2x = math.random(896+200,896+300)
+            asteroid2y = math.random(5,414-50)
+        end
     end 
 
     if(asteroid3x <= -50)
     then 
-        asteroid3x = math.random(896,1792)
-        asteroid3y = math.random(5,414-50)
+        if(returnIfCurrentlyInLightSpeedOrDeactivatingLightSpeed() == true)
+        then
+            asteroid3x = -40
 
+        else
+
+            asteroid3x = math.random(896+300,896+400)
+            asteroid3y = math.random(5,414-50)
+        end
     end
 
     if(asteroid4x <= -50)
     then 
-        asteroid4x = math.random(896,1792)
-        asteroid4y = math.random(5,414-50)
+        if(returnIfCurrentlyInLightSpeedOrDeactivatingLightSpeed() == true)
+        then
+            asteroid4x = -40
 
+        else
+
+            asteroid4x = math.random(896+400,896+500)
+            asteroid4y = math.random(5,414-50)
+        end
     end
 
 
@@ -724,6 +769,7 @@ function love.keypressed( key, scancode, isrepeat )
         then
             activateLightSpeed = true
             multiplier = multiplier + 40
+            --shipexpectedy = (414/2)+shipheight
               
         end
     end
@@ -928,14 +974,20 @@ function resetGame()
     asteroid0height = 30
     
     gamestate = "startmenu"
-    asteroid1x = math.random(896+30,1792-30)
+    --asteroid1x = math.random(896+30,1792-30)
+    asteroid1x = -30
     asteroid1y = math.random(30,414-30)
-    asteroid2x = math.random(896+30,1792-30)
+    asteroid2x = -30
     asteroid2y = math.random(30,414-30)
-    asteroid3x = math.random(896+30,1792-30)
+    asteroid3x = -30
     asteroid3y = math.random(30,414-30)
-    asteroid4x = math.random(896+30,1792-30)
+    asteroid4x = -30
     asteroid4y = math.random(30,414-30)
+
+    asteroid1Status = true
+    asteroid2Status = false
+    asteroid3Status = false
+    asteroid4Status = false
 
     shipupdownspeed = 0
 
@@ -1032,7 +1084,7 @@ end
 
 function setupLightSpeedAnimation()
     lightspeedanimationx = math.random(896+30,1792-30)
-    lightspeedanimationy = math.random(30,414-30)
+    lightspeedanimationy = math.random(30,414-30-30)
     lightspeedanimation = {}
     lightspeedanimationframe = 1
     xforquads = 0
@@ -1108,10 +1160,10 @@ function animateLightSpeedIcon(dt)
     then
         lightsystemcurrenttime = lightsystemcurrenttime + dt
         xmaxlinearAcceleration = xmaxlinearAcceleration + 10
-        lightsystem:setLinearAcceleration(xminlinearAcceleration,yminlinearAcceleration,xmaxlinearAcceleration,ymaxlinearAcceleartion)
-        if(xmaxlinearAcceleration >= 350)
+        --lightsystem:setLinearAcceleration(xminlinearAcceleration,yminlinearAcceleration,xmaxlinearAcceleration,ymaxlinearAcceleartion)
+        if(xmaxlinearAcceleration >= 150)
         then
-            lightsystem:stop()
+            lightsystem:pause()
             xmaxlinearAcceleration = 1
             lightsystemactive = false
         end
@@ -1169,7 +1221,7 @@ function checkIfLightSpeedIconClipped(dt)
     then
         math.randomseed(dt)
         lightspeedanimationx = 896+30
-        lightspeedanimationy = math.random(30,414-30)
+        lightspeedanimationy = math.random(30,414-30-30)
         lightSpeedAnimationIconActive = false
         lightsystemx = lightspeedanimationx
     end
@@ -1201,13 +1253,13 @@ function setupLightSpeedIconBreakingParticleSystem()
 
     lightsystemStatus = false
 
-    lightsystem = love.graphics.newParticleSystem(lightspeediconbreaks, 500)
+    lightsystem = love.graphics.newParticleSystem(lightspeediconbreaks, 100)
     lightsystem:setParticleLifetime(1) -- Particles live at least 2s and at most 5s. 
     lightsystem:setSpeed(1)
     
-	lightsystem:setEmissionRate(500)    
+	lightsystem:setEmissionRate(100)    
     
-    lightsystem:setSizes(0.1,0.1,0.2,0.1,0.3)
+    lightsystem:setSizes(0.3,0.4,0.2,0.4,0.4)
     xminlinearAcceleration = 0
     yminlinearAcceleration = 0
     xmaxlinearAcceleration = 1
@@ -1215,9 +1267,9 @@ function setupLightSpeedIconBreakingParticleSystem()
 
     lightsystemRadialAcceleration = 1
 
-    lightsystem:setEmissionArea('borderellipse', 10, 10, 180,true)
+    lightsystem:setEmissionArea('uniform', 10, 10, 0,true)
     --lightsystem:setRadialAcceleration(0,lightsystemRadialAcceleration)
-    lightsystem:setLinearAcceleration(xminlinearAcceleration,yminlinearAcceleration,xmaxlinearAcceleration,ymaxlinearAcceleartion)  -- Random movement in all directions.
+    --lightsystem:setLinearAcceleration(xminlinearAcceleration,yminlinearAcceleration,xmaxlinearAcceleration,ymaxlinearAcceleartion)  -- Random movement in all directions.
 	lightsystem:setColors(1, 1, 1, 1, 1, 1, 1, 0) -- Fade to transparency.
     --lightsystem:setRadialAcceleration(-590,590)
     lightsystem:stop()
@@ -1259,7 +1311,7 @@ function love.draw()
     then
         love.graphics.draw(backgroundcolor,0,0,0,0.5,0.5);
         
-        love.graphics.print(math.floor(0.5+OlivinesCollected),20,20,0,0.5,0.5)
+        love.graphics.print(OlivinesCollected,20,20,0,0.5,0.5)
         
         
         love.graphics.scale(scalefactor, scalefactor)
@@ -1280,23 +1332,6 @@ function love.draw()
         --love.graphics.print(backgroundlayer1x,0,0)
 
         
-        love.graphics.draw(psystem,asteroid1x+(asteroid0width/2), asteroid1y+(asteroid0height/2))
-        love.graphics.draw(psystem,asteroid2x+(asteroid0width/2), asteroid2y+(asteroid0height/2))
-        love.graphics.draw(psystem,asteroid4x+(asteroid0width/2), asteroid4y+(asteroid0height/2))
-        love.graphics.draw(psystem,asteroid3x+(asteroid0width/2), asteroid3y+(asteroid0height/2))
-
-        
-        love.graphics.draw(asteroid0,asteroid1x,asteroid1y,0,30/(30*4),30/(30*4))
-        
-        love.graphics.draw(asteroid1,asteroid2x,asteroid2y,0,30/(30*4),30/(30*4))
-        
-        love.graphics.draw(asteroid3,asteroid3x,asteroid3y,0,30/(30*4),30/(30*4))
-      
-        love.graphics.draw(asteroid4,asteroid4x,asteroid4y,0,30/(30*4),30/(30*4))
-        love.graphics.draw(lightsystem,lightsystemx,lightsystemy)
-
-        --love.graphics.draw(olivineanimation.image,olivineanimation.x,olivineanimation.y,0,olivineanimation.scaleFactorX,olivineanimation.scaleFactorY)
-
         love.graphics.draw(particleAchievementSystem1.particleSystem,particleAchievementSystem1.x,particleAchievementSystem1.y)
         love.graphics.draw(particleAchievementSystem2.particleSystem,particleAchievementSystem2.x,particleAchievementSystem2.y)
 
@@ -1315,13 +1350,34 @@ function love.draw()
             love.graphics.draw(fadingparticleAchievementSystem2.particleSystem,fadingparticleAchievementSystem2.x,fadingparticleAchievementSystem2.y)
         end
 
-        love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy,0,0.5,0.5)
-
-
         if(lightSpeedAnimationIconActive == true)
         then
             love.graphics.draw(lightspeediconspritesheet, lightspeedanimation[lightspeedanimationframe],lightspeedanimationx,lightspeedanimationy,0,0.5,0.5)
         end
+
+        love.graphics.draw(psystem,asteroid1x+(asteroid0width/2), asteroid1y+(asteroid0height/2))
+        love.graphics.draw(psystem,asteroid2x+(asteroid0width/2), asteroid2y+(asteroid0height/2))
+        love.graphics.draw(psystem,asteroid4x+(asteroid0width/2), asteroid4y+(asteroid0height/2))
+        love.graphics.draw(psystem,asteroid3x+(asteroid0width/2), asteroid3y+(asteroid0height/2))
+
+        
+        love.graphics.draw(asteroid0,asteroid1x,asteroid1y,0,30/(30*4),30/(30*4))
+        
+        love.graphics.draw(asteroid1,asteroid2x,asteroid2y,0,30/(30*4),30/(30*4))
+        
+        love.graphics.draw(asteroid3,asteroid3x,asteroid3y,0,30/(30*4),30/(30*4))
+      
+        love.graphics.draw(asteroid4,asteroid4x,asteroid4y,0,30/(30*4),30/(30*4))
+        love.graphics.draw(lightsystem,lightsystemx,lightsystemy)
+
+        --love.graphics.draw(olivineanimation.image,olivineanimation.x,olivineanimation.y,0,olivineanimation.scaleFactorX,olivineanimation.scaleFactorY)
+
+     
+
+        love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy,0,0.5,0.5)
+
+
+        
         --love.graphics.circle('fill',shipx,getReverseScaledY(shipexpectedy),10)
        
         --love.graphics.draw(up,upx,upy,0,0.5,0.5)
@@ -1365,7 +1421,7 @@ function love.draw()
         love.graphics.draw(backgroundlayer1,backgroundlayer1x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer3,backgroundlayer3x,0,0,0.5,0.5);
         
-        love.graphics.print("SCORE : "..math.floor(0.5+OlivinesCollected),scorex,scorey,0,0.5,0.5)
+        love.graphics.print("SCORE : "..OlivinesCollected,scorex,scorey,0,0.5,0.5)
         love.graphics.draw(restartbutton,restartbuttonx,restartbuttony,0,0.5,0.5)
 
     end
