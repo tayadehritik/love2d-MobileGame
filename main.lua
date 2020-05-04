@@ -538,6 +538,10 @@ function love.update(dt)
         backgroundlayer5x = backgroundlayer5x - (multiplier/4)
         checkIfPlanetsClipped(dt)
         checkIfBackgroundImagesClipped()
+        if(multiplier >= 10)
+        then
+            multiplier = multiplier - 1
+        end
     
     end
 
@@ -1427,3 +1431,4 @@ function love.draw()
     end
     
 end
+
