@@ -3,6 +3,8 @@
     DONE: scaling and zooming in
     TODO: lightspeed button
 ]]--
+require "animation/main"
+require "planet"
 backgroundlayer0 = love.graphics.newImage("assets/layers/backgroundlayer0(5).png")
 
 backgroundlayer1 = love.graphics.newImage("assets/layers/backgroundlayer1(8).png")
@@ -128,6 +130,7 @@ function love.load()
 
     loadAchievementParticleSystem()
 
+
     resetGame()
     
 
@@ -166,6 +169,8 @@ function olivineanimationcreate (x,y)
     end
 
     animation.image = animation[animation.frame]
+
+    planetLoad()
 
     return animation
 end
@@ -386,8 +391,7 @@ function love.update(dt)
         backgroundlayer3x = backgroundlayer3x - (multiplier/5)
         backgroundlayer5x = backgroundlayer5x - (multiplier/4)
 
-        checkAchievementUnlocked()
-        checkAchievementClipped(dt)
+        
 
         if(achievement.status == true)
         then
@@ -410,6 +414,30 @@ function love.update(dt)
         then
             asteroid4x = asteroid4x - (multiplier/2)
         end
+
+
+        if(math.floor(score) == 100)
+        then
+            asteroid2Status = true
+        end
+
+
+        if(math.floor(score) == 200)
+        then
+            asteroid3Status = true
+        end
+
+
+        if(math.floor(score) == 300)
+        then
+            asteroid4Status = true
+        end
+
+
+        
+        
+
+
         checkIfPlanetsClipped(dt)
         checkIfBackgroundImagesClipped()
 
@@ -499,9 +527,9 @@ function love.update(dt)
         end
 
 
-        if(score % 100 == 0)
+        if(math.floor(score) % 50 == 0)
         then
-            multiplier = multiplier + 1
+            multiplier = multiplier + 0.01
             shipupdownspeed = shipupdownspeed + 0.5
         end
 
@@ -519,7 +547,8 @@ function love.update(dt)
         checkCollisionBetweenShipAndLightSpeedIcon(dt)
         updateOlivine(dt)
         updateParticleSystem(dt)
-
+        planetUpdate(dt)
+        
 
 
 
@@ -550,60 +579,9 @@ end
 
 
 
-function checkAchievementUnlocked()
-
-    if(math.floor(0.5+score) == 10)
-    then
-        achievement.status = true
-        asteroid2Status = true
-
-        
-    end
-
-    if(math.floor(0.5+score) == 100)
-    then
-        achievement.status = true
-        asteroid3Status = true
-    end
-
-    if(math.floor(0.5+score) == 500)
-    then
-        achievement.status = true
-        asteroid4Status = true
-    end
-
-    if(math.floor(0.5+score) == 1000)
-    then
-        achievement.status = true
-    end
-
-    if(math.floor(0.5+score) == 2000)
-    then
-        achievement.status = true
-    end
-    
-    
-    
 
 
-end
 
-
-function checkAchievementClipped(dt)
-    math.randomseed(dt)
-    if(achievement.x <= -95)
-    then
-        achievement.x = 896+95
-        achievement.y = math.random(95,414-95)
-        if(achievementindex < maxindexforarchievement)
-        then
-            achievementindex = achievementindex + 1
-            achievement.image = achievementimages[achievementindex]
-        end
-        achievement.status = false   
-    end
-
-end
 
 function lerppos(initial_value, target_value, speed)
 	local result = (1-speed) * initial_value + speed*target_value
@@ -1050,12 +1028,9 @@ function resetGame()
     punchx = 20
     punchy = 414-50-20
 
-    achievementimages[1] = ach1
-    achievementimages[2] = ach2
-    achievementimages[3] = ach3
-    achievementimages[4] = ach4
-    achievementimages[5] = ach5
-    maxindexforarchievement = 5
+
+
+    
     achievementindex = 1
     achievement.x = 1792-95
     achievement.y = math.random(95,414-95)
@@ -1080,7 +1055,7 @@ function resetGame()
     setupLightSpeedIconBreakingParticleSystem()
 
     resetOlivineAndItsParticleSystems()
-
+    resetPlanets()
     OlivinesCollected = 0
 
 end
@@ -1332,9 +1307,7 @@ function love.draw()
         love.graphics.draw(backgroundlayer1,backgroundlayer1x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer3,backgroundlayer3x,0,0,0.5,0.5);
         
-        love.graphics.draw(achievement.image,achievement.x,achievement.y,0,0.5,0.5)
-        --love.graphics.print(backgroundlayer1x,0,0)
-
+        planetDraw()
         
         love.graphics.draw(particleAchievementSystem1.particleSystem,particleAchievementSystem1.x,particleAchievementSystem1.y)
         love.graphics.draw(particleAchievementSystem2.particleSystem,particleAchievementSystem2.x,particleAchievementSystem2.y)
@@ -1359,11 +1332,25 @@ function love.draw()
             love.graphics.draw(lightspeediconspritesheet, lightspeedanimation[lightspeedanimationframe],lightspeedanimationx,lightspeedanimationy,0,0.5,0.5)
         end
 
-        love.graphics.draw(psystem,asteroid1x+(asteroid0width/2), asteroid1y+(asteroid0height/2))
-        love.graphics.draw(psystem,asteroid2x+(asteroid0width/2), asteroid2y+(asteroid0height/2))
-        love.graphics.draw(psystem,asteroid4x+(asteroid0width/2), asteroid4y+(asteroid0height/2))
-        love.graphics.draw(psystem,asteroid3x+(asteroid0width/2), asteroid3y+(asteroid0height/2))
+        if(asteroid1Status == true)
+        then
+            love.graphics.draw(psystem,asteroid1x+(asteroid0width/2), asteroid1y+(asteroid0height/2))
+        end
 
+        if(asteroid2Status == true)
+        then
+            love.graphics.draw(psystem,asteroid2x+(asteroid0width/2), asteroid2y+(asteroid0height/2))
+        
+        end
+        if(asteroid4Status == true)
+        then
+            love.graphics.draw(psystem,asteroid4x+(asteroid0width/2), asteroid4y+(asteroid0height/2))
+        end
+
+        if(asteroid4Status == true)
+        then
+            love.graphics.draw(psystem,asteroid3x+(asteroid0width/2), asteroid3y+(asteroid0height/2))
+        end
         
         love.graphics.draw(asteroid0,asteroid1x,asteroid1y,0,30/(30*4),30/(30*4))
         
@@ -1375,8 +1362,8 @@ function love.draw()
         love.graphics.draw(lightsystem,lightsystemx,lightsystemy)
 
         --love.graphics.draw(olivineanimation.image,olivineanimation.x,olivineanimation.y,0,olivineanimation.scaleFactorX,olivineanimation.scaleFactorY)
-
-     
+        
+        
 
         love.graphics.draw(shipspritesheet,shipanimation.image,shipx,shipy,0,0.5,0.5)
 
@@ -1394,7 +1381,7 @@ function love.draw()
         end
 
         
- 
+        
        --[[     
         love.graphics.rectangle("line",shipx+110,shipy+8,50,22-8)
         love.graphics.rectangle("line",shipx+99,shipy+39,36,15)
@@ -1432,3 +1419,52 @@ function love.draw()
     
 end
 
+
+
+--[[
+function loadAnimation(foldername,imagename, frames, duration)
+
+    local animation = {}
+    animation.frame = 1
+    animation.currentTime = 0
+    animation.frames = frames
+    animation.duration = duration
+    animation.x = 0
+    animation.y = 0
+    animation.scaleX = 1
+    animation.scaleY = 1
+    animation.status = "pause"
+    for i=1,frames,1
+    do
+        animation[i] = love.graphics.newImage(foldername.."/"..imagename.." "..i.. ".png")
+    end
+    animation.image = animation[animation.frame]
+    return animation
+end
+
+
+
+function updateAniamtion(dt, animation)
+
+    if(animation.status == "play")
+    then
+        animation.currentTime = animation.currentTime + dt
+        if(animation.currentTime > animation.duration)
+        then
+            animation.currentTime = animation.currentTime - animation.duration
+        end
+        animation.frame = math.floor(animation.currentTime / animation.duration * animation.frames ) + 1 
+        animation.image = animation[animation.frame]
+    
+    end
+
+end
+
+function drawAnimation(animation)
+
+    if(animation.status == "play")
+    then
+        love.graphics.draw(animation.image,animation.x,animation.y,0,animation.scaleX,animation.scaleY)
+    end
+end
+]]--

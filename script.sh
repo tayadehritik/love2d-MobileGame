@@ -1,6 +1,6 @@
 rm -r game/
 mkdir game
-cp -r assets/ main.lua Montserrat-ExtraBold.ttf game/
+cp -r assets/ animation/ planet.lua main.lua Montserrat-ExtraBold.ttf game/
 cd game/
 zip -9 -r game.love .
 cp game.love ../../love-android/app/src/main/assets/game.love
