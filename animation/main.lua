@@ -1,15 +1,15 @@
 function love.load()
 
-    foldername = "shootingstar"
-    imagename = "shootingstar"
-    frames = 11
-    duration = 1
+    foldername = "planet6"
+    imagename = "planet6"
+    frames = 48
+    duration = 2
     animation1 = loadAnimation(foldername,imagename,frames,duration)
     animation1.scaleX = 1
     animation1.scaleY = 1
     animation1.status = "play"
-    animation1.x = 10
-    animation1.rotation = -43.4
+    animation1.x = 100
+    
 
 end
 
@@ -40,19 +40,8 @@ end
 function love.update(dt)
 
     
-    updateAnimationWithoutLooping(dt, animation1) 
-    if(animation1.status == "pause")
-    then
-        animation1.x = math.random(10,100)
-        animation1.y = math.random(10,100)
-        animation1.status = "play"
-    end
-
-    if(animation1.status == "play")
-    then
-        animation1.x = lerppos(animation1.x,animation1.x+10,0.5)
-        animation1.y = lerppos(animation1.y,animation1.y+10,0.5)
-    end
+    updateAnimation(dt, animation1) 
+    
    
 end
 

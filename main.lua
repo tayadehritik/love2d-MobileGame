@@ -25,7 +25,7 @@ function love.load()
     love.graphics.setColor(255,255,255)
     love.graphics.setFont(font)
     
-    love.graphics.setBackgroundColor(32/255, 38/255, 43/255, 1/100)
+    love.graphics.setBackgroundColor(20/255, 26/255, 31/255, 1/100)
 
     love.window.setFullscreen(true)
     
@@ -62,7 +62,7 @@ function love.load()
 
     splashicon = love.graphics.newImage("assets/layers/splashicon.png")
     LOADING = love.graphics.newImage("assets/layers/LOADING.png")
-    
+    loadstatus = true
     gamestate = "loading1"
 
     
@@ -308,15 +308,15 @@ function love.update(dt)
         shipy2 = shipy + 74
     
         
-        backgroundlayer0x = backgroundlayer0x - (multiplier/9)
+        backgroundlayer0x = backgroundlayer0x - (multiplier/7)
         planet1x = planet1x - (multiplier/9)
         planet1greenx = planet1greenx - (multiplier/9)
-        backgroundlayer1x = backgroundlayer1x - (multiplier/8)
+        backgroundlayer1x = backgroundlayer1x - (multiplier/6)
         planet2x = planet2x -(multiplier/8)
         planet2bluex = planet2bluex - (multiplier/8)
-        backgroundlayer2x = backgroundlayer2x - (multiplier/6)
-        backgroundlayer3x = backgroundlayer3x - (multiplier/5)
-        backgroundlayer5x = backgroundlayer5x - (multiplier/4)
+        backgroundlayer2x = backgroundlayer2x - (multiplier/5)
+        backgroundlayer3x = backgroundlayer3x - (multiplier/4)
+        backgroundlayer5x = backgroundlayer5x - (multiplier/3)
 
         
 
@@ -368,8 +368,8 @@ function love.update(dt)
         checkIfPlanetsClipped(dt)
         checkIfBackgroundImagesClipped()
 
-        
-            
+        --[[
+         
             checkCollisionBetweenTwoObjects(shipx+110,shipy+8,50,22-8,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
             checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
             checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
@@ -395,10 +395,12 @@ function love.update(dt)
             checkCollisionBetweenTwoObjects(shipx+48,shipy+39,49,6,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
             checkCollisionBetweenTwoObjects(shipx+24,shipy+13,70,15,asteroid4x,asteroid4y,asteroid0width,asteroid0height);
           
-        
+          
 
+        ]]--
 
-        score = score + dt
+       
+        score = score + dt 
         
 
         scorex = (PlayAreaWidth/2) - ((font:getWidth("SCORE : "..math.floor(0.5+score))*0.5)/2)
@@ -453,12 +455,14 @@ function love.update(dt)
             whenDeactivatingLightSpeed(dt)
         end
 
-
+        --print(multiplier.." "..score)
+        --[[
         if(math.floor(score) % 50 == 0)
         then
-            multiplier = multiplier + 0.01
+            multiplier = multiplier + 0.1
             shipupdownspeed = shipupdownspeed + 0.5
-        end
+        end]]--
+        multiplier = multiplier + 0.0003
 
         if(shipanimationframe < 18)
         then
@@ -582,6 +586,7 @@ function love.update(dt)
     elseif(gamestate == "loading15")
     then        
         loadresourcepack15() 
+        loadstatus = false
         gamestate = "startmenu"
         
         
@@ -1014,7 +1019,7 @@ function resetGame()
     shipwidth = 170
     shipheight = 55
 
-    score = 0
+    score = 1
     scorex = 0
     scorey = 0
 
@@ -1306,7 +1311,7 @@ function love.draw()
     
     if(gamestate == "startmenu")
     then
-        love.graphics.draw(backgroundcolor,0,0,0,0.5,0.5);
+        --love.graphics.draw(backgroundcolor,0,0,0,0.5,0.5);
         
         love.graphics.draw(backgroundlayer0,backgroundlayer0x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer1,backgroundlayer1x,0,0,0.5,0.5);
@@ -1322,10 +1327,11 @@ function love.draw()
     
     elseif(gamestate == "play")
     then
-        love.graphics.draw(backgroundcolor,0,0,0,0.5,0.5);
-        
-        love.graphics.print(OlivinesCollected,20,20,0,0.5,0.5)
-        
+        --love.graphics.draw(backgroundcolor,0,0,0,0.5,0.5);
+        love.graphics.draw(olivineanimation1[1],20+5,10+2+10,0,79/(79*10),140/(140*10))
+        love.graphics.print(OlivinesCollected,40+5,10+10,0,0.4,0.4)
+        love.graphics.draw(displayplanetimage,40+5+((font:getWidth(OlivinesCollected)*0.5))+15,10+1+10,0,90/(90*11),90/(90*11))
+        love.graphics.print(planetsfound.." - 20",40+5+((font:getWidth(OlivinesCollected)*0.5))+15+30,10+10,0,0.4,0.4)
         
         love.graphics.scale(scalefactor, scalefactor)
         love.graphics.translate(translatefactorx, translatefactory)
@@ -1443,7 +1449,7 @@ function love.draw()
 
     elseif(gamestate == "pause")
     then
-        love.graphics.draw(backgroundcolor,0,0,0,0.5,0.5);
+        --love.graphics.draw(backgroundcolor,0,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer0,backgroundlayer0x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer1,backgroundlayer1x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer3,backgroundlayer3x,0,0,0.5,0.5);
@@ -1455,7 +1461,7 @@ function love.draw()
         planetDraw()
 
 
-    elseif(gamestate  == "loading1" or gamestate == "loading2" or gamestate == "loading3" or gamestate == "loading4" or gamestate == "loading5" or gamestate == "loading6" or gamestate == "loading7" or gamestate == "loading8" or gamestate == "loading9" or gamestate == "loading10" or gamestate == "loading11" or gamestate == "loading12" or gamestate == "loading13" or gamestate == "loading14" or gamestate == "loading15")
+    elseif(loadstatus == true)
     then
         love.graphics.draw(splashicon,896/2-(75/2),414/2-(75/2),0,0.5,0.5)
         love.graphics.draw(LOADING,(896/2)-(120/2),414/2+(75/2)+30,0,0.5,0.5)

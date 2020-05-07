@@ -220,7 +220,7 @@ function loadresourcepack10()
     shipwidth = 170
     shipheight = 55
 
-    score = 0
+    score = 1
     scorex = 0
     scorey = 0
 
