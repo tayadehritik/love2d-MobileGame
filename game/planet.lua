@@ -2,19 +2,19 @@
 function planetLoad()
 
 
-    planetanimation0 = loadAnimation("animation/planet0","planet0",48,2)
+    planetanimation0 = loadAnimation("animation/planet0","planet0",48,1)
     planetanimation0.scaleX = 0.5
     planetanimation0.scaleY = 0.5
 
-    planetanimation1 = loadAnimation("animation/planet1","planet1",48,2)
+    planetanimation1 = loadAnimation("animation/planet1","planet1",48,1)
     planetanimation1.scaleX = 0.5
     planetanimation1.scaleY = 0.5
 
-    planetanimation2 = loadAnimation("animation/planet2","planet2",48,2)
+    planetanimation2 = loadAnimation("animation/planet2","planet2",48,1)
     planetanimation2.scaleX = 0.5
     planetanimation2.scaleY = 0.5
 
-    planetanimation3 = loadAnimation("animation/planet3","planet3",48,2)
+    planetanimation3 = loadAnimation("animation/planet3","planet3",48,1)
     planetanimation3.scaleX = 0.5
     planetanimation3.scaleY = 0.5
 
@@ -34,7 +34,7 @@ function planetUpdate(dt)
     updateAnimation(dt,planetanimationtable.animation)
    
     
-    print(math.floor(score))
+    
     if(math.floor(score) % 200 == 0 and planetanimationtable.index <= 3)
     then
         planetanimationtable.animation = planetanimationtable[planetanimationtable.index]

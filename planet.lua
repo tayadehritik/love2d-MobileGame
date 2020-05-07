@@ -34,8 +34,8 @@ function planetUpdate(dt)
     updateAnimation(dt,planetanimationtable.animation)
    
     
-    print(math.floor(score))
-    if(math.floor(score) % 200 == 0 and planetanimationtable.index <= 3)
+    
+    if(math.floor(score) % 110 == 0 and planetanimationtable.index <= 3)
     then
         planetanimationtable.animation = planetanimationtable[planetanimationtable.index]
         planetanimationtable.animation.x = math.random(896,1792)

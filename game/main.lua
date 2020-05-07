@@ -5,73 +5,9 @@
 ]]--
 require "animation/main"
 require "planet"
-backgroundlayer0 = love.graphics.newImage("assets/layers/backgroundlayer0(5).png")
-
-backgroundlayer1 = love.graphics.newImage("assets/layers/backgroundlayer1(8).png")
-
-backgroundlayer3 = love.graphics.newImage("assets/layers/backgroundlayer3(10).png")
-
-backgroundlayer5 = love.graphics.newImage("assets/layers/backgroundlayer5(still).png")
-
-startbutton = love.graphics.newImage("assets/layers/startbutton.png")
-
-up = love.graphics.newImage("assets/layers/up.png")
-down = love.graphics.newImage("assets/layers/down.png")
-
-restartbutton = love.graphics.newImage("assets/layers/restart.png")
-
-backgroundcolor = love.graphics.newImage("assets/layers/backgroundcolor.png")
-
-asteroid0 = love.graphics.newImage("assets/layers/asteroid(0).png")
-
-lightspeediconspritesheet = love.graphics.newImage("assets/layers/lightspeediconanimationspritesheet.png")
-
-lightspeediconbreaks = love.graphics.newImage("assets/layers/lightspeediconbreaks.png")
-
-ach1 = love.graphics.newImage("assets/layers/ach1.png")
-ach2 = love.graphics.newImage("assets/layers/ach2.png")
-ach3 = love.graphics.newImage("assets/layers/ach3.png")
-ach4 = love.graphics.newImage("assets/layers/ach4.png")
-ach5 = love.graphics.newImage("assets/layers/ach5.png")
-
-planet1 = love.graphics.newImage("assets/layers/planet1.png")
-planet1green = love.graphics.newImage("assets/layers/planet1-green.png")
-
-particle = love.graphics.newImage("assets/layers/particle.png")
-
-
-planet2 = love.graphics.newImage("assets/layers/planet2.png")
-planet2blue = love.graphics.newImage("assets/layers/planet2-blue.png")
-
-PlayAreaWidth = 896
-PlayAreaHeight = 414
-
-WindowScaleFactorY = 1
-WindowScaleFactorX = 1
-
-shipanimationframe = 0
-shipanimation = {}
-
-
-achievement = {}
-achievementimages = {}
-asteroidanimationframe = 0
-asteroidanimation = {}
-
-punch = love.graphics.newImage("assets/layers/punch.png")
-
-asteroid1 = asteroid0
-
-printstatus = "0"
-asteroid2 = asteroid0
-
-asteroid3 = asteroid0
-asteroid4 = asteroid0
-
-shipupdownspeed = 0
-
-shipspritesheet = love.graphics.newImage("assets/layers/shipspritesheet.png")
-
+require "loadresourcepacks"
+require "blinkingstar"
+require "shootingstar"
 
 
 font = love.graphics.newFont("Montserrat-ExtraBold.ttf", 36)
@@ -88,18 +24,18 @@ function love.load()
     love.window.setMode(896,414,{vsync = true, fullscreen = true, resizable = true})
     love.graphics.setColor(255,255,255)
     love.graphics.setFont(font)
+    
+    love.graphics.setBackgroundColor(32/255, 38/255, 43/255, 1/100)
 
     love.window.setFullscreen(true)
-    local img = love.graphics.newImage('assets/layers/particle.png')
+    
+    PlayAreaWidth = 896
+    PlayAreaHeight = 414
+
+    WindowScaleFactorY = 1
+    WindowScaleFactorX = 1
 
    
-	psystem = love.graphics.newParticleSystem(img, 32)
-	psystem:setParticleLifetime(2, 5) -- Particles live at least 2s and at most 5s. 
-	psystem:setEmissionRate(5)
-	psystem:setSizeVariation(1)
-	psystem:setLinearAcceleration(0, -20, 20, 20) -- Random movement in all directions.
-	psystem:setColors(1, 1, 1, 1, 1, 1, 1, 0) -- Fade to transparency.
-
 
     WindowWidth = love.graphics.getWidth()
     WindowHeight = love.graphics.getHeight()
@@ -108,46 +44,38 @@ function love.load()
     WindowScaleFactorX = WindowWidth / PlayAreaWidth
 
 
-    --love.window.setFullscreen(true)
-    indexforquads = 0
-    for yforquad=0,1980,110
-    do
-        
-        indexforquads = indexforquads+1
-        shipanimation[indexforquads] = love.graphics.newQuad(0,yforquad,340,110,shipspritesheet:getDimensions())
+    loadresource1 = false
+    loadresource2 = false
+    loadresource3 = false
+    loadresource4 = false
+    loadresource5 = false
+    loadresource6 = false
+    loadresource7 = false
+    loadresource8 = false
+    loadresource9 = false
+    loadresource10 = false
+    loadresource11 = false
+    loadresource12 = false
+    loadresource13 = false
+    loadresource14 = false
+    loadresource15 = false
+
+    splashicon = love.graphics.newImage("assets/layers/splashicon.png")
+    LOADING = love.graphics.newImage("assets/layers/LOADING.png")
     
-    end
-
+    gamestate = "loading1"
 
     
-    clicksound = love.audio.newSource("assets/sounds/click.wav","static")
-    crashsound = love.audio.newSource("assets/sounds/crash.wav","static")
-    shipthrusters = love.audio.newSource("assets/sounds/ship_thrusters.mp3","static")
-
-    shipthrusters:setLooping(true)
-
-    loadandSetupOlivine()
-
-    loadAchievementParticleSystem()
-
-
-    resetGame()
+    --resetGame()
     
 
 end
 
-width = 0
-olivineanimation1 = {}
-olivineanimation2 = {}
-olivineanimation3 = {}
-olivineanimation4 = {}
-particleAchievementImage = love.graphics.newImage("assets/layers/particleachievement.png")
 
-particleAchievementSystem1 = {}
-particleAchievementSystem2 = {}
 
-fadingparticleAchievementSystem1 = {}
-fadingparticleAchievementSystem2 = {}
+
+
+
 
 
 
@@ -354,12 +282,8 @@ end
 
 function love.update(dt)
     
-    width = love.graphics.getDimensions()
+   
     
-    psystem:update(dt)
-    lightsystem:update(dt)
-    
-
     if(gamestate == "startmenu")
     then
         
@@ -374,6 +298,9 @@ function love.update(dt)
         backgroundlayer5x = backgroundlayer5x - (multiplier/4)
         checkIfPlanetsClipped(dt)
         checkIfBackgroundImagesClipped()
+        planetUpdate(dt)
+        updateblinkingstars(dt)
+        updateshootingstars(dt)
 
     elseif(gamestate == "play")
     then
@@ -541,14 +468,19 @@ function love.update(dt)
         else
             shipanimationframe = 1
         end
-       
+        width = love.graphics.getDimensions()
+    
+        psystem:update(dt)
+        lightsystem:update(dt)
+        
         
         animateLightSpeedIcon(dt)
         checkCollisionBetweenShipAndLightSpeedIcon(dt)
         updateOlivine(dt)
         updateParticleSystem(dt)
         planetUpdate(dt)
-        
+        updateblinkingstars(dt)
+        updateshootingstars(dt)
 
 
 
@@ -571,8 +503,92 @@ function love.update(dt)
         then
             multiplier = multiplier - 1
         end
-    
+        planetUpdate(dt)
+        updateblinkingstars(dt)
+        updateshootingstars(dt)
+    elseif(gamestate == "loading1")
+    then
+        
+        loadresourcepack1()
+        gamestate = "loading2"
+        
+    elseif(gamestate == "loading2")
+    then
+        loadresourcepack2()
+        gamestate = "loading3"
+
+    elseif(gamestate == "loading3")
+    then
+        loadresourcepack3()
+        gamestate = "loading4"
+
+    elseif(gamestate == "loading4")
+    then
+        loadresourcepack4()
+        gamestate = "loading5"
+
+    elseif(gamestate == "loading5")
+    then
+        loadresourcepack5()
+        gamestate = "loading6"
+
+    elseif(gamestate == "loading6")
+    then
+        loadresourcepack6()
+        gamestate = "loading7"
+
+    elseif(gamestate == "loading7")
+    then
+        loadresourcepack7()
+        gamestate = "loading8"
+
+    elseif(gamestate == "loading8")
+    then
+        loadresourcepack8()
+        gamestate = "loading9"
+
+    elseif(gamestate == "loading9")
+    then
+        loadresourcepack9()
+        gamestate = "loading10"
+
+    elseif(gamestate == "loading10")
+    then
+        loadresourcepack10()
+        gamestate = "loading11"
+
+    elseif(gamestate == "loading11")
+    then
+        loadresourcepack11()
+        gamestate = "loading12"
+
+        
+    elseif(gamestate == "loading12")
+    then
+        loadresourcepack12()
+        gamestate = "loading13"
+
+    elseif(gamestate == "loading13")
+    then
+        loadresourcepack13()
+        gamestate = "loading14"
+
+    elseif(gamestate == "loading14")
+    then
+        loadresourcepack14()
+        gamestate = "loading15" 
+
+    elseif(gamestate == "loading15")
+    then        
+        loadresourcepack15() 
+        gamestate = "startmenu"
+        
+        
+
     end
+
+
+
 
 end
 
@@ -705,23 +721,31 @@ function checkIfBackgroundImagesClipped()
 end
 function love.touchpressed( id, x, y, dx, dy, pressure )
     -- test if the touch happened in the upper half of the screen
-    touchStatus = true
-    
-    puncStatus = checkIfClickedOnPunch(x,y)
-
-    if(punchStatus == false)
+    if(gamestate == "startmenu" or gamestate == "pause" or gamestate == "play")
     then
-        shipexpectedy = y 
+        touchStatus = true
+        
+        puncStatus = checkIfClickedOnPunch(x,y)
+
+        if(punchStatus == false)
+        then
+            shipexpectedy = y 
+        end
     end
     
 end
 function love.touchmoved( id, x, y, dx, dy, pressure )
 
-    shipexpectedy = y 
-
+    if(gamestate == "startmenu" or gamestate == "pause" or gamestate == "play")
+    then
+        shipexpectedy = y 
+    end
 end
 function love.touchreleased( id, x, y, dx, dy, pressure )
-    touchStatus = false
+    if(gamestate == "startmenu" or gamestate == "pause" or gamestate == "play")
+    then
+        touchStatus = false
+    end
 end
 
 
@@ -772,32 +796,35 @@ end
     
 
 function love.mousepressed( x, y, button, istouch, presses )
-    
-    mouseTouchStatus = true
-    
-    --shipexpectedy = y
-   
-      
-    --punchStatusMouse = checkIfClickedOnPunch(x,y)
-    --[[
-    if(punchStatusMouse ~= true)
+
+    if(gamestate == "startmenu" or gamestate == "pause" or gamestate == "play")
     then
+    
+        mouseTouchStatus = true
+        
         --shipexpectedy = y
-
-        if(y > getScaledY(shipy + shipheight))
+    
+        
+        --punchStatusMouse = checkIfClickedOnPunch(x,y)
+        --[[
+        if(punchStatusMouse ~= true)
         then
-            shipexpectedy = getScaledY(414-5)
-        else
-            shipexpectedy = getScaledY(5)
-        end
+            --shipexpectedy = y
 
+            if(y > getScaledY(shipy + shipheight))
+            then
+                shipexpectedy = getScaledY(414-5)
+            else
+                shipexpectedy = getScaledY(5)
+            end
+
+        end
+        ]]--
+        checkIfClickedOnStart(x,y)
+        checkIfClickedOnRestart(x,y)
+        --checkIfClickedOnUp(x,y)
+        --checkIfClickedOnDown(x,y)
     end
-    ]]--
-    checkIfClickedOnStart(x,y)
-    checkIfClickedOnRestart(x,y)
-    --checkIfClickedOnUp(x,y)
-    --checkIfClickedOnDown(x,y)
-  
 end
 
 function love.keyreleased( key, scancode )
@@ -808,10 +835,13 @@ end
 
 function love.mousereleased( x, y, button, istouch, presses )
 
-    mouseTouchStatus = false
-    keyPressedStatus = false
-    shipthrusters:stop()
-    shipthrusterplaying = false
+    if(gamestate == "startmenu" or gamestate == "pause" or gamestate == "play")
+    then    
+        mouseTouchStatus = false
+        keyPressedStatus = false
+        shipthrusters:stop()
+        shipthrusterplaying = false
+    end
 end
 
 function checkIfClickedOnStart(x, y)
@@ -1057,6 +1087,7 @@ function resetGame()
     resetOlivineAndItsParticleSystems()
     resetPlanets()
     OlivinesCollected = 0
+    
 
 end
 
@@ -1271,7 +1302,7 @@ end
 
 function love.draw()
     love.graphics.scale(WindowScaleFactorX,WindowScaleFactorY)
-   
+    
     if(gamestate == "startmenu")
     then
         love.graphics.draw(backgroundcolor,0,0,0,0.5,0.5);
@@ -1283,7 +1314,9 @@ function love.draw()
         love.graphics.draw(startbutton,startx,starty,0,0.5,0.5)
 
         
-        
+        drawblinkingstars()
+        drawshootingstars()
+        planetDraw()
 
     
     elseif(gamestate == "play")
@@ -1306,7 +1339,9 @@ function love.draw()
         love.graphics.draw(backgroundlayer0,backgroundlayer0x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer1,backgroundlayer1x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer3,backgroundlayer3x,0,0,0.5,0.5);
-        
+
+        drawblinkingstars()
+        drawshootingstars()
         planetDraw()
         
         love.graphics.draw(particleAchievementSystem1.particleSystem,particleAchievementSystem1.x,particleAchievementSystem1.y)
@@ -1414,7 +1449,15 @@ function love.draw()
         
         love.graphics.print("SCORE : "..OlivinesCollected,scorex,scorey,0,0.5,0.5)
         love.graphics.draw(restartbutton,restartbuttonx,restartbuttony,0,0.5,0.5)
+        drawblinkingstars()
+        drawshootingstars()
+        planetDraw()
 
+
+    elseif(gamestate  == "loading1" or gamestate == "loading2" or gamestate == "loading3" or gamestate == "loading4" or gamestate == "loading5" or gamestate == "loading6" or gamestate == "loading7" or gamestate == "loading8" or gamestate == "loading9" or gamestate == "loading10" or gamestate == "loading11" or gamestate == "loading12" or gamestate == "loading13" or gamestate == "loading14" or gamestate == "loading15")
+    then
+        love.graphics.draw(splashicon,896/2-(75/2),414/2-(75/2),0,0.5,0.5)
+        love.graphics.draw(LOADING,(896/2)-(120/2),414/2+(75/2)+30,0,0.5,0.5)
     end
     
 end
