@@ -1,7 +1,7 @@
 function love.load()
 
-    foldername = "planet6"
-    imagename = "planet6"
+    foldername = "planet9"
+    imagename = "planet9"
     frames = 48
     duration = 2
     animation1 = loadAnimation(foldername,imagename,frames,duration)

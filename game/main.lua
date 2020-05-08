@@ -62,7 +62,7 @@ function love.load()
 
     splashicon = love.graphics.newImage("assets/layers/splashicon.png")
     LOADING = love.graphics.newImage("assets/layers/LOADING.png")
-    
+    loadstatus = true
     gamestate = "loading1"
 
     
@@ -135,7 +135,9 @@ end
 function loadandSetupOlivine()
 
     olivineanimation1 = olivineanimationcreate(math.random(896,1792),math.random(0,414))
+    olivinesound1 = clicksound
     olivineanimation2 = olivineanimationcreate(math.random(896,1792),math.random(0,414))
+    olivinesound2 = clicksound
 end
 
 
@@ -152,14 +154,14 @@ function updateOlivine(dt)
 
    olivineanimationupdate(olivineanimation1,dt)
    olivineanimationupdate(olivineanimation2,dt)
-   checkIfCrashedWithOlivine(olivineanimation1,shipx,shipy,dt,fadingparticleAchievementSystem1)
-   checkIfCrashedWithOlivine(olivineanimation2,shipx,shipy,dt,fadingparticleAchievementSystem2)
+   checkIfCrashedWithOlivine(olivineanimation1,shipx,shipy,dt,fadingparticleAchievementSystem1,olivinesound1)
+   checkIfCrashedWithOlivine(olivineanimation2,shipx,shipy,dt,fadingparticleAchievementSystem2,olivinesound2)
    
 end
 
 
 
-function checkIfCrashedWithOlivine(localolivine,shipx,shipy,dt,localfadingparticlesystem)
+function checkIfCrashedWithOlivine(localolivine,shipx,shipy,dt,localfadingparticlesystem,localolivinesound)
 
 
     if(localfadingparticlesystem.particleSystem:isActive() == true)
@@ -187,6 +189,8 @@ function checkIfCrashedWithOlivine(localolivine,shipx,shipy,dt,localfadingpartic
     then
         --  print("crashed")
         --playanimation
+        localolivinesound:play()
+
         OlivinesCollected = OlivinesCollected + 1
         localfadingparticlesystem.x = localolivine.x + (localolivine.width/2)
         localfadingparticlesystem.y = localolivine.y + (localolivine.height/2)
@@ -287,15 +291,16 @@ function love.update(dt)
     if(gamestate == "startmenu")
     then
         
-        backgroundlayer0x = backgroundlayer0x - (multiplier/9)
-        planet1x = planet1x - (multiplier/9)
-        planet1greenx = planet1greenx - (multiplier/9)
-        backgroundlayer1x = backgroundlayer1x - (multiplier/8)
-        planet2x = planet2x -(multiplier/8)
-        planet2bluex = planet2bluex - (multiplier/8)
-        backgroundlayer2x = backgroundlayer2x - (multiplier/6)
-        backgroundlayer3x = backgroundlayer3x - (multiplier/5)
-        backgroundlayer5x = backgroundlayer5x - (multiplier/4)
+         
+        backgroundlayer0x = backgroundlayer0x - (multiplier/7)
+        planet1x = planet1x - (multiplier/7)
+        planet1greenx = planet1greenx - (multiplier/7)
+        backgroundlayer1x = backgroundlayer1x - (multiplier/6)
+        planet2x = planet2x -(multiplier/6)
+        planet2bluex = planet2bluex - (multiplier/6)
+        backgroundlayer2x = backgroundlayer2x - (multiplier/5)
+        backgroundlayer3x = backgroundlayer3x - (multiplier/4)
+        backgroundlayer5x = backgroundlayer5x - (multiplier/3)
         checkIfPlanetsClipped(dt)
         checkIfBackgroundImagesClipped()
         planetUpdate(dt)
@@ -309,11 +314,11 @@ function love.update(dt)
     
         
         backgroundlayer0x = backgroundlayer0x - (multiplier/7)
-        planet1x = planet1x - (multiplier/9)
-        planet1greenx = planet1greenx - (multiplier/9)
+        planet1x = planet1x - (multiplier/7)
+        planet1greenx = planet1greenx - (multiplier/7)
         backgroundlayer1x = backgroundlayer1x - (multiplier/6)
-        planet2x = planet2x -(multiplier/8)
-        planet2bluex = planet2bluex - (multiplier/8)
+        planet2x = planet2x -(multiplier/6)
+        planet2bluex = planet2bluex - (multiplier/6)
         backgroundlayer2x = backgroundlayer2x - (multiplier/5)
         backgroundlayer3x = backgroundlayer3x - (multiplier/4)
         backgroundlayer5x = backgroundlayer5x - (multiplier/3)
@@ -368,7 +373,7 @@ function love.update(dt)
         checkIfPlanetsClipped(dt)
         checkIfBackgroundImagesClipped()
 
-        
+
          
             checkCollisionBetweenTwoObjects(shipx+110,shipy+8,50,22-8,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
             checkCollisionBetweenTwoObjects(shipx+99,shipy+39,36,15,asteroid1x,asteroid1y,asteroid0width,asteroid0height);
@@ -397,7 +402,6 @@ function love.update(dt)
           
           
 
-            
 
        
         score = score + dt 
@@ -462,7 +466,7 @@ function love.update(dt)
             multiplier = multiplier + 0.1
             shipupdownspeed = shipupdownspeed + 0.5
         end]]--
-        multiplier = multiplier + 0.0001
+        multiplier = multiplier + 0.0005
 
         if(shipanimationframe < 18)
         then
@@ -487,21 +491,26 @@ function love.update(dt)
         updateshootingstars(dt)
         --print(score)
 
-
+        
+        if(planetsfound == 10)
+        then
+            gamestate = "end"
+        end
 
 
         
     elseif(gamestate == "pause")
     then
-        backgroundlayer0x = backgroundlayer0x - (multiplier/9)
-        planet1x = planet1x - (multiplier/9)
-        planet1greenx = planet1greenx - (multiplier/9)
-        backgroundlayer1x = backgroundlayer1x - (multiplier/8)
-        planet2x = planet2x -(multiplier/8)
-        planet2bluex = planet2bluex - (multiplier/8)
-        backgroundlayer2x = backgroundlayer2x - (multiplier/6)
-        backgroundlayer3x = backgroundlayer3x - (multiplier/5)
-        backgroundlayer5x = backgroundlayer5x - (multiplier/4)
+         
+        backgroundlayer0x = backgroundlayer0x - (multiplier/7)
+        planet1x = planet1x - (multiplier/7)
+        planet1greenx = planet1greenx - (multiplier/7)
+        backgroundlayer1x = backgroundlayer1x - (multiplier/6)
+        planet2x = planet2x -(multiplier/6)
+        planet2bluex = planet2bluex - (multiplier/6)
+        backgroundlayer2x = backgroundlayer2x - (multiplier/5)
+        backgroundlayer3x = backgroundlayer3x - (multiplier/4)
+        backgroundlayer5x = backgroundlayer5x - (multiplier/3)
         checkIfPlanetsClipped(dt)
         checkIfBackgroundImagesClipped()
         if(multiplier >= 10)
@@ -511,6 +520,8 @@ function love.update(dt)
         planetUpdate(dt)
         updateblinkingstars(dt)
         updateshootingstars(dt)
+
+
     elseif(gamestate == "loading1")
     then
         
@@ -586,9 +597,30 @@ function love.update(dt)
     elseif(gamestate == "loading15")
     then        
         loadresourcepack15() 
+        loadstatus = false
         gamestate = "startmenu"
+    
+    elseif(gamestate == "end")
+    then
         
-        
+        backgroundlayer0x = backgroundlayer0x - (multiplier/7)
+        planet1x = planet1x - (multiplier/7)
+        planet1greenx = planet1greenx - (multiplier/7)
+        backgroundlayer1x = backgroundlayer1x - (multiplier/6)
+        planet2x = planet2x -(multiplier/6)
+        planet2bluex = planet2bluex - (multiplier/6)
+        backgroundlayer2x = backgroundlayer2x - (multiplier/5)
+        backgroundlayer3x = backgroundlayer3x - (multiplier/4)
+        backgroundlayer5x = backgroundlayer5x - (multiplier/3)
+        if(multiplier >= 10)
+        then
+            multiplier = multiplier - 1
+        end
+        checkIfPlanetsClipped(dt)
+        checkIfBackgroundImagesClipped()
+        planetUpdate(dt)
+        updateblinkingstars(dt)
+        updateshootingstars(dt)
 
     end
 
@@ -802,7 +834,7 @@ end
 
 function love.mousepressed( x, y, button, istouch, presses )
 
-    if(gamestate == "startmenu" or gamestate == "pause" or gamestate == "play")
+    if(gamestate == "startmenu" or gamestate == "pause" or gamestate == "play" or gamestate == "end")
     then
     
         mouseTouchStatus = true
@@ -825,6 +857,7 @@ function love.mousepressed( x, y, button, istouch, presses )
 
         end
         ]]--
+        
         checkIfClickedOnStart(x,y)
         checkIfClickedOnRestart(x,y)
         --checkIfClickedOnUp(x,y)
@@ -861,7 +894,7 @@ function checkIfClickedOnStart(x, y)
 end
 
 function checkIfClickedOnRestart(x,y)
-    if(x >= getScaledX(restartbuttonx) and x <= (getScaledX(restartbuttonx+50)) and  y >= getScaledY(restartbuttony) and y <= (getScaledY(restartbuttony+50)) and gamestate == "pause")
+    if(x >= getScaledX(restartbuttonx) and x <= (getScaledX(restartbuttonx+50)) and  y >= getScaledY(restartbuttony) and y <= (getScaledY(restartbuttony+50)) and (gamestate == "pause" or gamestate == "end") )
     then
         resetGame()
         clicksound:play()
@@ -1101,6 +1134,7 @@ function setupLightSpeedAnimation()
     lightspeedanimationx = math.random(896+30,1792-30)
     lightspeedanimationy = math.random(30,414-30-30)
     lightspeedanimation = {}
+    lightspeediconsound = clicksound
     lightspeedanimationframe = 1
     xforquads = 0
     indexforquadslightspeed = 0
@@ -1216,7 +1250,7 @@ function checkCollisionBetweenShipAndLightSpeedIcon(dt)
         lightsystemactive = true
         lightsystemx = lightspeedanimationx + 15
         lightsystemy = lightspeedanimationy + 15    
-        
+        lightspeediconsound:play()
         lightSpeedGameIconActive = true
         lightSpeedAnimationIconActive = false
         math.randomseed(dt)
@@ -1312,6 +1346,13 @@ function love.draw()
     then
         --love.graphics.draw(backgroundcolor,0,0,0,0.5,0.5);
         
+
+
+        love.graphics.draw(planet2,planet2x,planet2y,planet2angle,24/(24*3),11/(11*3))
+        love.graphics.draw(planet2blue,planet2bluex,planet2bluey,planet2blueangle,24/(24*3),11/(11*3))
+        love.graphics.draw(planet1,planet1x,planet1y,planet1angle,16/(16*3),6/(6*3))
+        love.graphics.draw(planet1green,planet1greenx,planet1greeny,planet1greenangle,16/(16*3),6/(5*3))
+
         love.graphics.draw(backgroundlayer0,backgroundlayer0x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer1,backgroundlayer1x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer3,backgroundlayer3x,0,0,0.5,0.5);
@@ -1330,7 +1371,7 @@ function love.draw()
         love.graphics.draw(olivineanimation1[1],20+5,10+2+10,0,79/(79*10),140/(140*10))
         love.graphics.print(OlivinesCollected,40+5,10+10,0,0.4,0.4)
         love.graphics.draw(displayplanetimage,40+5+((font:getWidth(OlivinesCollected)*0.5))+15,10+1+10,0,90/(90*11),90/(90*11))
-        love.graphics.print(planetsfound.." - 20",40+5+((font:getWidth(OlivinesCollected)*0.5))+15+30,10+10,0,0.4,0.4)
+        love.graphics.print(planetsfound.." - 10",40+5+((font:getWidth(OlivinesCollected)*0.5))+15+30,10+10,0,0.4,0.4)
         
         love.graphics.scale(scalefactor, scalefactor)
         love.graphics.translate(translatefactorx, translatefactory)
@@ -1449,6 +1490,13 @@ function love.draw()
     elseif(gamestate == "pause")
     then
         --love.graphics.draw(backgroundcolor,0,0,0,0.5,0.5);
+
+
+        love.graphics.draw(planet2,planet2x,planet2y,planet2angle,24/(24*3),11/(11*3))
+        love.graphics.draw(planet2blue,planet2bluex,planet2bluey,planet2blueangle,24/(24*3),11/(11*3))
+        love.graphics.draw(planet1,planet1x,planet1y,planet1angle,16/(16*3),6/(6*3))
+        love.graphics.draw(planet1green,planet1greenx,planet1greeny,planet1greenangle,16/(16*3),6/(5*3))
+
         love.graphics.draw(backgroundlayer0,backgroundlayer0x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer1,backgroundlayer1x,0,0,0.5,0.5);
         love.graphics.draw(backgroundlayer3,backgroundlayer3x,0,0,0.5,0.5);
@@ -1460,10 +1508,34 @@ function love.draw()
         planetDraw()
 
 
-    elseif(gamestate  == "loading1" or gamestate == "loading2" or gamestate == "loading3" or gamestate == "loading4" or gamestate == "loading5" or gamestate == "loading6" or gamestate == "loading7" or gamestate == "loading8" or gamestate == "loading9" or gamestate == "loading10" or gamestate == "loading11" or gamestate == "loading12" or gamestate == "loading13" or gamestate == "loading14" or gamestate == "loading15")
+    elseif(loadstatus == true)
     then
         love.graphics.draw(splashicon,896/2-(75/2),414/2-(75/2),0,0.5,0.5)
         love.graphics.draw(LOADING,(896/2)-(120/2),414/2+(75/2)+30,0,0.5,0.5)
+
+
+    elseif(gamestate == "end")
+    then
+
+
+        love.graphics.draw(planet2,planet2x,planet2y,planet2angle,24/(24*3),11/(11*3))
+        love.graphics.draw(planet2blue,planet2bluex,planet2bluey,planet2blueangle,24/(24*3),11/(11*3))
+        love.graphics.draw(planet1,planet1x,planet1y,planet1angle,16/(16*3),6/(6*3))
+        love.graphics.draw(planet1green,planet1greenx,planet1greeny,planet1greenangle,16/(16*3),6/(5*3))
+
+        love.graphics.draw(backgroundlayer0,backgroundlayer0x,0,0,0.5,0.5);
+        love.graphics.draw(backgroundlayer1,backgroundlayer1x,0,0,0.5,0.5);
+        love.graphics.draw(backgroundlayer3,backgroundlayer3x,0,0,0.5,0.5);
+        
+        
+
+        love.graphics.print("You Win : "..OlivinesCollected,scorex,scorey,0,0.5,0.5)
+        love.graphics.draw(restartbutton,restartbuttonx,restartbuttony,0,0.5,0.5)
+        
+        drawblinkingstars()
+        drawshootingstars()
+        planetDraw()
+
     end
     
 end
